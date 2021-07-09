@@ -13,8 +13,8 @@ handler = logging.StreamHandler()
 logger.addHandler(handler)
 handler.setFormatter(Formatter('%(name)s %(levelname)s %(message)s'))
 try:
-    level = os.environ.get('COSCONLOGLEVEL', logging.WARNING)
+    level = os.environ.get('PMPMLOGLEVEL', logging.WARNING)
     logger.setLevel(level=level)
 except ValueError:
     logger.setLevel(level=logging.WARNING)
-    logger.error(f'Unknown COSCONLOGLEVEL {level}, set to default WARNING.')
+    logger.error(f'Unknown PMPMLOGLEVEL {level}, set to default WARNING.')

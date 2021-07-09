@@ -91,7 +91,8 @@ mpi = [
     "mpi4py",
 ]
 
-# [tool.poetry.scripts]
+[tool.poetry.scripts]
+pmpm = 'pmpm.core:cli'
 
 [tool.coverage.paths]
 source = [
