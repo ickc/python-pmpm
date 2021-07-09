@@ -8,7 +8,7 @@ from logging import getLogger
 from functools import cached_property
 from dataclasses import dataclass, field
 from typing import Tuple, TYPE_CHECKING, ClassVar, List, Optional
-import subprocess
+from importlib import import_module
 
 import defopt
 import psutil
@@ -25,7 +25,7 @@ def is_intel() -> bool:
     from cpuinfo import get_cpu_info
 
     _is_intel = get_cpu_info()['vendor_id_raw'] == 'GenuineIntel'
-    logger.info(f'Determined if the CPU is Intel: {_is_intel}')
+    logger.info('Determined if the CPU is Intel: %s', _is_intel)
     return _is_intel
 
 
@@ -55,7 +55,10 @@ class InstallEnvironment:
     compile_prefix_name: str = 'compile'
     download_prefix_name: str = 'git'
     conda: str = 'mamba'
+    sub_platform: str = ''  # ubuntu, arch...
+    # TODO: defopt can't pass False here
     nomkl: Optional[bool] = None
+    update: Optional[bool] = None
     conda_environment_filename: ClassVar[str] = 'environment.yml'
     supported_platforms: ClassVar[Tuple[str, ...]] = ('Linux', 'Darwin')
     platform: ClassVar[str] = platform.system()
@@ -93,12 +96,14 @@ class InstallEnvironment:
                 'compile_prefix_name': self.compile_prefix_name,
                 'download_prefix_name': self.download_prefix_name,
                 'conda': self.conda,
+                'sub_platform': self.sub_platform,
                 'nomkl': self.nomkl,
+                'update': self.update,
             },
         }
 
     def write_dict(self):
-        logger.info(f'Writing environment definition to {self.conda_environment_path}')
+        logger.info('Writing environment definition to %s', self.conda_environment_path)
         conda_environment_path = self.conda_environment_path
         conda_environment_path.parent.mkdir(parents=True, exist_ok=True)
         with open(conda_environment_path, 'w') as f:
@@ -122,7 +127,9 @@ class InstallEnvironment:
             compile_prefix_name=pmpm['compile_prefix_name'],
             download_prefix_name=pmpm['download_prefix_name'],
             conda=pmpm['conda'],
+            sub_platform=pmpm['sub_platform'],
             nomkl=pmpm['nomkl'],
+            update=pmpm['update'],
         )
 
     @classmethod
@@ -194,24 +201,22 @@ class InstallEnvironment:
         prepend_path(env, str(self.conda_prefix / 'bin'))
         return env
 
-    def install_conda_packages(self):
-        cmd = [
-            str(self.mamba_bin),
-            'env', 'create',
-            '--file', str(self.conda_environment_path),
-            '--prefix', str(self.conda_prefix),
-        ]
-        logger.info(f'Creating conda environment by running {" ".join(cmd)}')
-
-        subprocess.run(
-            cmd,
-            check=True,
-            env=self.environ,
-        )
-
     def run_all(self):
+        # TODO: don't write dict if read from file
         self.write_dict()
-        self.install_conda_packages()
+
+        # install conda
+        from .packages.conda import Package
+        package = Package(self, update=self.update)
+        package.run()
+
+        for dep in self.dependencies:
+            try:
+                Package = import_module(f'.packages.{dep}.Package')
+            except ImportError:
+                raise RuntimeError(f'Package {dep} is not defined in pmpm.packages.{dep}.Package')
+            package = Package(self, update=self.update)
+            package.run()
 
 
 @dataclass
