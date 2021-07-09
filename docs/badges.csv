@@ -1,0 +1,31 @@
+docs,"
+[![Documentation Status](https://readthedocs.org/projects/python-pmpm/badge/?version=latest)](https://python-pmpm.readthedocs.io/en/latest/?badge=latest&style=plastic)
+[![Documentation Status](https://github.com/ickc/python-pmpm/workflows/GitHub%20Pages/badge.svg)](https://ickc.github.io/python-pmpm)
+"
+tests,"
+![GitHub Actions](https://github.com/ickc/python-pmpm/workflows/Python%20package/badge.svg)
+[![Coverage Status](https://codecov.io/gh/ickc/python-pmpm/branch/master/graphs/badge.svg?branch=master)](https://codecov.io/github/ickc/python-pmpm)
+<!--[![Coverage Status](https://coveralls.io/repos/ickc/python-pmpm/badge.svg?branch=master&service=github)](https://coveralls.io/r/ickc/python-pmpm)-->
+
+[![Codacy Code Quality Status](https://img.shields.io/codacy/grade/078ebc537c5747f68c1d4ad3d3594bbf.svg)](https://www.codacy.com/app/ickc/python-pmpm)
+[![Scrutinizer Status](https://img.shields.io/scrutinizer/quality/g/ickc/python-pmpm/master.svg)](https://scrutinizer-ci.com/g/ickc/python-pmpm/)
+[![CodeClimate Quality Status](https://codeclimate.com/github/ickc/python-pmpm/badges/gpa.svg)](https://codeclimate.com/github/ickc/python-pmpm)
+"
+package,"
+[![Supported versions](https://img.shields.io/pypi/pyversions/python-pmpm.svg)](https://pypi.org/project/python-pmpm)
+[![Supported implementations](https://img.shields.io/pypi/implementation/python-pmpm.svg)](https://pypi.org/project/python-pmpm)
+[![PyPI Wheel](https://img.shields.io/pypi/wheel/python-pmpm.svg)](https://pypi.org/project/python-pmpm)
+
+[![PyPI Package latest release](https://img.shields.io/pypi/v/python-pmpm.svg)](https://pypi.org/project/python-pmpm)
+[![GitHub Releases](https://img.shields.io/github/tag/ickc/python-pmpm.svg?label=github+release)](https://github.com/ickc/python-pmpm/releases)
+[![Development Status](https://img.shields.io/pypi/status/python-pmpm.svg)](https://pypi.python.org/pypi/python-pmpm/)
+[![Downloads](https://img.shields.io/pypi/dm/python-pmpm.svg)](https://pypi.python.org/pypi/python-pmpm/)
+
+[![Commits since latest release](https://img.shields.io/github/commits-since/ickc/python-pmpm/v0.1.0.svg)](https://github.com/ickc/python-pmpm/compare/v0.1.0...master)
+![License](https://img.shields.io/pypi/l/python-pmpm.svg)
+"
+conda-forge,"
+[![Conda Recipe](https://img.shields.io/badge/recipe-python-pmpm-green.svg)](https://anaconda.org/conda-forge/python-pmpm)
+[![Conda Downloads](https://img.shields.io/conda/dn/conda-forge/python-pmpm.svg)](https://anaconda.org/conda-forge/python-pmpm)
+[![Conda Version](https://img.shields.io/conda/vn/conda-forge/python-pmpm.svg)](https://anaconda.org/conda-forge/python-pmpm)
+[![Conda Platforms](https://img.shields.io/conda/pn/conda-forge/python-pmpm.svg)](https://anaconda.org/conda-forge/python-pmpm)"
