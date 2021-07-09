@@ -10,7 +10,7 @@ from . import GenericPackage
 logger = getLogger('pmpm')
 
 if TYPE_CHECKING:
-    from typing import Dict, List
+    from typing import Dict
 
 
 @dataclass
@@ -41,18 +41,39 @@ class Package(GenericPackage):
         return is_dir
 
     def install_env(self):
+        # conda
         cmd = [
             str(self.env.mamba_bin),
             'env', 'create',
             '--file', str(self.env.conda_environment_path),
             '--prefix', str(self.env.conda_prefix),
         ]
-        logger.info(f'Creating conda environment by running {" ".join(cmd)}')
+        logger.info('Creating conda environment by running %s', subprocess.list2cmdline(cmd))
 
         subprocess.run(
             cmd,
             check=True,
             env=self.environ,
+        )
+
+        # ipykernel
+        cmd = [
+            'python',
+            '-m', 'ipykernel',
+            'install',
+            '--user',
+            '--name', self.env.name,
+            '--display-name', self.env.name,
+        ]
+
+        cmd_str = '; '.join([self.activate_str, subprocess.list2cmdline(cmd)])
+        logger.info('Creating conda environment by running %s', cmd_str)
+
+        subprocess.run(
+            cmd_str,
+            check=True,
+            env=self.environ,
+            shell=True,
         )
 
     def update_env(self):
@@ -72,4 +93,3 @@ class Package(GenericPackage):
 
     def run(self):
         self.update_env() if self.update else self.install_env()
-

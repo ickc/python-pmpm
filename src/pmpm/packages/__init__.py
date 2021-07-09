@@ -2,11 +2,10 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from typing import ClassVar, TYPE_CHECKING
-import subprocess
 from logging import getLogger
 
 if TYPE_CHECKING:
-    from typing import Optional, Dict, List
+    from typing import Optional, Dict
 
     from ..core import InstallEnvironment
 
@@ -53,4 +52,8 @@ class GenericPackage:
 
     @property
     def sub_platform(self) -> str:
-        return self.sub_platform
+        return self.env.sub_platform
+
+    @property
+    def activate_str(self) -> str:
+        return self.env.activate_str

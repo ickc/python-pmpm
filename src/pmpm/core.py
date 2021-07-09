@@ -83,9 +83,13 @@ class InstallEnvironment:
             append_env(self.conda_dependencies, 'nomkl')
 
     @property
+    def name(self) -> str:
+        return self.prefix.name
+
+    @property
     def to_dict(self) -> Dict[str, Union[str, List[str], Dict[str, Any]]]:
         return {
-            'name': self.prefix.name,
+            'name': self.name,
             'channels': self.conda_channels,
             'dependencies': self.conda_dependencies,
             '_pmpm': {
@@ -166,6 +170,11 @@ class InstallEnvironment:
     @cached_property
     def activate_bin(self) -> Path:
         return self.conda_bin_prefix / 'bin' / 'activate'
+
+    @cached_property
+    def activate_str(self) -> str:
+        """Return a string of command to activate the conda environment."""
+        return f'. {self.activate_bin} {self.conda_prefix}'
 
     @cached_property
     def conda_prefix(self):
