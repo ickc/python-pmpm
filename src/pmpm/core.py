@@ -16,7 +16,7 @@ import psutil
 from .templates import CONDA_CHANNELS, CONDA_DEPENDENCIES
 
 if TYPE_CHECKING:
-    from typing import Dict, Union
+    from typing import Dict, Union, Any
 
 logger = getLogger('pmpm')
 
@@ -47,7 +47,6 @@ def append_env(dependencies: List[str], package: str):
 class InstallEnvironment:
     """A Generic install environment."""
     prefix: Path
-    conda_environment_path: Path = Path('environment.yml')
     conda_channels: List[str] = field(default_factory=lambda: list(CONDA_CHANNELS))
     conda_dependencies: List[str] = field(default_factory=lambda: list(CONDA_DEPENDENCIES))
     dependencies: List[str] = field(default_factory=list)
@@ -57,6 +56,7 @@ class InstallEnvironment:
     download_prefix_name: str = 'git'
     conda: str = 'mamba'
     nomkl: Optional[bool] = None
+    conda_environment_filename: ClassVar[str] = 'environment.yml'
     supported_platforms: ClassVar[Tuple[str, ...]] = ('Linux', 'Darwin')
     platform: ClassVar[str] = platform.system()
     cpu_count: ClassVar[int] = psutil.cpu_count(logical=False)
@@ -80,12 +80,61 @@ class InstallEnvironment:
             append_env(self.conda_dependencies, 'nomkl')
 
     @property
-    def conda_environment(self) -> Dict[str, Union[str, List[str]]]:
+    def to_dict(self) -> Dict[str, Union[str, List[str], Dict[str, Any]]]:
         return {
             'name': self.prefix.name,
             'channels': self.conda_channels,
             'dependencies': self.conda_dependencies,
+            '_pmpm': {
+                'prefix': str(self.prefix),
+                'dependencies': self.dependencies,
+                'python_version': self.python_version,
+                'conda_prefix_name': self.conda_prefix_name,
+                'compile_prefix_name': self.compile_prefix_name,
+                'download_prefix_name': self.download_prefix_name,
+                'conda': self.conda,
+                'nomkl': self.nomkl,
+            },
         }
+
+    def write_dict(self):
+        logger.info(f'Writing environment definition to {self.conda_environment_path}')
+        conda_environment_path = self.conda_environment_path
+        conda_environment_path.parent.mkdir(parents=True, exist_ok=True)
+        with open(conda_environment_path, 'w') as f:
+            json.dump(
+                self.to_dict,
+                f,
+                indent=2,
+                sort_keys=True,
+            )
+
+    @classmethod
+    def from_dict(cls, data: Dict[str, Union[str, List[str], Dict[str, Any]]]):
+        pmpm: Dict[str, Any] = data['_pmpm']
+        return cls(
+            Path(pmpm['prefix']),
+            conda_channels=data['channels'],
+            conda_dependencies=data['dependencies'],
+            dependencies=pmpm['dependencies'],
+            python_version=str(pmpm['python_version']),
+            conda_prefix_name=pmpm['conda_prefix_name'],
+            compile_prefix_name=pmpm['compile_prefix_name'],
+            download_prefix_name=pmpm['download_prefix_name'],
+            conda=pmpm['conda'],
+            nomkl=pmpm['nomkl'],
+        )
+
+    @classmethod
+    def read_dict(cls, input: Path):
+        """"""
+        with open(input, 'r') as f:
+            data = json.load(f)
+        return cls.from_dict(data)
+
+    @cached_property
+    def conda_environment_path(self) -> Path:
+        return self.prefix / self.conda_environment_filename
 
     @cached_property
     def is_linux(self) -> bool:
@@ -146,22 +195,23 @@ class InstallEnvironment:
         return env
 
     def install_conda_packages(self):
-        conda_environment_path = self.conda_environment_path
-        with open(conda_environment_path, 'w') as f:
-            json.dump(self.conda_environment, f)
-
-        logger.info(f'Creating conda environment using {conda_environment_path}')
+        cmd = [
+            str(self.mamba_bin),
+            'env', 'create',
+            '--file', str(self.conda_environment_path),
+            '--prefix', str(self.conda_prefix),
+        ]
+        logger.info(f'Creating conda environment by running {" ".join(cmd)}')
 
         subprocess.run(
-            [
-                str(self.mamba_bin),
-                'env', 'create',
-                '--file', str(conda_environment_path),
-                '--prefix', str(self.conda_prefix),
-            ],
+            cmd,
             check=True,
             env=self.environ,
         )
+
+    def run_all(self):
+        self.write_dict()
+        self.install_conda_packages()
 
 
 @dataclass
@@ -174,7 +224,8 @@ class CondaOnlyEnvironment(InstallEnvironment):
     def __post_init__(self):
         super().__post_init__()
 
-        assert self.conda_prefix_name == self.compile_prefix_name
+        if self.conda_prefix_name != self.compile_prefix_name:
+            raise RuntimeError('For conda only environment, conda_prefix_name should equals to compile_prefix_name.')
 
         append_env(self.conda_dependencies, 'cmake')
         if self.nomkl:
@@ -206,13 +257,16 @@ class CondaOnlyEnvironment(InstallEnvironment):
 
 def cli():
     env = defopt.run(
-        [
-            InstallEnvironment,
-            CondaOnlyEnvironment,
-        ],
+        {
+            'system_install': InstallEnvironment,
+            'conda_install': CondaOnlyEnvironment,
+            'system_install_from_file': InstallEnvironment.read_dict,
+            'conda_install_from_file': CondaOnlyEnvironment.read_dict,
+        },
         strict_kwonly=False,
+        show_types=True,
     )
-    env.install_conda_packages()
+    env.run_all()
 
 
 if __name__ == '__main__':
