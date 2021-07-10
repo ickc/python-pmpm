@@ -17,12 +17,6 @@ if TYPE_CHECKING:
 class Package(GenericPackage):
     package_name: ClassVar[str] = 'conda'
 
-    def __post_init__(self):
-        # use some heuristics to determine if we need to update or not
-        if self.update is None:
-            self.update = self.is_installed
-        self.update: bool
-
     @property
     def src_dir(self) -> Path:
         return self.env.conda_prefix / 'etc' / 'conda'
@@ -55,13 +49,14 @@ class Package(GenericPackage):
         ]
 
         cmd_str = '; '.join([self.activate_cmd, subprocess.list2cmdline(cmd)])
-        logger.info('Creating conda environment by running %s', cmd_str)
+        logger.info('Registering ipykernel by running %s', cmd_str)
 
         subprocess.run(
             cmd_str,
             check=True,
             env=self.env.environ_with_conda_path,
             shell=True,
+            cwd=self.src_dir,
         )
 
     def install_env(self):
