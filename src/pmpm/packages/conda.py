@@ -40,7 +40,7 @@ class Package(GenericPackage):
             logger.info('%s not found, assuming conda not already installed.', path)
         return is_dir
 
-    def install_env(self):
+    def _install_conda(self):
         # conda
         cmd = [
             str(self.env.mamba_bin),
@@ -56,6 +56,7 @@ class Package(GenericPackage):
             env=self.environ,
         )
 
+    def _install_ipykernel(self):
         # ipykernel
         cmd = [
             'python',
@@ -75,6 +76,10 @@ class Package(GenericPackage):
             env=self.environ,
             shell=True,
         )
+
+    def install_env(self):
+        self._install_conda()
+        self._install_ipykernel()
 
     def update_env(self):
         cmd = [
