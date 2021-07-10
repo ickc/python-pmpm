@@ -319,6 +319,22 @@ class CondaOnlyEnvironment(InstallEnvironment):
             append_env(self.conda_dependencies, 'libblas=*=*mkl')
             append_env(self.conda_dependencies, 'liblapack=*=*mkl')
 
+    # @property
+    # def sanitized_path(self) -> List[str]:
+    #     import subprocess
+
+    #     res = subprocess.run(
+    #         'echo $PATH',
+    #         capture_output=True,
+    #         shell=True,
+    #         check=True,
+    #         env={},
+    #     )
+    #     paths = res.stdout.decode().strip().split(os.pathsep)
+    #     paths = [path for path in paths if path != '.']
+    #     logger.info('Obtained sanitized PATH: %s', paths)
+    #     return paths
+
     @cached_property
     def environ(self) -> Dict[str, str]:
         os_env = super().environ
