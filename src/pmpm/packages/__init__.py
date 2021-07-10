@@ -5,6 +5,7 @@ from typing import ClassVar, TYPE_CHECKING
 from logging import getLogger
 
 if TYPE_CHECKING:
+    from pathlib import Path
     from typing import Optional, Dict
 
     from ..core import InstallEnvironment
@@ -24,17 +25,11 @@ class GenericPackage:
             self.update = self.is_installed
         self.update: bool
 
+    @property
+    def src_dir(self) -> Path:
         raise NotImplementedError
 
-    @property
-    def environ(self) -> Dict[str, str]:
-        """The environment dict that this package needs.
-
-        This can depends on platform, subplatform"""
-        raise NotImplementedError
-
-    @property
-    def is_installed(self) -> bool:
+    def download(self):
         raise NotImplementedError
 
     def install_env(self):
@@ -45,6 +40,16 @@ class GenericPackage:
 
     def run(self):
         raise NotImplementedError
+
+    @property
+    def is_installed(self) -> bool:
+        path = self.src_dir
+        is_dir = path.is_dir()
+        if is_dir:
+            logger.info('Found %s, assuming %s has already been installed.', path, self.package_name)
+        else:
+            logger.info('%s not found, assuming %s not already installed.', path, self.package_name)
+        return is_dir
 
     @property
     def platform(self) -> str:

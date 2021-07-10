@@ -10,7 +10,7 @@ from . import GenericPackage
 logger = getLogger('pmpm')
 
 if TYPE_CHECKING:
-    from typing import Dict
+    from pathlib import Path
 
 
 @dataclass
@@ -24,21 +24,8 @@ class Package(GenericPackage):
         self.update: bool
 
     @property
-    def environ(self) -> Dict[str, str]:
-        """The environment dict that this package needs.
-
-        This can depends on platform, subplatform"""
-        return self.env.environ_with_conda_path
-
-    @property
-    def is_installed(self) -> bool:
-        path = self.env.conda_prefix / 'etc' / 'conda'
-        is_dir = path.is_dir()
-        if is_dir:
-            logger.info('Found %s, assuming conda has already been installed.', path)
-        else:
-            logger.info('%s not found, assuming conda not already installed.', path)
-        return is_dir
+    def src_dir(self) -> Path:
+        return self.env.conda_prefix / 'etc' / 'conda'
 
     def _install_conda(self):
         # conda
@@ -53,7 +40,7 @@ class Package(GenericPackage):
         subprocess.run(
             cmd,
             check=True,
-            env=self.environ,
+            env=self.env.environ_with_conda_path,
         )
 
     def _install_ipykernel(self):
@@ -73,7 +60,7 @@ class Package(GenericPackage):
         subprocess.run(
             cmd_str,
             check=True,
-            env=self.environ,
+            env=self.env.environ_with_conda_path,
             shell=True,
         )
 
@@ -93,7 +80,7 @@ class Package(GenericPackage):
         subprocess.run(
             cmd,
             check=True,
-            env=self.environ,
+            env=self.env.environ_with_conda_path,
         )
 
     def run(self):

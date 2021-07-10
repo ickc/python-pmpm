@@ -13,7 +13,7 @@ from importlib import import_module
 import defopt
 import psutil
 
-from .templates import CONDA_CHANNELS, CONDA_DEPENDENCIES
+from .templates import CONDA_CHANNELS, CONDA_DEPENDENCIES, DEPENDENCIES
 
 if TYPE_CHECKING:
     from typing import Dict, Union, Any
@@ -85,7 +85,7 @@ class InstallEnvironment:
     prefix: Path
     conda_channels: List[str] = field(default_factory=lambda: list(CONDA_CHANNELS))
     conda_dependencies: List[str] = field(default_factory=lambda: list(CONDA_DEPENDENCIES))
-    dependencies: List[str] = field(default_factory=list)
+    dependencies: List[str] = field(default_factory=lambda: list(DEPENDENCIES))
     python_version: str = '3.8'
     conda_prefix_name: str = 'conda'
     compile_prefix_name: str = 'compile'
@@ -223,17 +223,23 @@ class InstallEnvironment:
 
     @cached_property
     def conda_prefix(self):
-        return self.prefix / self.conda_prefix_name
+        path = self.prefix / self.conda_prefix_name
+        path.mkdir(parents=True, exist_ok=True)
+        return path
 
     @cached_property
     def compile_prefix(self):
-        return self.prefix / self.compile_prefix_name
+        path = self.prefix / self.compile_prefix_name
+        path.mkdir(parents=True, exist_ok=True)
+        return path
 
     @cached_property
     def downoad_prefix(self):
-        return self.prefix / self.download_prefix_name
+        path = self.prefix / self.download_prefix_name
+        path.mkdir(parents=True, exist_ok=True)
+        return path
 
-    @property
+    @cached_property
     def environ(self) -> Dict[str, str]:
         _dict = dict(os.environ)
         # point CONDA_PREFIX to the root prefix
@@ -270,10 +276,10 @@ class InstallEnvironment:
 
         for dep in self.dependencies:
             try:
-                Package = import_module(f'.packages.{dep}.Package')
+                package_module = import_module(f'.packages.{dep}', package='pmpm')
             except ImportError:
-                raise RuntimeError(f'Package {dep} is not defined in pmpm.packages.{dep}.Package')
-            package = Package(self, update=self.update)
+                raise RuntimeError(f'Package {dep} is not defined in pmpm.packages.{dep}')
+            package = package_module.Package(self, update=self.update)
             package.run()
 
 
