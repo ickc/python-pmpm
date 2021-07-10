@@ -8,7 +8,7 @@ CONDA_CHANNELS: Tuple[str, ...] = (
     'conda-forge',
     'nodefaults',
 )
-CONDA_DEPENDENCIES: Tuple[str] = (
+CONDA_DEPENDENCIES: Tuple[str, ...] = (
     'ipykernel',
     'numpy',
     'scipy',
@@ -46,6 +46,7 @@ CONDA_DEPENDENCIES: Tuple[str] = (
     'quaternionarray',
     'make',
 )
-DEPENDENCIES: Tuple[str] = (
+DEPENDENCIES: Tuple[str, ...] = (
     'libmadam',
+    'toast',
 )

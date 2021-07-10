@@ -40,7 +40,7 @@ class Package(GenericPackage):
     def _install_ipykernel(self):
         # ipykernel
         cmd = [
-            'python',
+            str(self.env.python_bin),
             '-m', 'ipykernel',
             'install',
             '--user',

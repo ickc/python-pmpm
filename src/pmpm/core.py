@@ -79,6 +79,7 @@ class InstallEnvironment:
     :param download_prefix_name: the subdirectory within `prefix` for downloaded source codes from `dependencies`.
     :param conda: executable name for conda solver, can be mamba, conda.
     :param sub_platform: such as ubuntu, arch, macports, homebrew, etc.
+    :param skip_test: skip test if specified.
     :param nomkl: if nomkl is used in conda packages, nomkl should be True for non-Intel CPUs.
     :param update: if updating all packages.
     """
@@ -92,6 +93,7 @@ class InstallEnvironment:
     download_prefix_name: str = 'git'
     conda: str = 'mamba'
     sub_platform: str = ''
+    skip_test: bool = False
     # TODO: defopt can't pass False here
     nomkl: Optional[bool] = None
     update: Optional[bool] = None
@@ -137,6 +139,7 @@ class InstallEnvironment:
                 'download_prefix_name': self.download_prefix_name,
                 'conda': self.conda,
                 'sub_platform': self.sub_platform,
+                'skip_test': self.skip_test,
                 'nomkl': self.nomkl,
                 'update': self.update,
             },
@@ -168,6 +171,7 @@ class InstallEnvironment:
             download_prefix_name=pmpm['download_prefix_name'],
             conda=pmpm['conda'],
             sub_platform=pmpm['sub_platform'],
+            skip_test=pmpm['skip_test'],
             nomkl=pmpm['nomkl'],
             update=pmpm['update'],
         )
@@ -215,6 +219,10 @@ class InstallEnvironment:
         path = self.conda_root_prefix / 'bin' / 'activate'
         check_file(path, 'binary located at %s')
         return path
+
+    @cached_property
+    def python_bin(self) -> Path:
+        return self.conda_prefix / 'bin' / 'python'
 
     @cached_property
     def activate_cmd(self) -> str:
@@ -297,13 +305,14 @@ class CondaOnlyEnvironment(InstallEnvironment):
     :param download_prefix_name: the subdirectory within `prefix` for downloaded source codes from `dependencies`.
     :param conda: executable name for conda solver, can be mamba, conda.
     :param sub_platform: such as ubuntu, arch, macports, homebrew, etc.
+    :param skip_test: skip test if specified.
     :param nomkl: if nomkl is used in conda packages, nomkl should be True for non-Intel CPUs.
     :param update: if updating all packages.
     """
     conda_prefix_name: str = ''
     compile_prefix_name: str = ''
     environment_variable: ClassVar[Tuple[str, ...]] = ('CONDA_PREFIX', 'CONDA_EXE', 'SCRATCH', 'TERM', 'HOME')
-    sanitized_path: ClassVar[Tuple[str, ...]] = ('/bin', '/usr/bin')  ## needed for conda to find POSIX executables
+    sanitized_path: ClassVar[Tuple[str, ...]] = ('/bin', '/usr/bin')  # needed for conda to find POSIX executables
 
     def __post_init__(self):
         super().__post_init__()
