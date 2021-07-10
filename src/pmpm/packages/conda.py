@@ -66,7 +66,7 @@ class Package(GenericPackage):
             '--display-name', self.env.name,
         ]
 
-        cmd_str = '; '.join([self.activate_str, subprocess.list2cmdline(cmd)])
+        cmd_str = '; '.join([self.activate_cmd, subprocess.list2cmdline(cmd)])
         logger.info('Creating conda environment by running %s', cmd_str)
 
         subprocess.run(

@@ -37,15 +37,51 @@ def prepend_path(environ: Dict[str, str], path: str):
         environ["PATH"] = path
 
 
+def append_path(environ: Dict[str, str], path: str):
+    """Append to PATH in environment dictionary in-place."""
+    if 'PATH' in environ:
+        environ["PATH"] += os.pathsep + path
+    else:
+        environ["PATH"] = path
+
+
 def append_env(dependencies: List[str], package: str):
     """Append a package to conda environment definition."""
     if package not in dependencies:
         dependencies.append(package)
 
 
+def check_file(path: Path, msg: str):
+    if path.is_file():
+        logger.info(msg, path)
+    else:
+        raise RuntimeError(f'{path} not found.')
+
+
+def check_dir(path: Path, msg: str):
+    if path.is_dir():
+        logger.info(msg, path)
+    else:
+        raise RuntimeError(f'{path} not found.')
+
+
 @dataclass
 class InstallEnvironment:
-    """A Generic install environment."""
+    """A Generic install environment.
+
+    :param prefix: the prefix path of the environment.
+    :conda_channels: conda channels for packages to be searched in.
+    :param conda_dependencies: dependencies install via conda.
+    :param dependencies: dependencies install via pmpm.
+    :param python_version: Python version to be installed.
+    :param conda_prefix_name: the subdirectory within `prefix` for conda.
+    :param compile_prefix_name: the subdirectory within `prefix` for compiled packages from `dependencies`.
+    :param download_prefix_name: the subdirectory within `prefix` for downloaded source codes from `dependencies`.
+    :param conda: executable name for conda solver, can be mamba, conda.
+    :param sub_platform: such as ubuntu, arch, macports, homebrew, etc.
+    :param nomkl: if nomkl is used in conda packages, nomkl should be True for non-Intel CPUs.
+    :param update: if updating all packages.
+    """
     prefix: Path
     conda_channels: List[str] = field(default_factory=lambda: list(CONDA_CHANNELS))
     conda_dependencies: List[str] = field(default_factory=lambda: list(CONDA_DEPENDENCIES))
@@ -55,7 +91,7 @@ class InstallEnvironment:
     compile_prefix_name: str = 'compile'
     download_prefix_name: str = 'git'
     conda: str = 'mamba'
-    sub_platform: str = ''  # ubuntu, arch...
+    sub_platform: str = ''
     # TODO: defopt can't pass False here
     nomkl: Optional[bool] = None
     update: Optional[bool] = None
@@ -145,6 +181,7 @@ class InstallEnvironment:
 
     @cached_property
     def conda_environment_path(self) -> Path:
+        """Path to the JSON file of the environment definition."""
         return self.prefix / self.conda_environment_filename
 
     @cached_property
@@ -157,22 +194,30 @@ class InstallEnvironment:
 
     @cached_property
     def conda_bin(self) -> Path:
-        return Path(self.environ['CONDA_EXE'])
+        path = Path(self.environ['CONDA_EXE'])
+        check_file(path, 'binary located at %s')
+        return path
 
     @cached_property
-    def conda_bin_prefix(self) -> Path:
-        return self.conda_bin.parent.parent
+    def conda_root_prefix(self) -> Path:
+        path = Path(self.environ['CONDA_PREFIX'])
+        check_dir(path, 'conda root prefix located at %s')
+        return path
 
     @cached_property
     def mamba_bin(self) -> Path:
-        return self.conda_bin_prefix / 'bin' / self.conda
+        path = self.conda_root_prefix / 'bin' / self.conda
+        check_file(path, 'binary located at %s')
+        return path
 
     @cached_property
     def activate_bin(self) -> Path:
-        return self.conda_bin_prefix / 'bin' / 'activate'
+        path = self.conda_root_prefix / 'bin' / 'activate'
+        check_file(path, 'binary located at %s')
+        return path
 
     @cached_property
-    def activate_str(self) -> str:
+    def activate_cmd(self) -> str:
         """Return a string of command to activate the conda environment."""
         return f'. {self.activate_bin} {self.conda_prefix}'
 
@@ -190,7 +235,11 @@ class InstallEnvironment:
 
     @property
     def environ(self) -> Dict[str, str]:
-        return dict(os.environ)
+        _dict = dict(os.environ)
+        # point CONDA_PREFIX to the root prefix
+        conda_bin = Path(_dict['CONDA_EXE'])
+        _dict['CONDA_PREFIX'] = str(conda_bin.parent.parent)
+        return _dict
 
     @cached_property
     def environ_with_compile_path(self) -> Dict[str, str]:
@@ -230,10 +279,25 @@ class InstallEnvironment:
 
 @dataclass
 class CondaOnlyEnvironment(InstallEnvironment):
-    """Using only the stack provided by conda to compile."""
+    """Using only the stack provided by conda to compile.
+
+    :param prefix: the prefix path of the environment.
+    :conda_channels: conda channels for packages to be searched in.
+    :param conda_dependencies: dependencies install via conda.
+    :param dependencies: dependencies install via pmpm.
+    :param python_version: Python version to be installed.
+    :param conda_prefix_name: the subdirectory within `prefix` for conda.
+    :param compile_prefix_name: the subdirectory within `prefix` for compiled packages from `dependencies`.
+    :param download_prefix_name: the subdirectory within `prefix` for downloaded source codes from `dependencies`.
+    :param conda: executable name for conda solver, can be mamba, conda.
+    :param sub_platform: such as ubuntu, arch, macports, homebrew, etc.
+    :param nomkl: if nomkl is used in conda packages, nomkl should be True for non-Intel CPUs.
+    :param update: if updating all packages.
+    """
     conda_prefix_name: str = ''
     compile_prefix_name: str = ''
-    environment_variable: ClassVar[Tuple[str, ...]] = ('CONDA_EXE', 'SCRATCH', 'TERM', 'HOME')
+    environment_variable: ClassVar[Tuple[str, ...]] = ('CONDA_PREFIX', 'CONDA_EXE', 'SCRATCH', 'TERM', 'HOME')
+    sanitized_path: ClassVar[Tuple[str, ...]] = ('/bin', '/usr/bin')  ## needed for conda to find POSIX executables
 
     def __post_init__(self):
         super().__post_init__()
@@ -251,8 +315,12 @@ class CondaOnlyEnvironment(InstallEnvironment):
 
     @cached_property
     def environ(self) -> Dict[str, str]:
-        os_env = os.environ
-        return {key: os_env[key] for key in self.environment_variable if key in os_env}
+        os_env = super().environ
+        _dict = {key: os_env[key] for key in self.environment_variable if key in os_env}
+        for path in self.sanitized_path:
+            append_path(_dict, path)
+        logger.info('environment constructed as %s', _dict)
+        return _dict
 
     @cached_property
     def environ_with_all_paths(self) -> Dict[str, str]:
