@@ -44,6 +44,7 @@ CONDA_DEPENDENCIES: Tuple[str] = (
     'lapack',
     'compilers',
     'quaternionarray',
+    'make',
 )
 DEPENDENCIES: Tuple[str] = (
     'libmadam',
