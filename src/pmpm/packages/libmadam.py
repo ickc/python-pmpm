@@ -70,21 +70,25 @@ class Package(GenericPackage):
     def _configure(self):
         env = self.env.environ_with_compile_path.copy()
         env['MPIFC'] = 'mpifort'
-        env['FC'] = 'gfortran'
-        env['FCFLAGS'] = "-O3 -fPIC -pthread -march=native -mtune=native"
-        env['LDFLAGS'] = str(self.env.compile_prefix / 'lib')
-        env['MPICC'] = 'mpicc'
-        env['CFLAGS'] = "-O3 -fPIC -pthread -march=native -mtune=native"
+        env['FC'] = 'mpifort'
+        env['FCFLAGS'] = f'-O3 -fPIC -pthread -march=native -mtune=native'
+        env['CFLAGS'] = f'-O3 -fPIC -pthread -march=native -mtune=native'
+        if self.env.is_darwin:
+            temp = ' -I/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include -L/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/lib'
+            env['CFLAGS'] += temp
+            env['FCFLAGS'] += temp
         cmd = [
             './configure',
             f'--prefix={self.env.compile_prefix}',
         ]
-        logger.info('Running %s', subprocess.list2cmdline(cmd))
+        cmd_str = '; '.join([self.activate_cmd, subprocess.list2cmdline(cmd)])
+        logger.info('Running %s', cmd_str)
         subprocess.run(
-            cmd,
+            cmd_str,
             check=True,
             env=env,
             cwd=self.src_dir,
+            shell=True,
         )
 
     def _make(self):
@@ -117,8 +121,8 @@ class Package(GenericPackage):
     def _python_install(self):
         cmd = [
             'python',
+            'setup.py',
             'install',
-            '.',
         ]
         cmd_str = '; '.join([self.activate_cmd, subprocess.list2cmdline(cmd)])
         logger.info('Running %s', subprocess.list2cmdline(cmd))
