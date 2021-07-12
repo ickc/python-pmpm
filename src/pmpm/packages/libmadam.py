@@ -169,5 +169,10 @@ class Package(GenericPackage):
         if not self.env.skip_test:
             self._test()
 
-    def run(self):
-        self.update_env() if self.update else self.install_env()
+    def update_env_fast(self):
+        logger.info('Fast updating %s, any changes in %s will be installed.', self.package_name, self.src_dir)
+        self._make()
+        self._make_install()
+        self._python_install()
+        if not self.env.skip_test:
+            self._test()

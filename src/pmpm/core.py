@@ -80,6 +80,8 @@ class InstallEnvironment:
     :param conda: executable name for conda solver, can be mamba, conda.
     :param sub_platform: such as ubuntu, arch, macports, homebrew, etc.
     :param skip_test: skip test if specified.
+    :param skip_conda: skip installing/updating conda.
+    :param fast_update: assume minimal change to source of compiled package and perform fast update.
     :param nomkl: if nomkl is used in conda packages, nomkl should be True for non-Intel CPUs.
     :param update: if updating all packages.
     """
@@ -94,6 +96,8 @@ class InstallEnvironment:
     conda: str = 'mamba'
     sub_platform: str = ''
     skip_test: bool = False
+    skip_conda: bool = False
+    fast_update: bool = False
     # TODO: defopt can't pass False here
     nomkl: Optional[bool] = None
     update: Optional[bool] = None
@@ -140,6 +144,8 @@ class InstallEnvironment:
                 'conda': self.conda,
                 'sub_platform': self.sub_platform,
                 'skip_test': self.skip_test,
+                'skip_conda': self.skip_conda,
+                'fast_update': self.fast_update,
                 'nomkl': self.nomkl,
                 'update': self.update,
             },
@@ -172,6 +178,8 @@ class InstallEnvironment:
             conda=pmpm['conda'],
             sub_platform=pmpm['sub_platform'],
             skip_test=pmpm['skip_test'],
+            skip_conda=pmpm['skip_conda'],
+            fast_update=pmpm['fast_update'],
             nomkl=pmpm['nomkl'],
             update=pmpm['update'],
         )
@@ -211,8 +219,12 @@ class InstallEnvironment:
     @cached_property
     def mamba_bin(self) -> Path:
         path = self.conda_root_prefix / 'bin' / self.conda
-        check_file(path, 'binary located at %s')
-        return path
+        try:
+            check_file(path, 'binary located at %s')
+            return path
+        except RuntimeError:
+            logger.warning('%s not found, use conda instead.', self.conda)
+            return self.conda_bin
 
     @cached_property
     def activate_bin(self) -> Path:
@@ -278,16 +290,17 @@ class InstallEnvironment:
         self.write_dict()
 
         # install conda
-        from .packages.conda import Package
-        package = Package(self, update=self.update)
-        package.run()
+        if not self.skip_conda:
+            from .packages.conda import Package
+            package = Package(self, update=self.update, fast_update=self.fast_update)
+            package.run()
 
         for dep in self.dependencies:
             try:
                 package_module = import_module(f'.packages.{dep}', package='pmpm')
             except ImportError:
                 raise RuntimeError(f'Package {dep} is not defined in pmpm.packages.{dep}')
-            package = package_module.Package(self, update=self.update)
+            package = package_module.Package(self, update=self.update, fast_update=self.fast_update)
             package.run()
 
 
@@ -306,6 +319,8 @@ class CondaOnlyEnvironment(InstallEnvironment):
     :param conda: executable name for conda solver, can be mamba, conda.
     :param sub_platform: such as ubuntu, arch, macports, homebrew, etc.
     :param skip_test: skip test if specified.
+    :param skip_conda: skip installing/updating conda.
+    :param fast_update: assume minimal change to source of compiled package and perform fast update.
     :param nomkl: if nomkl is used in conda packages, nomkl should be True for non-Intel CPUs.
     :param update: if updating all packages.
     """

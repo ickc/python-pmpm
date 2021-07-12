@@ -77,6 +77,3 @@ class Package(GenericPackage):
             check=True,
             env=self.env.environ_with_conda_path,
         )
-
-    def run(self):
-        self.update_env() if self.update else self.install_env()

@@ -17,12 +17,16 @@ logger = getLogger('pmpm')
 class GenericPackage:
     env: InstallEnvironment
     update: Optional[bool] = None
+    fast_update: bool = False
     package_name: ClassVar[str] = ''
 
     def __post_init__(self):
         # use some heuristics to determine if we need to update or not
         if self.update is None:
-            self.update = self.is_installed
+            if self.fast_update:
+                self.update = True
+            else:
+                self.update = self.is_installed
         self.update: bool
 
     @property
@@ -38,8 +42,18 @@ class GenericPackage:
     def update_env(self):
         raise NotImplementedError
 
+    def update_env_fast(self):
+        logger.warning('%s has not implemented fast update, using normal update...', self.package_name)
+        return self.update_env()
+
     def run(self):
-        raise NotImplementedError
+        if self.update:
+            if self.fast_update:
+                self.update_env_fast()
+            else:
+                self.update_env()
+        else:
+            self.install_env()
 
     @property
     def is_installed(self) -> bool:
