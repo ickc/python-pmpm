@@ -19,7 +19,7 @@ def combine_commands(*args: Union[str, List[str]]) -> str:
 
     :param args: can be in string or list of string that subprocess.run accepts.
     """
-    return '&& '.join(cmd if type(cmd) is str else list2cmdline(cmd) for cmd in args)
+    return ' && '.join(cmd if type(cmd) is str else list2cmdline(cmd) for cmd in args)
 
 
 @dataclass
