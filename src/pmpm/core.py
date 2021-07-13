@@ -266,7 +266,8 @@ class InstallEnvironment:
     def environ(self) -> Dict[str, str]:
         _dict = dict(os.environ)
         # point CONDA_PREFIX to the root prefix
-        _dict['CONDA_PREFIX'] = str(self.conda_bin.parent.parent)
+        conda_bin = Path(_dict['CONDA_EXE'])
+        _dict['CONDA_PREFIX'] = str(conda_bin.parent.parent)
         return _dict
 
     @cached_property
