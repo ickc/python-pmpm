@@ -1,9 +1,16 @@
+name: test with conda
+
+on:
+  pull_request:
+  push:
+
 jobs:
   test:
-    name: test with conda
     strategy:
+      fail-fast: false
       matrix:
         os: ["ubuntu", "macos", "windows"]
+    name: test with conda on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}-latest
     steps:
       - uses: actions/checkout@v2
