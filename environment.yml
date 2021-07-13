@@ -20,6 +20,7 @@ dependencies:
   - psutil >=5,<6
   # run_constrained:
   - coloredlogs >=14,<16
+  - py-cpuinfo >=8,<9
   # tests:
   - coverage
   - coveralls

@@ -46,6 +46,7 @@ psutil = "^5"
 
 # extras
 coloredlogs = {optional = true, version = ">=14,<16"}
+py-cpuinfo = {optional = true, version = "^8"}
 
 # tests
 coverage = {optional = true, version = "*"}
@@ -72,6 +73,7 @@ data-science-types = "*"
 [tool.poetry.extras]
 extras = [
     "coloredlogs",
+    "py-cpuinfo",
 ]
 tests = [
     "coverage",
