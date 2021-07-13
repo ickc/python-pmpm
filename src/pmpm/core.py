@@ -102,13 +102,16 @@ class InstallEnvironment:
     nomkl: Optional[bool] = None
     update: Optional[bool] = None
     conda_environment_filename: ClassVar[str] = 'environment.yml'
-    supported_platforms: ClassVar[Tuple[str, ...]] = ('Linux', 'Darwin')
+    supported_platforms: ClassVar[Tuple[str, ...]] = ('Linux', 'Darwin', 'Windows')
     platform: ClassVar[str] = platform.system()
     cpu_count: ClassVar[int] = psutil.cpu_count(logical=False)
 
     def __post_init__(self):
-        if self.platform not in self.supported_platforms:
+        platform = self.platform
+        if platform not in self.supported_platforms:
             raise OSError(f'OS {self.platform} not supported.')
+        elif platform == 'Windows':
+            logger.warning('Windows support is experimental and may not work.')
 
         if self.nomkl is None:
             try:
