@@ -9,6 +9,7 @@ from functools import cached_property
 from dataclasses import dataclass, field
 from typing import Tuple, TYPE_CHECKING, ClassVar, List, Optional
 from importlib import import_module
+from subprocess import list2cmdline
 
 import defopt
 import psutil
@@ -208,6 +209,10 @@ class InstallEnvironment:
         return self.platform == 'Darwin'
 
     @cached_property
+    def is_windows(self) -> bool:
+        return self.platform == 'Windows'
+
+    @cached_property
     def conda_bin(self) -> Path:
         path = Path(self.environ['CONDA_EXE'])
         check_file(path, 'binary located at %s')
@@ -240,9 +245,16 @@ class InstallEnvironment:
         return self.conda_prefix / 'bin' / 'python'
 
     @cached_property
-    def activate_cmd(self) -> str:
+    def activate_cmd(self) -> List[str]:
+        """Return a command to activate the conda environment."""
+        cmd = [] if self.is_windows else ['source']
+        cmd += [str(self.activate_bin), str(self.conda_prefix)]
+        return cmd
+
+    @cached_property
+    def activate_cmd_str(self) -> str:
         """Return a string of command to activate the conda environment."""
-        return f'. {self.activate_bin} {self.conda_prefix}'
+        return list2cmdline(self.activate_cmd)
 
     @cached_property
     def conda_prefix(self):

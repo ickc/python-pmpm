@@ -83,5 +83,9 @@ class GenericPackage:
         return self.env.sub_platform
 
     @property
-    def activate_cmd(self) -> str:
+    def activate_cmd(self) -> List[str]:
         return self.env.activate_cmd
+
+    @property
+    def activate_cmd_str(self) -> str:
+        return self.env.activate_cmd_str

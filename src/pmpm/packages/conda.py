@@ -46,7 +46,7 @@ class Package(GenericPackage):
             '--name', self.env.name,
             '--display-name', self.env.name,
         ]
-        cmd_str = combine_commands(self.activate_cmd, cmd)
+        cmd_str = combine_commands(self.activate_cmd_str, cmd)
         logger.info('Registering ipykernel by running %s', cmd_str)
         subprocess.run(
             cmd_str,

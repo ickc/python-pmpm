@@ -86,7 +86,7 @@ class Package(GenericPackage):
             './configure',
             f'--prefix={self.env.compile_prefix}',
         ]
-        cmd_str = combine_commands(self.activate_cmd, cmd)
+        cmd_str = combine_commands(self.activate_cmd_str, cmd)
         logger.info('Running %s', cmd_str)
         subprocess.run(
             cmd_str,
@@ -129,7 +129,7 @@ class Package(GenericPackage):
             'setup.py',
             'install',
         ]
-        cmd_str = combine_commands(self.activate_cmd, cmd)
+        cmd_str = combine_commands(self.activate_cmd_str, cmd)
         logger.info('Running %s', subprocess.list2cmdline(cmd))
         subprocess.run(
             cmd_str,
@@ -145,7 +145,7 @@ class Package(GenericPackage):
             'setup.py',
             'test',
         ]
-        cmd_str = combine_commands(self.activate_cmd, cmd)
+        cmd_str = combine_commands(self.activate_cmd_str, cmd)
         logger.info('Running %s', subprocess.list2cmdline(cmd))
         subprocess.run(
             cmd_str,

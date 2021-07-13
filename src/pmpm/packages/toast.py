@@ -125,7 +125,7 @@ class Package(GenericPackage):
             '-c',
             'from toast.tests import run; run()',
         ]
-        cmd_str = combine_commands(self.activate_cmd, cmd)
+        cmd_str = combine_commands(self.activate_cmd_str, cmd)
         logger.info('Running %s', subprocess.list2cmdline(cmd))
         subprocess.run(
             cmd_str,
