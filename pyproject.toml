@@ -41,6 +41,8 @@ include = [
 
 [tool.poetry.dependencies]
 python = ">=3.8"
+defopt = "^6"
+psutil = "^5"
 
 # extras
 coloredlogs = {optional = true, version = ">=14,<16"}
