@@ -19,8 +19,6 @@ jobs:
           python-version: 3.9
           mamba-version: "*"
           channels: conda-forge
-          auto-activate-base: true
-          activate-environment: ""
           environment-file: environment.yml
       - name: test
         run: |
