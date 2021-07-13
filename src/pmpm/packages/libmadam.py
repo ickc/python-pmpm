@@ -4,6 +4,7 @@ from dataclasses import dataclass
 from logging import getLogger
 from typing import ClassVar, TYPE_CHECKING
 import subprocess
+import os
 
 from . import GenericPackage
 
@@ -72,10 +73,14 @@ class Package(GenericPackage):
         env['FC'] = 'mpifort'
         env['FCFLAGS'] = '-O3 -fPIC -pthread -march=native -mtune=native'
         env['CFLAGS'] = '-O3 -fPIC -pthread -march=native -mtune=native'
+        inc = [str(self.env.compile_prefix / 'include')]
+        lib = [str(self.env.compile_prefix / 'lib')]
         if self.env.is_darwin:
-            temp = ' -I/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include -L/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/lib'
-            env['CFLAGS'] += temp
-            env['FCFLAGS'] += temp
+            inc.append('/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include')
+            lib.append('/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/lib')
+        temp = f' -I{os.pathsep.join(inc)} -L{os.pathsep.join(lib)}'
+        env['CFLAGS'] += temp
+        env['FCFLAGS'] += temp
         cmd = [
             './configure',
             f'--prefix={self.env.compile_prefix}',
