@@ -10,6 +10,9 @@ jobs:
       fail-fast: false
       matrix:
         os: ["ubuntu", "macos", "windows"]
+    defaults:
+      run:
+        shell: bash -l {0}
     name: test with conda on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}-latest
     steps:
@@ -21,6 +24,4 @@ jobs:
           channels: conda-forge
           environment-file: environment.yml
       - name: test
-        run: |
-          conda activate pmpm
-          pmpm conda_install "$HOME/pmpm-test"
+        run: pmpm conda_install "$HOME/pmpm-test"
