@@ -23,7 +23,7 @@ jobs:
           mamba-version: "*"
           channels: conda-forge
           environment-file: environment.yml
-      - Install pmpm
+      - name: Install pmpm
         run: pip install .
       - name: test
         run: pmpm conda_install "$HOME/pmpm-test"
