@@ -6,7 +6,7 @@ from typing import ClassVar, TYPE_CHECKING
 import subprocess
 import os
 
-from . import GenericPackage
+from . import GenericPackage, combine_commands
 
 logger = getLogger('pmpm')
 
@@ -81,11 +81,12 @@ class Package(GenericPackage):
         temp = f' -I{os.pathsep.join(inc)} -L{os.pathsep.join(lib)}'
         env['CFLAGS'] += temp
         env['FCFLAGS'] += temp
+
         cmd = [
             './configure',
             f'--prefix={self.env.compile_prefix}',
         ]
-        cmd_str = '; '.join([self.activate_cmd, subprocess.list2cmdline(cmd)])
+        cmd_str = combine_commands(self.activate_cmd, cmd)
         logger.info('Running %s', cmd_str)
         subprocess.run(
             cmd_str,
@@ -128,7 +129,7 @@ class Package(GenericPackage):
             'setup.py',
             'install',
         ]
-        cmd_str = '; '.join([self.activate_cmd, subprocess.list2cmdline(cmd)])
+        cmd_str = combine_commands(self.activate_cmd, cmd)
         logger.info('Running %s', subprocess.list2cmdline(cmd))
         subprocess.run(
             cmd_str,
@@ -144,7 +145,7 @@ class Package(GenericPackage):
             'setup.py',
             'test',
         ]
-        cmd_str = '; '.join([self.activate_cmd, subprocess.list2cmdline(cmd)])
+        cmd_str = combine_commands(self.activate_cmd, cmd)
         logger.info('Running %s', subprocess.list2cmdline(cmd))
         subprocess.run(
             cmd_str,

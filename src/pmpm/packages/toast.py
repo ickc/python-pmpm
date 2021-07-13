@@ -6,7 +6,7 @@ from logging import getLogger
 from typing import ClassVar, TYPE_CHECKING
 import subprocess
 
-from . import GenericPackage
+from . import GenericPackage, combine_commands
 
 logger = getLogger('pmpm')
 
@@ -84,7 +84,7 @@ class Package(GenericPackage):
             f'-DSUITESPARSE_LIBRARY_DIR_HINTS={prefix}/lib',
             '..',
         ]
-        logger.info('Running %s', subprocess.list2cmdline(cmd), self.build_dir)
+        logger.info('In %s, running %s', subprocess.list2cmdline(cmd), self.build_dir)
         subprocess.run(
             cmd,
             check=True,
@@ -125,7 +125,7 @@ class Package(GenericPackage):
             '-c',
             'from toast.tests import run; run()',
         ]
-        cmd_str = '; '.join([self.activate_cmd, subprocess.list2cmdline(cmd)])
+        cmd_str = combine_commands(self.activate_cmd, cmd)
         logger.info('Running %s', subprocess.list2cmdline(cmd))
         subprocess.run(
             cmd_str,

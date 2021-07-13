@@ -3,14 +3,23 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import ClassVar, TYPE_CHECKING
 from logging import getLogger
+from subprocess import list2cmdline
 
 if TYPE_CHECKING:
     from pathlib import Path
-    from typing import Optional, Dict
+    from typing import Optional, Union, List
 
     from ..core import InstallEnvironment
 
 logger = getLogger('pmpm')
+
+
+def combine_commands(*args: Union[str, List[str]]) -> str:
+    """Combine multiple commands into a single line of string for subprocess.
+
+    :param args: can be in string or list of string that subprocess.run accepts.
+    """
+    return '&& '.join(cmd if type(cmd) is str else list2cmdline(cmd) for cmd in args)
 
 
 @dataclass

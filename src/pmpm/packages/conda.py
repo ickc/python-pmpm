@@ -5,7 +5,7 @@ from logging import getLogger
 from typing import ClassVar, TYPE_CHECKING
 import subprocess
 
-from . import GenericPackage
+from . import GenericPackage, combine_commands
 
 logger = getLogger('pmpm')
 
@@ -30,7 +30,6 @@ class Package(GenericPackage):
             '--prefix', str(self.env.conda_prefix),
         ]
         logger.info('Creating conda environment by running %s', subprocess.list2cmdline(cmd))
-
         subprocess.run(
             cmd,
             check=True,
@@ -47,10 +46,8 @@ class Package(GenericPackage):
             '--name', self.env.name,
             '--display-name', self.env.name,
         ]
-
-        cmd_str = '; '.join([self.activate_cmd, subprocess.list2cmdline(cmd)])
+        cmd_str = combine_commands(self.activate_cmd, cmd)
         logger.info('Registering ipykernel by running %s', cmd_str)
-
         subprocess.run(
             cmd_str,
             check=True,
@@ -70,8 +67,7 @@ class Package(GenericPackage):
             '--file', str(self.env.conda_environment_path),
             '--prefix', str(self.env.conda_prefix),
         ]
-        logger.info(f'Updating conda environment by running {" ".join(cmd)}')
-
+        logger.info('Updating conda environment by running %s', subprocess.list2cmdline(cmd))
         subprocess.run(
             cmd,
             check=True,
