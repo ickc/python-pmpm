@@ -1,0 +1,41 @@
+# this should be very similar to https://github.com/conda-forge/pmpm-feedstock/blob/master/recipe/meta.yaml
+# run the following command to create a conda environment that is suitable for testing pmpm
+# conda env create -f environment.yml
+# conda activate pmpm
+# python -m ipykernel install --user --name pmpm --display-name pmpm
+# and then run this to install pmpm in editable mode
+# make editable
+# update using
+# conda env update --name pmpm --file environment.yml  --prune
+name: pmpm
+channels:
+  - conda-forge
+dependencies:
+  # host:
+  - pip
+  - python >=3.8  # for cached property
+  - poetry >=1,<2
+  # run:
+  - defopt >=6,<7
+  - psutil >=5,<6
+  # run_constrained:
+  - coloredlogs >=14,<16
+  # tests:
+  - coverage
+  - coveralls
+  - flake8
+  - pytest
+  - pytest-cov
+  - pytest-parallel
+  - pytest-xdist
+  # docs:
+  - sphinx
+  - sphinx_bootstrap_theme
+  - pygments-style-solarized
+  - sphinxcontrib-apidoc
+  # dev:
+  - data-science-types
+  - ipykernel
+  - mypy
+  - bandit
+  - bump2version
