@@ -11,7 +11,7 @@ __version__ = '0.1.0'
 logger = logging.getLogger(__name__)
 handler = logging.StreamHandler()
 logger.addHandler(handler)
-handler.setFormatter(Formatter('%(name)s %(levelname)s %(message)s'))
+handler.setFormatter(Formatter('%(name)s %(levelname)s (%(module)-s): %(message)s'))
 try:
     level = os.environ.get('PMPMLOGLEVEL', logging.INFO)
     logger.setLevel(level=level)
