@@ -105,7 +105,7 @@ class InstallEnvironment:
     conda_environment_filename: ClassVar[str] = 'environment.yml'
     supported_systems: ClassVar[Iterable[str]] = ('Linux', 'Darwin', 'Windows')
     system: ClassVar[str] = platform.system()
-    windows_exclude_conda_dependencies: ClassVar[Iterable[str]] = {'automake', 'libaatm', 'mpich-mpicc', 'libsharp', 'healpy', 'libtool', 'mpich-mpicxx', 'mpich-mpifort'}
+    windows_exclude_conda_dependencies: ClassVar[Iterable[str]] = {'automake', 'libaatm', 'mpich-mpicc', 'libsharp', 'healpy', 'libtool', 'mpich-mpicxx', 'mpich-mpifort', 'suitesparse'}
     windows_exclude_dependencies: ClassVar[Iterable[str]] = ('libmadam',)
     cpu_count: ClassVar[int] = psutil.cpu_count(logical=False)
 
