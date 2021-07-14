@@ -229,7 +229,11 @@ class InstallEnvironment:
 
     @cached_property
     def mamba_bin(self) -> Path:
-        path = self.conda_root_prefix / 'bin' / self.conda
+        if self.conda == 'mamba' and self.is_windows:
+            mamba = 'mamba.exe'
+        else:
+            mamba = self.conda
+        path = self.conda_root_prefix / 'bin' / mamba
         try:
             check_file(path, 'binary located at %s')
             return path
