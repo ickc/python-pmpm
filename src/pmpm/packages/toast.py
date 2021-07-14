@@ -4,9 +4,9 @@ from dataclasses import dataclass
 from functools import cached_property
 from logging import getLogger
 from typing import ClassVar, TYPE_CHECKING
-import subprocess
+import os
 
-from . import GenericPackage, combine_commands
+from . import GenericPackage
 
 logger = getLogger('pmpm')
 
@@ -109,6 +109,13 @@ class Package(GenericPackage):
 
     def _test(self):
         logger.info('Running test')
+        CIBUILDWHEEL = os.environ.get('CIBUILDWHEEL', None)
+        if CIBUILDWHEEL is not None:
+            env = self.env.environ_with_all_paths.copy()
+            logger.info('Skipping toast timing test by setting CIBUILDWHEEL=%s', CIBUILDWHEEL)
+            env['CIBUILDWHEEL'] = CIBUILDWHEEL
+        else:
+            env = self.env.environ_with_all_paths
         cmd = [
             str(self.env.python_bin),
             '-c',
@@ -116,7 +123,7 @@ class Package(GenericPackage):
         ]
         self.run_conda_activated(
             cmd,
-            env=self.env.environ_with_all_paths,
+            env=env,
             cwd=self.build_dir,
         )
 
