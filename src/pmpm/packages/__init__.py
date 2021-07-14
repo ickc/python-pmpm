@@ -3,7 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import ClassVar, TYPE_CHECKING
 from logging import getLogger
-from subprocess import list2cmdline
+import subprocess
 
 if TYPE_CHECKING:
     from pathlib import Path
@@ -19,7 +19,7 @@ def combine_commands(*args: Union[str, List[str]]) -> str:
 
     :param args: can be in string or list of string that subprocess.run accepts.
     """
-    return ' && '.join(cmd if type(cmd) is str else list2cmdline(cmd) for cmd in args)
+    return ' && '.join(cmd if type(cmd) is str else subprocess.list2cmdline(cmd) for cmd in args)
 
 
 @dataclass
@@ -55,7 +55,54 @@ class GenericPackage:
         logger.warning('%s has not implemented fast update, using normal update...', self.package_name)
         return self.update_env()
 
-    def run(self):
+    @staticmethod
+    def run_simple(
+        command: List[str],
+        **kwargs,
+    ):
+        """Run single command without shell.
+
+        :param kwargs: passes to subprocess.run"""
+        cmd_str = subprocess.list2cmdline(command)
+        logger.info('Running %s', cmd_str)
+        subprocess.run(
+            command,
+            check=True,
+            **kwargs,
+        )
+
+    def run(
+        self,
+        *commands: Union[str, List[str]],
+        **kwargs,
+    ):
+        """Run commands through bash.
+
+        :param kwargs: passes to subprocess.run
+        """
+        cmd_str = combine_commands(*commands)
+        logger.info('Running %s', cmd_str)
+        subprocess.run(
+            cmd_str,
+            check=True,
+            shell=True,
+            executable=self.bash_bin,
+            **kwargs,
+        )
+
+    def run_conda_activated(
+        self,
+        *commands: Union[str, List[str]],
+        **kwargs,
+    ):
+        """Run commands through bash with conda activated.
+
+        :param kwargs: passes to subprocess.run
+        """
+        logger.info('Running the following command with conda activated:')
+        self.run(self.activate_cmd_str, *commands, **kwargs)
+
+    def run_all(self):
         if self.update:
             if self.fast_update:
                 self.update_env_fast()
@@ -89,3 +136,7 @@ class GenericPackage:
     @property
     def activate_cmd_str(self) -> str:
         return self.env.activate_cmd_str
+
+    @property
+    def bash_bin(self) -> str:
+        return self.env.bash_bin

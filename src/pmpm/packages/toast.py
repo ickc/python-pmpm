@@ -30,40 +30,32 @@ class Package(GenericPackage):
 
     def download(self):
         try:
+            logger.info('Downloading %s', self.package_name)
             cmd = [
                 'git',
                 'clone',
                 f'git@github.com:hpc4cmb/{self.package_name}.git',
             ]
-            cmd_str = subprocess.list2cmdline(cmd)
-            logger.info(
-                'Downloading %s by running %s',
-                self.package_name,
-                cmd_str,
-            )
-            subprocess.run(
+            self.run_simple(
                 cmd,
-                check=True,
                 env=self.env.environ_with_all_paths,
                 cwd=self.src_dir.parent,
             )
         except Exception:
-            logger.info('Cannot run %s', cmd_str)
+            logger.info('Download %s fail, trying another URL', self.package_name)
             cmd = [
                 'git',
                 'clone',
                 f'https://github.com/hpc4cmb/{self.package_name}.git',
             ]
-            cmd_str = subprocess.list2cmdline(cmd)
-            logger.info('Trying %s instead.', cmd_str)
-            subprocess.run(
+            self.run_simple(
                 cmd,
-                check=True,
                 env=self.env.environ_with_all_paths,
                 cwd=self.src_dir.parent,
             )
 
     def _cmake(self):
+        logger.info('Running CMake')
         prefix = self.env.compile_prefix
         libext = 'dylib' if self.env.is_darwin else 'so'
         cmd = [
@@ -84,58 +76,52 @@ class Package(GenericPackage):
             f'-DSUITESPARSE_LIBRARY_DIR_HINTS={prefix}/lib',
             '..',
         ]
-        logger.info('In %s, running %s', subprocess.list2cmdline(cmd), self.build_dir)
-        subprocess.run(
+        self.run_simple(
             cmd,
-            check=True,
             env=self.env.environ_with_compile_path,
             cwd=self.build_dir,
         )
 
     def _make(self):
+        logger.info('Running Make')
         cmd = [
             'make',
             f'-j{self.env.cpu_count}',
         ]
-        logger.info('Running %s', subprocess.list2cmdline(cmd))
-        subprocess.run(
+        self.run_simple(
             cmd,
-            check=True,
             env=self.env.environ_with_compile_path,
             cwd=self.build_dir,
         )
 
     def _make_install(self):
+        logger.info('Running make install')
         cmd = [
             'make',
             'install',
             f'-j{self.env.cpu_count}',
         ]
-        logger.info('Running %s', subprocess.list2cmdline(cmd))
-        subprocess.run(
+        self.run_simple(
             cmd,
-            check=True,
             env=self.env.environ_with_compile_path,
             cwd=self.build_dir,
         )
 
     def _test(self):
+        logger.info('Running test')
         cmd = [
             str(self.env.python_bin),
             '-c',
             'from toast.tests import run; run()',
         ]
-        cmd_str = combine_commands(self.activate_cmd_str, cmd)
-        logger.info('Running %s', subprocess.list2cmdline(cmd))
-        subprocess.run(
-            cmd_str,
-            check=True,
-            env=self.env.environ_with_conda_path,
+        self.run_conda_activated(
+            cmd,
+            env=self.env.environ_with_all_paths,
             cwd=self.build_dir,
-            shell=True,
         )
 
     def install_env(self):
+        logger.info('Installing %s', self.package_name)
         self.download()
         self._cmake()
         self._make()

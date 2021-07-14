@@ -24,45 +24,34 @@ class Package(GenericPackage):
 
     def download(self):
         try:
+            logger.info('Downloading %s', self.package_name)
             cmd = [
                 'git',
                 'clone',
                 f'git@github.com:hpc4cmb/{self.package_name}.git',
             ]
-            cmd_str = subprocess.list2cmdline(cmd)
-            logger.info(
-                'Downloading %s by running %s',
-                self.package_name,
-                cmd_str,
-            )
-            subprocess.run(
+            self.run_simple(
                 cmd,
-                check=True,
                 env=self.env.environ_with_all_paths,
                 cwd=self.src_dir.parent,
             )
         except Exception:
-            logger.info('Cannot run %s', cmd_str)
+            logger.info('Download %s fail, trying another URL', self.package_name)
             cmd = [
                 'git',
                 'clone',
                 f'https://github.com/hpc4cmb/{self.package_name}.git',
             ]
-            cmd_str = subprocess.list2cmdline(cmd)
-            logger.info('Trying %s instead.', cmd_str)
-            subprocess.run(
+            self.run_simple(
                 cmd,
-                check=True,
                 env=self.env.environ_with_all_paths,
                 cwd=self.src_dir.parent,
             )
 
     def _autogen(self):
-        cmd_str = './autogen.sh'
-        logger.info('Running %s', cmd_str)
-        subprocess.run(
-            cmd_str,
-            check=True,
+        logger.info('Running autogen')
+        self.run_conda_activated(
+            './autogen.sh',
             env=self.env.environ_with_compile_path,
             cwd=self.src_dir,
         )
@@ -71,91 +60,81 @@ class Package(GenericPackage):
         env = self.env.environ_with_compile_path.copy()
         env['MPIFC'] = 'mpifort'
         env['FC'] = 'mpifort'
-        env['FCFLAGS'] = '-O3 -fPIC -pthread -march=native -mtune=native'
-        env['CFLAGS'] = '-O3 -fPIC -pthread -march=native -mtune=native'
-        inc = [str(self.env.compile_prefix / 'include')]
-        lib = [str(self.env.compile_prefix / 'lib')]
+
+        inc = self.env.compile_prefix / 'include'
+        lib = self.env.compile_prefix / 'lib'
+        temp = f'-O3 -fPIC -pthread -march=native -mtune=native -I"{inc}" -L"{lib}"'
         if self.env.is_darwin:
-            inc.append('/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include')
-            lib.append('/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/lib')
-        temp = f' -I{os.pathsep.join(inc)} -L{os.pathsep.join(lib)}'
-        env['CFLAGS'] += temp
-        env['FCFLAGS'] += temp
+            temp += ' -I/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include -L/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/lib'
+
+        env['FCFLAGS'] = temp
+        env['CFLAGS'] = temp
+        logger.info('Running configure with environment %s', env)
 
         cmd = [
             './configure',
             f'--prefix={self.env.compile_prefix}',
         ]
-        cmd_str = combine_commands(self.activate_cmd_str, cmd)
-        logger.info('Running %s', cmd_str)
-        subprocess.run(
-            cmd_str,
-            check=True,
+
+        self.run_conda_activated(
+            cmd,
             env=env,
             cwd=self.src_dir,
-            shell=True,
         )
 
     def _make(self):
+        logger.info('Running make')
         cmd = [
             'make',
             f'-j{self.env.cpu_count}',
         ]
-        logger.info('Running %s', subprocess.list2cmdline(cmd))
-        subprocess.run(
+        self.run_simple(
             cmd,
-            check=True,
             env=self.env.environ_with_compile_path,
             cwd=self.src_dir,
         )
 
     def _make_install(self):
+        logger.info('Running make install')
         cmd = [
             'make',
             'install',
             f'-j{self.env.cpu_count}',
         ]
-        logger.info('Running %s', subprocess.list2cmdline(cmd))
-        subprocess.run(
+        self.run_simple(
             cmd,
-            check=True,
             env=self.env.environ_with_compile_path,
             cwd=self.src_dir,
         )
 
     def _python_install(self):
+        logger.info('Running Python install')
         cmd = [
             str(self.env.python_bin),
             'setup.py',
             'install',
         ]
-        cmd_str = combine_commands(self.activate_cmd_str, cmd)
-        logger.info('Running %s', subprocess.list2cmdline(cmd))
-        subprocess.run(
-            cmd_str,
-            check=True,
+        self.run_conda_activated(
+            cmd,
             env=self.env.environ_with_conda_path,
             cwd=self.src_dir / 'python',
-            shell=True,
         )
 
     def _test(self):
+        logger.info('Running test')
         cmd = [
             str(self.env.python_bin),
             'setup.py',
             'test',
         ]
-        cmd_str = combine_commands(self.activate_cmd_str, cmd)
-        logger.info('Running %s', subprocess.list2cmdline(cmd))
-        subprocess.run(
-            cmd_str,
-            check=True,
+        self.run_conda_activated(
+            cmd,
             env=self.env.environ_with_conda_path,
             cwd=self.src_dir / 'python',
-            shell=True,
         )
 
     def install_env(self):
+        logger.info('Installing %s', self.package_name)
         self.download()
         self._autogen()
         self._configure()

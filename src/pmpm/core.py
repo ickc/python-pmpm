@@ -7,7 +7,7 @@ import platform
 from logging import getLogger
 from functools import cached_property
 from dataclasses import dataclass, field
-from typing import Tuple, TYPE_CHECKING, ClassVar, List, Optional
+from typing import Tuple, TYPE_CHECKING, ClassVar, List, Optional, Iterable
 from importlib import import_module
 from subprocess import list2cmdline
 
@@ -17,7 +17,7 @@ import psutil
 from .templates import CONDA_CHANNELS, CONDA_DEPENDENCIES, DEPENDENCIES
 
 if TYPE_CHECKING:
-    from typing import Dict, Union, Any, Iterable
+    from typing import Dict, Union, Any
 
 logger = getLogger('pmpm')
 
@@ -249,6 +249,19 @@ class InstallEnvironment:
         return self.conda_prefix / 'bin' / 'python'
 
     @cached_property
+    def bash_bin(self) -> Path:
+        from shutil import which
+
+        bash_str = 'bash.exe' if self.is_windows else 'bash'
+        bash = which(bash_str, path=self.environ_with_all_paths.get('PATH', None))
+
+        if bash is None:
+            raise RuntimeError('Cannot locate bash in environment: %s', self.environ_with_all_paths)
+
+        logger.info('Using bash located at %s', bash)
+        return Path(bash)
+
+    @cached_property
     def activate_cmd(self) -> List[str]:
         """Return a command to activate the conda environment."""
         cmd = [] if self.is_windows else ['source']
@@ -312,7 +325,7 @@ class InstallEnvironment:
         if not self.skip_conda:
             from .packages.conda import Package
             package = Package(self, update=self.update, fast_update=self.fast_update)
-            package.run()
+            package.run_all()
 
         for dep in self.dependencies:
             try:
@@ -320,7 +333,7 @@ class InstallEnvironment:
             except ImportError:
                 raise RuntimeError(f'Package {dep} is not defined in pmpm.packages.{dep}')
             package = package_module.Package(self, update=self.update, fast_update=self.fast_update)
-            package.run()
+            package.run_all()
 
 
 @dataclass

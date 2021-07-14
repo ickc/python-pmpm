@@ -22,22 +22,20 @@ class Package(GenericPackage):
         return self.env.conda_prefix / 'etc' / 'conda'
 
     def _install_conda(self):
-        # conda
+        logger.info('Creating conda environment')
         cmd = [
             str(self.env.mamba_bin),
             'env', 'create',
             '--file', str(self.env.conda_environment_path),
             '--prefix', str(self.env.conda_prefix),
         ]
-        logger.info('Creating conda environment by running %s', subprocess.list2cmdline(cmd))
-        subprocess.run(
+        self.run_simple(
             cmd,
-            check=True,
             env=self.env.environ_with_conda_path,
         )
 
     def _install_ipykernel(self):
-        # ipykernel
+        logger.info('Registering ipykernel')
         cmd = [
             str(self.env.python_bin),
             '-m', 'ipykernel',
@@ -46,13 +44,9 @@ class Package(GenericPackage):
             '--name', self.env.name,
             '--display-name', self.env.name,
         ]
-        cmd_str = combine_commands(self.activate_cmd_str, cmd)
-        logger.info('Registering ipykernel by running %s', cmd_str)
-        subprocess.run(
-            cmd_str,
-            check=True,
+        self.run_conda_activated(
+            cmd,
             env=self.env.environ_with_conda_path,
-            shell=True,
             cwd=self.src_dir,
         )
 
@@ -61,15 +55,14 @@ class Package(GenericPackage):
         self._install_ipykernel()
 
     def update_env(self):
+        logger.info('Updating conda environment')
         cmd = [
             str(self.env.mamba_bin),
             'env', 'update',
             '--file', str(self.env.conda_environment_path),
             '--prefix', str(self.env.conda_prefix),
         ]
-        logger.info('Updating conda environment by running %s', subprocess.list2cmdline(cmd))
-        subprocess.run(
+        self.run_simple(
             cmd,
-            check=True,
             env=self.env.environ_with_conda_path,
         )
