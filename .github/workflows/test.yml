@@ -25,12 +25,5 @@ jobs:
           environment-file: environment.yml
       - name: Install pmpm
         run: pip install .
-      - name: temporarily overriding toast download
-        run: |
-          mkdir -p "$HOME/pmpm-test/git"
-          cd "$HOME/pmpm-test/git"
-          git clone git@github.com:ickc/toast.git
-          cd toast
-          git checkout timing-macOS
       - name: test
         run: pmpm conda_install "$HOME/pmpm-test"
