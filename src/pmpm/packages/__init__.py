@@ -75,8 +75,8 @@ class GenericPackage:
         return is_dir
 
     @property
-    def platform(self) -> str:
-        return self.env.platform
+    def system(self) -> str:
+        return self.env.system
 
     @property
     def sub_platform(self) -> str:

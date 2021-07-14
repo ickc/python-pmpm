@@ -103,17 +103,17 @@ class InstallEnvironment:
     nomkl: Optional[bool] = None
     update: Optional[bool] = None
     conda_environment_filename: ClassVar[str] = 'environment.yml'
-    supported_platforms: ClassVar[Iterable[str]] = ('Linux', 'Darwin', 'Windows')
-    platform: ClassVar[str] = platform.system()
+    supported_systems: ClassVar[Iterable[str]] = ('Linux', 'Darwin', 'Windows')
+    system: ClassVar[str] = platform.system()
     windows_exclude_conda_dependencies: ClassVar[Iterable[str]] = {'automake' 'libaatm' 'mpich-mpicc' 'libsharp' 'healpy' 'libtool' 'mpich-mpicxx' 'mpich-mpifort'}
     windows_exclude_dependencies: ClassVar[Iterable[str]] = ('libmadam',)
     cpu_count: ClassVar[int] = psutil.cpu_count(logical=False)
 
     def __post_init__(self):
-        platform = self.platform
-        if platform not in self.supported_platforms:
-            raise OSError(f'OS {self.platform} not supported.')
-        elif platform == 'Windows':
+        system = self.system
+        if system not in self.supported_systems:
+            raise OSError(f'OS {system} not supported.')
+        elif system == 'Windows':
             logger.warning('Windows support is experimental and may not work.')
             self.conda_dependencies = [dep for dep in self.conda_dependencies if dep not in self.windows_exclude_conda_dependencies]
             self.dependencies = [dep for dep in self.dependencies if dep not in self.windows_exclude_dependencies]
@@ -206,15 +206,15 @@ class InstallEnvironment:
 
     @cached_property
     def is_linux(self) -> bool:
-        return self.platform == 'Linux'
+        return self.system == 'Linux'
 
     @cached_property
     def is_darwin(self) -> bool:
-        return self.platform == 'Darwin'
+        return self.system == 'Darwin'
 
     @cached_property
     def is_windows(self) -> bool:
-        return self.platform == 'Windows'
+        return self.system == 'Windows'
 
     @cached_property
     def conda_bin(self) -> Path:
