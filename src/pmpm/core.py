@@ -17,7 +17,7 @@ import psutil
 from .templates import CONDA_CHANNELS, CONDA_DEPENDENCIES, DEPENDENCIES
 
 if TYPE_CHECKING:
-    from typing import Dict, Union, Any
+    from typing import Dict, Union, Any, Iterable
 
 logger = getLogger('pmpm')
 
@@ -103,8 +103,10 @@ class InstallEnvironment:
     nomkl: Optional[bool] = None
     update: Optional[bool] = None
     conda_environment_filename: ClassVar[str] = 'environment.yml'
-    supported_platforms: ClassVar[Tuple[str, ...]] = ('Linux', 'Darwin', 'Windows')
+    supported_platforms: ClassVar[Iterable[str]] = ('Linux', 'Darwin', 'Windows')
     platform: ClassVar[str] = platform.system()
+    windows_exclude_conda_dependencies: ClassVar[Iterable[str]] = {'automake' 'libaatm' 'mpich-mpicc' 'libsharp' 'healpy' 'libtool' 'mpich-mpicxx' 'mpich-mpifort'}
+    windows_exclude_dependencies: ClassVar[Iterable[str]] = ('libmadam',)
     cpu_count: ClassVar[int] = psutil.cpu_count(logical=False)
 
     def __post_init__(self):
@@ -113,6 +115,8 @@ class InstallEnvironment:
             raise OSError(f'OS {self.platform} not supported.')
         elif platform == 'Windows':
             logger.warning('Windows support is experimental and may not work.')
+            self.conda_dependencies = [dep for dep in self.conda_dependencies if dep not in self.windows_exclude_conda_dependencies]
+            self.dependencies = [dep for dep in self.dependencies if dep not in self.windows_exclude_dependencies]
 
         if self.nomkl is None:
             try:
