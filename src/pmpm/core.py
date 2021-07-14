@@ -110,13 +110,12 @@ class InstallEnvironment:
     cpu_count: ClassVar[int] = psutil.cpu_count(logical=False)
 
     def __post_init__(self):
-        system = self.system
-        if system not in self.supported_systems:
-            raise OSError(f'OS {system} not supported.')
-        elif system == 'Windows':
-            logger.warning('Windows support is experimental and may not work.')
+        if self.system not in self.supported_systems:
+            raise OSError(f'OS {self.system} not supported.')
+        elif self.is_windows:
             self.conda_dependencies = [dep for dep in self.conda_dependencies if dep not in self.windows_exclude_conda_dependencies]
             self.dependencies = [dep for dep in self.dependencies if dep not in self.windows_exclude_dependencies]
+            logger.warning('Windows support is experimental and may not work. Only the following dependencies are installed: Conda: %s; others: %s', self.conda_dependencies, self.dependencies)
 
         if self.nomkl is None:
             try:
