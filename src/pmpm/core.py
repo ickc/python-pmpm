@@ -245,8 +245,11 @@ class InstallEnvironment:
 
     @cached_property
     def activate_bin(self) -> Path:
-        path = self.conda_root_prefix / 'bin' / 'activate'
-        check_file(path, 'binary located at %s')
+        if self.is_windows:
+            path = Path('activate')
+        else:
+            path = self.conda_root_prefix / 'bin' / 'activate'
+            check_file(path, 'binary located at %s')
         return path
 
     @cached_property
