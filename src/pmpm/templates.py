@@ -45,6 +45,9 @@ CONDA_DEPENDENCIES: Tuple[str, ...] = (
     'compilers',
     'quaternionarray',
     'make',
+    'wurlitzer',
+    'sphinx',
+    'sphinx_rtd_theme',
 )
 DEPENDENCIES: Tuple[str, ...] = (
     'libmadam',
