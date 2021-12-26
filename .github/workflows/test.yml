@@ -3,6 +3,8 @@ name: test with conda
 on:
   pull_request:
   push:
+  schedule:
+      - cron: '12 1 * * 6'
 
 jobs:
   test:
