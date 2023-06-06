@@ -1,17 +1,17 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
-from typing import ClassVar, TYPE_CHECKING
-from logging import getLogger
 import subprocess
+from dataclasses import dataclass
+from logging import getLogger
+from typing import TYPE_CHECKING, ClassVar
 
 if TYPE_CHECKING:
     from pathlib import Path
-    from typing import Optional, Union, List
+    from typing import List, Optional, Union
 
     from ..core import InstallEnvironment
 
-logger = getLogger('pmpm')
+logger = getLogger("pmpm")
 
 
 def combine_commands(*args: Union[str, List[str]]) -> str:
@@ -19,7 +19,7 @@ def combine_commands(*args: Union[str, List[str]]) -> str:
 
     :param args: can be in string or list of string that subprocess.run accepts.
     """
-    return ' && '.join(cmd if type(cmd) is str else subprocess.list2cmdline(cmd) for cmd in args)
+    return " && ".join(cmd if type(cmd) is str else subprocess.list2cmdline(cmd) for cmd in args)
 
 
 @dataclass
@@ -27,7 +27,7 @@ class GenericPackage:
     env: InstallEnvironment
     update: Optional[bool] = None
     fast_update: bool = False
-    package_name: ClassVar[str] = ''
+    package_name: ClassVar[str] = ""
 
     def __post_init__(self):
         # use some heuristics to determine if we need to update or not
@@ -52,7 +52,7 @@ class GenericPackage:
         raise NotImplementedError
 
     def update_env_fast(self):
-        logger.warning('%s has not implemented fast update, using normal update...', self.package_name)
+        logger.warning("%s has not implemented fast update, using normal update...", self.package_name)
         return self.update_env()
 
     @staticmethod
@@ -64,7 +64,7 @@ class GenericPackage:
 
         :param kwargs: passes to subprocess.run"""
         cmd_str = subprocess.list2cmdline(command)
-        logger.info('Running %s', cmd_str)
+        logger.info("Running %s", cmd_str)
         subprocess.run(
             command,
             check=True,
@@ -81,7 +81,7 @@ class GenericPackage:
         :param kwargs: passes to subprocess.run
         """
         cmd_str = combine_commands(*commands)
-        logger.info('Running %s', cmd_str)
+        logger.info("Running %s", cmd_str)
         subprocess.run(
             cmd_str,
             check=True,
@@ -99,7 +99,7 @@ class GenericPackage:
 
         :param kwargs: passes to subprocess.run
         """
-        logger.info('Running the following command with conda activated:')
+        logger.info("Running the following command with conda activated:")
         self.run(self.activate_cmd_str, *commands, **kwargs)
 
     def run_all(self):
@@ -116,9 +116,9 @@ class GenericPackage:
         path = self.src_dir
         is_dir = path.is_dir()
         if is_dir:
-            logger.info('Found %s, assuming %s has already been installed.', path, self.package_name)
+            logger.info("Found %s, assuming %s has already been installed.", path, self.package_name)
         else:
-            logger.info('%s not found, assuming %s not already installed.', path, self.package_name)
+            logger.info("%s not found, assuming %s not already installed.", path, self.package_name)
         return is_dir
 
     @property

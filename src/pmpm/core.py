@@ -1,15 +1,15 @@
 from __future__ import annotations
 
-import os
 import json
-from pathlib import Path
+import os
 import platform
-from logging import getLogger
-from functools import cached_property
 from dataclasses import dataclass, field
-from typing import Tuple, TYPE_CHECKING, ClassVar, List, Optional, Iterable
+from functools import cached_property
 from importlib import import_module
+from logging import getLogger
+from pathlib import Path
 from subprocess import list2cmdline
+from typing import TYPE_CHECKING, ClassVar, Iterable, List, Optional, Tuple
 
 import defopt
 import psutil
@@ -17,22 +17,22 @@ import psutil
 from .templates import CONDA_CHANNELS, CONDA_DEPENDENCIES, DEPENDENCIES
 
 if TYPE_CHECKING:
-    from typing import Dict, Union, Any
+    from typing import Any, Dict, Union
 
-logger = getLogger('pmpm')
+logger = getLogger("pmpm")
 
 
 def is_intel() -> bool:
     from cpuinfo import get_cpu_info
 
-    _is_intel = get_cpu_info()['vendor_id_raw'] == 'GenuineIntel'
-    logger.info('Determined if the CPU is Intel: %s', _is_intel)
+    _is_intel = get_cpu_info()["vendor_id_raw"] == "GenuineIntel"
+    logger.info("Determined if the CPU is Intel: %s", _is_intel)
     return _is_intel
 
 
 def prepend_path(environ: Dict[str, str], path: str):
     """Prepend to PATH in environment dictionary in-place."""
-    if 'PATH' in environ:
+    if "PATH" in environ:
         environ["PATH"] = path + os.pathsep + environ["PATH"]
     else:
         environ["PATH"] = path
@@ -40,7 +40,7 @@ def prepend_path(environ: Dict[str, str], path: str):
 
 def append_path(environ: Dict[str, str], path: str):
     """Append to PATH in environment dictionary in-place."""
-    if 'PATH' in environ:
+    if "PATH" in environ:
         environ["PATH"] += os.pathsep + path
     else:
         environ["PATH"] = path
@@ -56,14 +56,14 @@ def check_file(path: Path, msg: str):
     if path.is_file():
         logger.info(msg, path)
     else:
-        raise RuntimeError(f'{path} not found.')
+        raise RuntimeError(f"{path} not found.")
 
 
 def check_dir(path: Path, msg: str):
     if path.is_dir():
         logger.info(msg, path)
     else:
-        raise RuntimeError(f'{path} not found.')
+        raise RuntimeError(f"{path} not found.")
 
 
 @dataclass
@@ -86,52 +86,76 @@ class InstallEnvironment:
     :param nomkl: if nomkl is used in conda packages, nomkl should be True for non-Intel CPUs.
     :param update: if updating all packages.
     """
+
     prefix: Path
     conda_channels: List[str] = field(default_factory=lambda: list(CONDA_CHANNELS))
     conda_dependencies: List[str] = field(default_factory=lambda: list(CONDA_DEPENDENCIES))
     dependencies: List[str] = field(default_factory=lambda: list(DEPENDENCIES))
-    python_version: str = '3.8'
-    conda_prefix_name: str = 'conda'
-    compile_prefix_name: str = 'compile'
-    download_prefix_name: str = 'git'
-    conda: str = 'mamba'
-    sub_platform: str = ''
+    python_version: str = "3.8"
+    conda_prefix_name: str = "conda"
+    compile_prefix_name: str = "compile"
+    download_prefix_name: str = "git"
+    conda: str = "mamba"
+    sub_platform: str = ""
     skip_test: bool = False
     skip_conda: bool = False
     fast_update: bool = False
     # TODO: defopt can't pass False here
     nomkl: Optional[bool] = None
     update: Optional[bool] = None
-    conda_environment_filename: ClassVar[str] = 'environment.yml'
-    supported_systems: ClassVar[Iterable[str]] = ('Linux', 'Darwin', 'Windows')
+    conda_environment_filename: ClassVar[str] = "environment.yml"
+    supported_systems: ClassVar[Iterable[str]] = ("Linux", "Darwin", "Windows")
     system: ClassVar[str] = platform.system()
-    windows_exclude_conda_dependencies: ClassVar[Iterable[str]] = {'automake', 'libaatm', 'mpich-mpicc', 'libsharp', 'healpy', 'libtool', 'mpich-mpicxx', 'mpich-mpifort', 'suitesparse', 'pysm3', 'fftw', 'cfitsio', 'lapack', 'matplotlib'}
-    windows_exclude_dependencies: ClassVar[Iterable[str]] = ('libmadam',)
+    windows_exclude_conda_dependencies: ClassVar[Iterable[str]] = {
+        "automake",
+        "libaatm",
+        "mpich-mpicc",
+        "libsharp",
+        "healpy",
+        "libtool",
+        "mpich-mpicxx",
+        "mpich-mpifort",
+        "suitesparse",
+        "pysm3",
+        "fftw",
+        "cfitsio",
+        "lapack",
+        "matplotlib",
+    }
+    windows_exclude_dependencies: ClassVar[Iterable[str]] = ("libmadam",)
     cpu_count: ClassVar[int] = psutil.cpu_count(logical=False)
 
     def __post_init__(self):
         if self.system not in self.supported_systems:
-            raise OSError(f'OS {self.system} not supported.')
+            raise OSError(f"OS {self.system} not supported.")
         elif self.is_windows:
-            if 'matplotlib' in self.conda_dependencies:
-                self.conda_dependencies.append('matplotlib-base')
-            self.conda_dependencies = [dep for dep in self.conda_dependencies if dep not in self.windows_exclude_conda_dependencies]
+            if "matplotlib" in self.conda_dependencies:
+                self.conda_dependencies.append("matplotlib-base")
+            self.conda_dependencies = [
+                dep for dep in self.conda_dependencies if dep not in self.windows_exclude_conda_dependencies
+            ]
             self.dependencies = [dep for dep in self.dependencies if dep not in self.windows_exclude_dependencies]
-            logger.warning('Windows support is experimental and may not work. Only the following dependencies are installed: Conda: %s; others: %s', self.conda_dependencies, self.dependencies)
+            logger.warning(
+                "Windows support is experimental and may not work. Only the following dependencies are installed: Conda: %s; others: %s",
+                self.conda_dependencies,
+                self.dependencies,
+            )
 
         if self.nomkl is None:
             try:
                 self.nomkl = False if is_intel() else True
             except ImportError:
-                raise RuntimeError('Cannot determine if CPU is Intel. Consider running pip/conda/mamba install py-cpuinfo.')
+                raise RuntimeError(
+                    "Cannot determine if CPU is Intel. Consider running pip/conda/mamba install py-cpuinfo."
+                )
             except Exception as e:
-                logger.critical('Cannot determine nomkl automatically. Try specifying nomkl explicitly.')
+                logger.critical("Cannot determine nomkl automatically. Try specifying nomkl explicitly.")
                 raise e
         self.nomkl: bool
 
-        append_env(self.conda_dependencies, f'python={self.python_version}')
+        append_env(self.conda_dependencies, f"python={self.python_version}")
         if self.nomkl:
-            append_env(self.conda_dependencies, 'nomkl')
+            append_env(self.conda_dependencies, "nomkl")
 
     @property
     def name(self) -> str:
@@ -140,31 +164,31 @@ class InstallEnvironment:
     @property
     def to_dict(self) -> Dict[str, Union[str, List[str], Dict[str, Any]]]:
         return {
-            'name': self.name,
-            'channels': self.conda_channels,
-            'dependencies': self.conda_dependencies,
-            '_pmpm': {
-                'prefix': str(self.prefix),
-                'dependencies': self.dependencies,
-                'python_version': self.python_version,
-                'conda_prefix_name': self.conda_prefix_name,
-                'compile_prefix_name': self.compile_prefix_name,
-                'download_prefix_name': self.download_prefix_name,
-                'conda': self.conda,
-                'sub_platform': self.sub_platform,
-                'skip_test': self.skip_test,
-                'skip_conda': self.skip_conda,
-                'fast_update': self.fast_update,
-                'nomkl': self.nomkl,
-                'update': self.update,
+            "name": self.name,
+            "channels": self.conda_channels,
+            "dependencies": self.conda_dependencies,
+            "_pmpm": {
+                "prefix": str(self.prefix),
+                "dependencies": self.dependencies,
+                "python_version": self.python_version,
+                "conda_prefix_name": self.conda_prefix_name,
+                "compile_prefix_name": self.compile_prefix_name,
+                "download_prefix_name": self.download_prefix_name,
+                "conda": self.conda,
+                "sub_platform": self.sub_platform,
+                "skip_test": self.skip_test,
+                "skip_conda": self.skip_conda,
+                "fast_update": self.fast_update,
+                "nomkl": self.nomkl,
+                "update": self.update,
             },
         }
 
     def write_dict(self):
-        logger.info('Writing environment definition to %s', self.conda_environment_path)
+        logger.info("Writing environment definition to %s", self.conda_environment_path)
         conda_environment_path = self.conda_environment_path
         conda_environment_path.parent.mkdir(parents=True, exist_ok=True)
-        with open(conda_environment_path, 'w') as f:
+        with open(conda_environment_path, "w") as f:
             json.dump(
                 self.to_dict,
                 f,
@@ -174,29 +198,29 @@ class InstallEnvironment:
 
     @classmethod
     def from_dict(cls, data: Dict[str, Union[str, List[str], Dict[str, Any]]]):
-        pmpm: Dict[str, Any] = data['_pmpm']
+        pmpm: Dict[str, Any] = data["_pmpm"]
         return cls(
-            Path(pmpm['prefix']),
-            conda_channels=data['channels'],
-            conda_dependencies=data['dependencies'],
-            dependencies=pmpm['dependencies'],
-            python_version=str(pmpm['python_version']),
-            conda_prefix_name=pmpm['conda_prefix_name'],
-            compile_prefix_name=pmpm['compile_prefix_name'],
-            download_prefix_name=pmpm['download_prefix_name'],
-            conda=pmpm['conda'],
-            sub_platform=pmpm['sub_platform'],
-            skip_test=pmpm['skip_test'],
-            skip_conda=pmpm['skip_conda'],
-            fast_update=pmpm['fast_update'],
-            nomkl=pmpm['nomkl'],
-            update=pmpm['update'],
+            Path(pmpm["prefix"]),
+            conda_channels=data["channels"],
+            conda_dependencies=data["dependencies"],
+            dependencies=pmpm["dependencies"],
+            python_version=str(pmpm["python_version"]),
+            conda_prefix_name=pmpm["conda_prefix_name"],
+            compile_prefix_name=pmpm["compile_prefix_name"],
+            download_prefix_name=pmpm["download_prefix_name"],
+            conda=pmpm["conda"],
+            sub_platform=pmpm["sub_platform"],
+            skip_test=pmpm["skip_test"],
+            skip_conda=pmpm["skip_conda"],
+            fast_update=pmpm["fast_update"],
+            nomkl=pmpm["nomkl"],
+            update=pmpm["update"],
         )
 
     @classmethod
     def read_dict(cls, input: Path):
         """"""
-        with open(input, 'r') as f:
+        with open(input, "r") as f:
             data = json.load(f)
         return cls.from_dict(data)
 
@@ -207,72 +231,72 @@ class InstallEnvironment:
 
     @cached_property
     def is_linux(self) -> bool:
-        return self.system == 'Linux'
+        return self.system == "Linux"
 
     @cached_property
     def is_darwin(self) -> bool:
-        return self.system == 'Darwin'
+        return self.system == "Darwin"
 
     @cached_property
     def is_windows(self) -> bool:
-        return self.system == 'Windows'
+        return self.system == "Windows"
 
     @cached_property
     def conda_bin(self) -> Path:
-        path = Path(self.environ['CONDA_EXE'])
-        check_file(path, 'binary located at %s')
+        path = Path(self.environ["CONDA_EXE"])
+        check_file(path, "binary located at %s")
         return path
 
     @cached_property
     def conda_root_prefix(self) -> Path:
-        path = Path(self.environ['CONDA_PREFIX'])
-        check_dir(path, 'conda root prefix located at %s')
+        path = Path(self.environ["CONDA_PREFIX"])
+        check_dir(path, "conda root prefix located at %s")
         return path
 
     @cached_property
     def mamba_bin(self) -> Path:
-        if self.conda == 'mamba' and self.is_windows:
-            mamba = 'mamba.exe'
+        if self.conda == "mamba" and self.is_windows:
+            mamba = "mamba.exe"
         else:
             mamba = self.conda
-        path = self.conda_root_prefix / 'bin' / mamba
+        path = self.conda_root_prefix / "bin" / mamba
         try:
-            check_file(path, 'binary located at %s')
+            check_file(path, "binary located at %s")
             return path
         except RuntimeError:
-            logger.warning('%s not found, use conda instead.', self.conda)
+            logger.warning("%s not found, use conda instead.", self.conda)
             return self.conda_bin
 
     @cached_property
     def activate_bin(self) -> Path:
         if self.is_windows:
-            path = Path('activate')
+            path = Path("activate")
         else:
-            path = self.conda_root_prefix / 'bin' / 'activate'
-            check_file(path, 'binary located at %s')
+            path = self.conda_root_prefix / "bin" / "activate"
+            check_file(path, "binary located at %s")
         return path
 
     @cached_property
     def python_bin(self) -> Path:
-        return self.conda_prefix / 'bin' / 'python'
+        return self.conda_prefix / "bin" / "python"
 
     @cached_property
     def bash_bin(self) -> Path:
         from shutil import which
 
-        bash_str = 'bash.exe' if self.is_windows else 'bash'
-        bash = which(bash_str, path=self.environ_with_all_paths.get('PATH', None))
+        bash_str = "bash.exe" if self.is_windows else "bash"
+        bash = which(bash_str, path=self.environ_with_all_paths.get("PATH", None))
 
         if bash is None:
-            raise RuntimeError('Cannot locate bash in environment: %s', self.environ_with_all_paths)
+            raise RuntimeError("Cannot locate bash in environment: %s", self.environ_with_all_paths)
 
-        logger.info('Using bash located at %s', bash)
+        logger.info("Using bash located at %s", bash)
         return Path(bash)
 
     @cached_property
     def activate_cmd(self) -> List[str]:
         """Return a command to activate the conda environment."""
-        cmd = [] if self.is_windows else ['source']
+        cmd = [] if self.is_windows else ["source"]
         cmd += [str(self.activate_bin), str(self.conda_prefix)]
         return cmd
 
@@ -303,26 +327,26 @@ class InstallEnvironment:
     def environ(self) -> Dict[str, str]:
         _dict = dict(os.environ)
         # point CONDA_PREFIX to the root prefix
-        conda_bin = Path(_dict['CONDA_EXE'])
-        _dict['CONDA_PREFIX'] = str(conda_bin.parent.parent)
+        conda_bin = Path(_dict["CONDA_EXE"])
+        _dict["CONDA_PREFIX"] = str(conda_bin.parent.parent)
         return _dict
 
     @cached_property
     def environ_with_compile_path(self) -> Dict[str, str]:
         env = self.environ.copy()
-        prepend_path(env, str(self.compile_prefix / 'bin'))
+        prepend_path(env, str(self.compile_prefix / "bin"))
         return env
 
     @cached_property
     def environ_with_conda_path(self) -> Dict[str, str]:
         env = self.environ.copy()
-        prepend_path(env, str(self.conda_prefix / 'bin'))
+        prepend_path(env, str(self.conda_prefix / "bin"))
         return env
 
     @cached_property
     def environ_with_all_paths(self) -> Dict[str, str]:
         env = self.environ_with_compile_path.copy()
-        prepend_path(env, str(self.conda_prefix / 'bin'))
+        prepend_path(env, str(self.conda_prefix / "bin"))
         return env
 
     def run_all(self):
@@ -332,14 +356,15 @@ class InstallEnvironment:
         # install conda
         if not self.skip_conda:
             from .packages.conda import Package
+
             package = Package(self, update=self.update, fast_update=self.fast_update)
             package.run_all()
 
         for dep in self.dependencies:
             try:
-                package_module = import_module(f'.packages.{dep}', package='pmpm')
+                package_module = import_module(f".packages.{dep}", package="pmpm")
             except ImportError:
-                raise RuntimeError(f'Package {dep} is not defined in pmpm.packages.{dep}')
+                raise RuntimeError(f"Package {dep} is not defined in pmpm.packages.{dep}")
             package = package_module.Package(self, update=self.update, fast_update=self.fast_update)
             package.run_all()
 
@@ -364,24 +389,32 @@ class CondaOnlyEnvironment(InstallEnvironment):
     :param nomkl: if nomkl is used in conda packages, nomkl should be True for non-Intel CPUs.
     :param update: if updating all packages.
     """
-    conda_prefix_name: str = ''
-    compile_prefix_name: str = ''
-    environment_variable: ClassVar[Tuple[str, ...]] = ('CONDA_PREFIX', 'CONDA_EXE', 'SCRATCH', 'TERM', 'HOME', 'SYSTEMROOT')
-    sanitized_path: ClassVar[Tuple[str, ...]] = ('/bin', '/usr/bin')  # needed for conda to find POSIX executables
+
+    conda_prefix_name: str = ""
+    compile_prefix_name: str = ""
+    environment_variable: ClassVar[Tuple[str, ...]] = (
+        "CONDA_PREFIX",
+        "CONDA_EXE",
+        "SCRATCH",
+        "TERM",
+        "HOME",
+        "SYSTEMROOT",
+    )
+    sanitized_path: ClassVar[Tuple[str, ...]] = ("/bin", "/usr/bin")  # needed for conda to find POSIX executables
 
     def __post_init__(self):
         super().__post_init__()
 
         if self.conda_prefix_name != self.compile_prefix_name:
-            raise RuntimeError('For conda only environment, conda_prefix_name should equals to compile_prefix_name.')
+            raise RuntimeError("For conda only environment, conda_prefix_name should equals to compile_prefix_name.")
 
-        append_env(self.conda_dependencies, 'cmake')
+        append_env(self.conda_dependencies, "cmake")
         if self.nomkl:
-            append_env(self.conda_dependencies, 'libblas')
-            append_env(self.conda_dependencies, 'liblapack')
+            append_env(self.conda_dependencies, "libblas")
+            append_env(self.conda_dependencies, "liblapack")
         else:
-            append_env(self.conda_dependencies, 'libblas=*=*mkl')
-            append_env(self.conda_dependencies, 'liblapack=*=*mkl')
+            append_env(self.conda_dependencies, "libblas=*=*mkl")
+            append_env(self.conda_dependencies, "liblapack=*=*mkl")
 
     # @property
     # def sanitized_path(self) -> List[str]:
@@ -405,13 +438,13 @@ class CondaOnlyEnvironment(InstallEnvironment):
         _dict = {key: os_env[key] for key in self.environment_variable if key in os_env}
         for path in self.sanitized_path:
             append_path(_dict, path)
-        logger.info('environment constructed as %s', _dict)
+        logger.info("environment constructed as %s", _dict)
         return _dict
 
     @cached_property
     def environ_with_all_paths(self) -> Dict[str, str]:
         env = self.environ.copy()
-        prepend_path(env, str(self.conda_prefix / 'bin'))
+        prepend_path(env, str(self.conda_prefix / "bin"))
         return env
 
     @property
@@ -426,10 +459,10 @@ class CondaOnlyEnvironment(InstallEnvironment):
 def cli():
     env = defopt.run(
         {
-            'system_install': InstallEnvironment,
-            'conda_install': CondaOnlyEnvironment,
-            'system_install_from_file': InstallEnvironment.read_dict,
-            'conda_install_from_file': CondaOnlyEnvironment.read_dict,
+            "system_install": InstallEnvironment,
+            "conda_install": CondaOnlyEnvironment,
+            "system_install_from_file": InstallEnvironment.read_dict,
+            "conda_install_from_file": CondaOnlyEnvironment.read_dict,
         },
         strict_kwonly=False,
         show_types=True,
@@ -437,5 +470,5 @@ def cli():
     env.run_all()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     cli()

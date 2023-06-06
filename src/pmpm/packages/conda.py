@@ -2,12 +2,11 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from logging import getLogger
-from typing import ClassVar, TYPE_CHECKING
-import subprocess
+from typing import TYPE_CHECKING, ClassVar
 
-from . import GenericPackage, combine_commands
+from . import GenericPackage
 
-logger = getLogger('pmpm')
+logger = getLogger("pmpm")
 
 if TYPE_CHECKING:
     from pathlib import Path
@@ -15,19 +14,22 @@ if TYPE_CHECKING:
 
 @dataclass
 class Package(GenericPackage):
-    package_name: ClassVar[str] = 'conda'
+    package_name: ClassVar[str] = "conda"
 
     @property
     def src_dir(self) -> Path:
-        return self.env.conda_prefix / 'etc' / 'conda'
+        return self.env.conda_prefix / "etc" / "conda"
 
     def _install_conda(self):
-        logger.info('Creating conda environment')
+        logger.info("Creating conda environment")
         cmd = [
             str(self.env.mamba_bin),
-            'env', 'create',
-            '--file', str(self.env.conda_environment_path),
-            '--prefix', str(self.env.conda_prefix),
+            "env",
+            "create",
+            "--file",
+            str(self.env.conda_environment_path),
+            "--prefix",
+            str(self.env.conda_prefix),
         ]
         self.run_simple(
             cmd,
@@ -35,14 +37,17 @@ class Package(GenericPackage):
         )
 
     def _install_ipykernel(self):
-        logger.info('Registering ipykernel')
+        logger.info("Registering ipykernel")
         cmd = [
             str(self.env.python_bin),
-            '-m', 'ipykernel',
-            'install',
-            '--user',
-            '--name', self.env.name,
-            '--display-name', self.env.name,
+            "-m",
+            "ipykernel",
+            "install",
+            "--user",
+            "--name",
+            self.env.name,
+            "--display-name",
+            self.env.name,
         ]
         self.run_conda_activated(
             cmd,
@@ -55,12 +60,15 @@ class Package(GenericPackage):
         self._install_ipykernel()
 
     def update_env(self):
-        logger.info('Updating conda environment')
+        logger.info("Updating conda environment")
         cmd = [
             str(self.env.mamba_bin),
-            'env', 'update',
-            '--file', str(self.env.conda_environment_path),
-            '--prefix', str(self.env.conda_prefix),
+            "env",
+            "update",
+            "--file",
+            str(self.env.conda_environment_path),
+            "--prefix",
+            str(self.env.conda_prefix),
         ]
         self.run_simple(
             cmd,
