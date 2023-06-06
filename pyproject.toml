@@ -23,6 +23,8 @@ classifiers = [
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: Implementation :: CPython",
     "Topic :: Utilities",
 ]
@@ -140,6 +142,7 @@ line_length = 120
 known_first_party = 'pmpm'
 default_section = 'THIRDPARTY'
 forced_separate = 'test_pmpm'
+profile = 'black'
 skip = [
     '.tox',
     '.eggs',
@@ -147,6 +150,16 @@ skip = [
     'build',
     'dist',
 ]
+
+[tool.pylint.messages_control]
+disable = "C0330, C0326"
+
+[tool.pylint.format]
+max-line-length = 120
+
+[tool.black]
+line-length = 120
+target-version = ['py38']
 
 [tool.tox]
 legacy_tox_ini = '''
