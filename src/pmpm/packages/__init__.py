@@ -28,6 +28,11 @@ class GenericPackage:
     update: Optional[bool] = None
     fast_update: bool = False
     package_name: ClassVar[str] = ""
+    # see doc for march: https://gcc.gnu.org/onlinedocs/gcc/x86-Options.html
+    # for example, native or x86-64-v3
+    arch: ClassVar[str] = "native"
+    # for example, native or generic
+    tune: ClassVar[str] = "native"
 
     def __post_init__(self):
         # use some heuristics to determine if we need to update or not

@@ -61,7 +61,7 @@ class Package(GenericPackage):
 
         inc = self.env.compile_prefix / "include"
         lib = self.env.compile_prefix / "lib"
-        temp = f'-O3 -fPIC -pthread -march=native -mtune=native -I"{inc}" -L"{lib}"'
+        temp = f'-O3 -fPIC -pthread -march={self.arch} -mtune={self.tune} -I"{inc}" -L"{lib}"'
         if self.env.is_darwin:
             temp += " -I/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include -L/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/lib"
 
