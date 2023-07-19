@@ -5,6 +5,7 @@ from dataclasses import dataclass
 from functools import cached_property
 from logging import getLogger
 from typing import TYPE_CHECKING, ClassVar
+import tempfile
 
 from . import GenericPackage
 
@@ -134,11 +135,12 @@ class Package(GenericPackage):
             "-c",
             "from toast.tests import run; run()",
         ]
-        self.run_conda_activated(
-            cmd,
-            env=env,
-            cwd=self.build_dir,
-        )
+        with tempfile.TemporaryDirectory() as tmpdirname:
+            self.run_conda_activated(
+                cmd,
+                env=env,
+                cwd=tmpdirname,
+            )
 
     def install_env(self):
         logger.info("Installing %s", self.package_name)
