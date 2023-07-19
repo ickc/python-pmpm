@@ -17,6 +17,7 @@ if TYPE_CHECKING:
 @dataclass
 class Package(GenericPackage):
     package_name: ClassVar[str] = "toast"
+    version: str = "toast3"
 
     @property
     def src_dir(self) -> Path:
@@ -53,6 +54,18 @@ class Package(GenericPackage):
                 env=self.env.environ_with_all_paths,
                 cwd=self.src_dir.parent,
             )
+        branch = self.version
+        logger.info("Changing to %s branch...", branch)
+        cmd = [
+            "git",
+            "checkout",
+            branch,
+        ]
+        self.run_simple(
+            cmd,
+            env=self.env.environ_with_all_paths,
+            cwd=self.src_dir,
+        )
 
     def _cmake(self):
         logger.info("Running CMake")
