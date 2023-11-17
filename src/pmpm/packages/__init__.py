@@ -30,9 +30,9 @@ class GenericPackage:
     package_name: ClassVar[str] = ""
     # see doc for march: https://gcc.gnu.org/onlinedocs/gcc/x86-Options.html
     # for example, native or x86-64-v3
-    arch: ClassVar[str] = "x86-64-v3"
+    arch: str = "x86-64-v3"
     # for example, native or generic
-    tune: ClassVar[str] = "generic"
+    tune: str = "generic"
 
     def __post_init__(self):
         # use some heuristics to determine if we need to update or not

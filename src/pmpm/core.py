@@ -85,6 +85,8 @@ class InstallEnvironment:
     :param fast_update: assume minimal change to source of compiled package and perform fast update.
     :param nomkl: if nomkl is used in conda packages, nomkl should be True for non-Intel CPUs.
     :param update: if updating all packages.
+    :param arch: -march for compilation, for example, native or x86-64-v3
+    :param tune: -mtune for compilation, for example, native or generic
     """
 
     prefix: Path
@@ -103,6 +105,11 @@ class InstallEnvironment:
     # TODO: defopt can't pass False here
     nomkl: Optional[bool] = None
     update: Optional[bool] = None
+    # see doc for march: https://gcc.gnu.org/onlinedocs/gcc/x86-Options.html
+    # for example, native or x86-64-v3
+    arch: str = "x86-64-v3"
+    # for example, native or generic
+    tune: str = "generic"
     conda_environment_filename: ClassVar[str] = "environment.yml"
     supported_systems: ClassVar[Iterable[str]] = ("Linux", "Darwin", "Windows")
     system: ClassVar[str] = platform.system()
@@ -365,7 +372,13 @@ class InstallEnvironment:
                 package_module = import_module(f".packages.{dep}", package="pmpm")
             except ImportError:
                 raise RuntimeError(f"Package {dep} is not defined in pmpm.packages.{dep}")
-            package = package_module.Package(self, update=self.update, fast_update=self.fast_update)
+            package = package_module.Package(
+                self,
+                update=self.update,
+                fast_update=self.fast_update,
+                arch=self.arch,
+                tune=self.tune,
+            )
             package.run_all()
 
 
@@ -388,6 +401,8 @@ class CondaOnlyEnvironment(InstallEnvironment):
     :param fast_update: assume minimal change to source of compiled package and perform fast update.
     :param nomkl: if nomkl is used in conda packages, nomkl should be True for non-Intel CPUs.
     :param update: if updating all packages.
+    :param arch: -march for compilation, for example, native or x86-64-v3
+    :param tune: -mtune for compilation, for example, native or generic
     """
 
     conda_prefix_name: str = ""
