@@ -93,7 +93,7 @@ class InstallEnvironment:
     conda_channels: List[str] = field(default_factory=lambda: list(CONDA_CHANNELS))
     conda_dependencies: List[str] = field(default_factory=lambda: list(CONDA_DEPENDENCIES))
     dependencies: List[str] = field(default_factory=lambda: list(DEPENDENCIES))
-    python_version: str = "3.8"
+    python_version: str = "3.11"
     conda_prefix_name: str = "conda"
     compile_prefix_name: str = "compile"
     download_prefix_name: str = "git"
