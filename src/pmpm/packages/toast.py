@@ -18,7 +18,6 @@ if TYPE_CHECKING:
 @dataclass
 class Package(GenericPackage):
     package_name: ClassVar[str] = "toast"
-    version: str = "toast3"
 
     @property
     def src_dir(self) -> Path:

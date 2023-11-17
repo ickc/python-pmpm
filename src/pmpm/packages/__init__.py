@@ -33,6 +33,8 @@ class GenericPackage:
     arch: str = "x86-64-v3"
     # for example, native or generic
     tune: str = "generic"
+    # must be a valid git tag/branch for git-based packages
+    version: str = "master"
 
     def __post_init__(self):
         # use some heuristics to determine if we need to update or not

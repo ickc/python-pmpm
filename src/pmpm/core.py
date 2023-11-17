@@ -141,7 +141,11 @@ class InstallEnvironment:
             self.conda_dependencies = [
                 dep for dep in self.conda_dependencies if dep not in self.windows_exclude_conda_dependencies
             ]
-            self.dependencies = [dep for dep in self.dependencies if dep not in self.windows_exclude_dependencies]
+            dependencies = []
+            for dep in self.dependencies:
+                if dep.split("=")[0] not in self.windows_exclude_dependencies:
+                    dependencies.append(dep)
+            self.dependencies = dependencies
             logger.warning(
                 "Windows support is experimental and may not work. Only the following dependencies are installed: Conda: %s; others: %s",
                 self.conda_dependencies,
@@ -167,6 +171,20 @@ class InstallEnvironment:
     @property
     def name(self) -> str:
         return self.prefix.name
+
+    @cached_property
+    def dependencies_versioned(self) -> dict[str, Optional[str]]:
+        """Return a dictionary of dependencies with version."""
+        res = {}
+        for dep in self.dependencies:
+            temp = dep.split("=")
+            if len(temp) == 1:
+                res[temp[0]] = None
+            elif len(temp) == 2:
+                res[temp[0]] = temp[1]
+            else:
+                raise RuntimeError(f"Invalid dependency {dep}")
+        return res
 
     @property
     def to_dict(self) -> Dict[str, Union[str, List[str], Dict[str, Any]]]:
@@ -367,7 +385,7 @@ class InstallEnvironment:
             package = Package(self, update=self.update, fast_update=self.fast_update)
             package.run_all()
 
-        for dep in self.dependencies:
+        for dep, ver in self.dependencies_versioned.items():
             try:
                 package_module = import_module(f".packages.{dep}", package="pmpm")
             except ImportError:
@@ -378,6 +396,7 @@ class InstallEnvironment:
                 fast_update=self.fast_update,
                 arch=self.arch,
                 tune=self.tune,
+                version=ver,
             )
             package.run_all()
 

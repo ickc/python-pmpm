@@ -81,5 +81,5 @@ CONDA_DEPENDENCIES: Tuple[str, ...] = (
 )
 DEPENDENCIES: Tuple[str, ...] = (
     "libmadam",
-    "toast",
+    "toast=toast3",
 )
