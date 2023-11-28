@@ -61,6 +61,7 @@ class Package(GenericPackage):
         cmd = [
             "cmake",
             "-DCMAKE_VERBOSE_MAKEFILE:BOOL=ON",
+            "-DPython3_FIND_VIRTUALENV=ONLY",
             f"-DBLAS_LIBRARIES={prefix}/lib/libblas.{libext}",
             f"-DCMAKE_C_COMPILER={prefix}/bin/mpicc",
             f"-DCMAKE_C_FLAGS=-O3 -fPIC -pthread -march={self.arch} -mtune={self.tune}",
@@ -73,6 +74,8 @@ class Package(GenericPackage):
             f"-DMPI_CXX_COMPILER={prefix}/bin/mpicxx",
             f"-DPython_EXECUTABLE:FILEPATH={prefix}/bin/python",
             f"-DPYTHON_EXECUTABLE:FILEPATH={prefix}/bin/python",
+            f"-DPython3_EXECUTABLE:FILEPATH={prefix}/bin/python",
+            f"-DPython3_INCLUDE_DIR={prefix}/include/python{self.env.python_version}",
             f"-DSUITESPARSE_INCLUDE_DIR_HINTS={prefix}/include",
             f"-DSUITESPARSE_LIBRARY_DIR_HINTS={prefix}/lib",
             "..",
