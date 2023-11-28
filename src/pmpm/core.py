@@ -215,7 +215,7 @@ class InstallEnvironment:
         logger.info("Writing environment definition to %s", self.conda_environment_path)
         conda_environment_path = self.conda_environment_path
         conda_environment_path.parent.mkdir(parents=True, exist_ok=True)
-        with open(conda_environment_path, "w") as f:
+        with conda_environment_path.open("w") as f:
             json.dump(
                 self.to_dict,
                 f,
