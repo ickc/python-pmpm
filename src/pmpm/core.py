@@ -206,6 +206,8 @@ class InstallEnvironment:
                 "fast_update": self.fast_update,
                 "nomkl": self.nomkl,
                 "update": self.update,
+                "arch": self.arch,
+                "tune": self.tune,
             },
         }
 
