@@ -249,7 +249,7 @@ class InstallEnvironment:
     @classmethod
     def read_dict(cls, input: Path):
         """"""
-        with open(input, "r") as f:
+        with input.open("r") as f:
             data = json.load(f)
         return cls.from_dict(data)
 
