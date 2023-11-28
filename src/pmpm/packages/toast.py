@@ -30,30 +30,17 @@ class Package(GenericPackage):
         return path
 
     def download(self):
-        try:
-            logger.info("Downloading %s", self.package_name)
-            cmd = [
-                "git",
-                "clone",
-                f"git@github.com:hpc4cmb/{self.package_name}.git",
-            ]
-            self.run_simple(
-                cmd,
-                env=self.env.environ_with_all_paths,
-                cwd=self.src_dir.parent,
-            )
-        except Exception:
-            logger.info("Download %s fail, trying another URL", self.package_name)
-            cmd = [
-                "git",
-                "clone",
-                f"https://github.com/hpc4cmb/{self.package_name}.git",
-            ]
-            self.run_simple(
-                cmd,
-                env=self.env.environ_with_all_paths,
-                cwd=self.src_dir.parent,
-            )
+        logger.info("Downloading %s", self.package_name)
+        cmd = [
+            "git",
+            "clone",
+            f"https://github.com/hpc4cmb/{self.package_name}.git",
+        ]
+        self.run_simple(
+            cmd,
+            env=self.env.environ_with_all_paths,
+            cwd=self.src_dir.parent,
+        )
         branch = self.version
         logger.info("Changing to %s branch...", branch)
         cmd = [
