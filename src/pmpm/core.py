@@ -192,8 +192,8 @@ class InstallEnvironment:
             "name": self.name,
             "channels": self.conda_channels,
             "dependencies": self.conda_dependencies,
+            "prefix": str(self.prefix),
             "_pmpm": {
-                "prefix": str(self.prefix),
                 "dependencies": self.dependencies,
                 "python_version": self.python_version,
                 "conda_prefix_name": self.conda_prefix_name,
