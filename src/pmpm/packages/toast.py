@@ -1,11 +1,11 @@
 from __future__ import annotations
 
 import os
+import tempfile
 from dataclasses import dataclass
 from functools import cached_property
 from logging import getLogger
 from typing import TYPE_CHECKING, ClassVar
-import tempfile
 
 from . import GenericPackage
 
