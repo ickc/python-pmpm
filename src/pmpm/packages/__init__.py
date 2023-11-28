@@ -28,6 +28,13 @@ class GenericPackage:
     update: Optional[bool] = None
     fast_update: bool = False
     package_name: ClassVar[str] = ""
+    # see doc for march: https://gcc.gnu.org/onlinedocs/gcc/x86-Options.html
+    # for example, native or x86-64-v3
+    arch: str = "x86-64-v3"
+    # for example, native or generic
+    tune: str = "generic"
+    # must be a valid git tag/branch for git-based packages
+    version: str = "master"
 
     def __post_init__(self):
         # use some heuristics to determine if we need to update or not

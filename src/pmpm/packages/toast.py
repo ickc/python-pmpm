@@ -5,6 +5,7 @@ from dataclasses import dataclass
 from functools import cached_property
 from logging import getLogger
 from typing import TYPE_CHECKING, ClassVar
+import tempfile
 
 from . import GenericPackage
 
@@ -29,30 +30,29 @@ class Package(GenericPackage):
         return path
 
     def download(self):
-        try:
-            logger.info("Downloading %s", self.package_name)
-            cmd = [
-                "git",
-                "clone",
-                f"git@github.com:hpc4cmb/{self.package_name}.git",
-            ]
-            self.run_simple(
-                cmd,
-                env=self.env.environ_with_all_paths,
-                cwd=self.src_dir.parent,
-            )
-        except Exception:
-            logger.info("Download %s fail, trying another URL", self.package_name)
-            cmd = [
-                "git",
-                "clone",
-                f"https://github.com/hpc4cmb/{self.package_name}.git",
-            ]
-            self.run_simple(
-                cmd,
-                env=self.env.environ_with_all_paths,
-                cwd=self.src_dir.parent,
-            )
+        logger.info("Downloading %s", self.package_name)
+        cmd = [
+            "git",
+            "clone",
+            f"https://github.com/hpc4cmb/{self.package_name}.git",
+        ]
+        self.run_simple(
+            cmd,
+            env=self.env.environ_with_all_paths,
+            cwd=self.src_dir.parent,
+        )
+        branch = self.version
+        logger.info("Changing to %s branch...", branch)
+        cmd = [
+            "git",
+            "checkout",
+            branch,
+        ]
+        self.run_simple(
+            cmd,
+            env=self.env.environ_with_all_paths,
+            cwd=self.src_dir,
+        )
 
     def _cmake(self):
         logger.info("Running CMake")
@@ -62,9 +62,9 @@ class Package(GenericPackage):
             "cmake",
             f"-DCMAKE_INSTALL_PREFIX={prefix}",
             f"-DCMAKE_C_COMPILER={prefix}/bin/mpicc",
-            "-DCMAKE_C_FLAGS=-O3 -fPIC -pthread -march=native -mtune=native",
+            f"-DCMAKE_C_FLAGS=-O3 -fPIC -pthread -march={self.arch} -mtune={self.tune}",
             f"-DCMAKE_CXX_COMPILER={prefix}/bin/mpicxx",
-            "-DCMAKE_CXX_FLAGS=-O3 -fPIC -pthread -march=native -mtune=native",
+            f"-DCMAKE_CXX_FLAGS=-O3 -fPIC -pthread -march={self.arch} -mtune={self.tune}",
             f"-DMPI_C_COMPILER={prefix}/bin/mpicc",
             f"-DMPI_CXX_COMPILER={prefix}/bin/mpicxx",
             f"-DPYTHON_EXECUTABLE:FILEPATH={prefix}/bin/python",
@@ -121,11 +121,12 @@ class Package(GenericPackage):
             "-c",
             "from toast.tests import run; run()",
         ]
-        self.run_conda_activated(
-            cmd,
-            env=env,
-            cwd=self.build_dir,
-        )
+        with tempfile.TemporaryDirectory() as tmpdirname:
+            self.run_conda_activated(
+                cmd,
+                env=env,
+                cwd=tmpdirname,
+            )
 
     def install_env(self):
         logger.info("Installing %s", self.package_name)

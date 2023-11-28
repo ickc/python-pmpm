@@ -17,3 +17,15 @@ include: badges.csv
 # Introduction
 
 Python manual package manager is a package manager written in Python for manually installing a compiled stack.
+
+# One-step install
+
+```sh
+git clone https://github.com/ickc/python-pmpm.git
+cd python-pmpm
+conda activate
+mamba env create -f environment.yml
+conda activate pmpm
+pip install .
+pmpm conda_install "$HOME/pmpm-test"
+```
