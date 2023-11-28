@@ -68,6 +68,7 @@ class Package(GenericPackage):
             f"-DMPI_C_COMPILER={prefix}/bin/mpicc",
             f"-DMPI_CXX_COMPILER={prefix}/bin/mpicxx",
             f"-DPYTHON_EXECUTABLE:FILEPATH={prefix}/bin/python",
+            f"-DPython_EXECUTABLE:FILEPATH={prefix}/bin/python",
             f"-DBLAS_LIBRARIES={prefix}/lib/libblas.{libext}",
             f"-DLAPACK_LIBRARIES={prefix}/lib/liblapack.{libext}",
             "-DCMAKE_VERBOSE_MAKEFILE:BOOL=ON",
