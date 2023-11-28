@@ -227,7 +227,7 @@ class InstallEnvironment:
     def from_dict(cls, data: Dict[str, Union[str, List[str], Dict[str, Any]]]):
         pmpm: Dict[str, Any] = data["_pmpm"]
         return cls(
-            Path(pmpm["prefix"]),
+            Path(data["prefix"]),
             conda_channels=data["channels"],
             conda_dependencies=data["dependencies"],
             dependencies=pmpm["dependencies"],
@@ -242,6 +242,8 @@ class InstallEnvironment:
             fast_update=pmpm["fast_update"],
             nomkl=pmpm["nomkl"],
             update=pmpm["update"],
+            arch=pmpm["arch"],
+            tune=pmpm["tune"],
         )
 
     @classmethod
