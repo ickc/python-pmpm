@@ -12,13 +12,16 @@ jobs:
       fail-fast: false
       matrix:
         os:
-          - "ubuntu-22.04"
-          - "ubuntu-20.04"
-          - "windows-2022"
-          - "windows-2019"
-          - "macos-13"
-          - "macos-12"
-          - "macos-11"
+          - "ubuntu-latest"
+          # - "ubuntu-22.04"
+          # - "ubuntu-20.04"
+          - "windows-latest"
+          # - "windows-2022"
+          # - "windows-2019"
+          - "macos-latest"
+          # - "macos-13"
+          # - "macos-12"
+          # - "macos-11"
         python-version:
           - "3.8"
           - "3.9"
@@ -49,9 +52,6 @@ jobs:
             --conda-dependencies numpy \
             --dependencies toast=toast3 \
             --python-version ${{ matrix.python-version }} \
-            --conda-prefix-name conda_prefix \
-            --compile-prefix-name compile_prefix \
-            --download-prefix-name download_prefix \
             --conda mamba \
             --skip-test \
             --arch x86-64-v2 \
