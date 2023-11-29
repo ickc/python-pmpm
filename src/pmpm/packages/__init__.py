@@ -5,6 +5,8 @@ from dataclasses import dataclass
 from logging import getLogger
 from typing import TYPE_CHECKING, ClassVar
 
+from custom_inherit import DocInheritMeta
+
 if TYPE_CHECKING:
     from pathlib import Path
     from typing import List, Optional, Union
@@ -23,7 +25,20 @@ def combine_commands(*args: Union[str, List[str]]) -> str:
 
 
 @dataclass
-class GenericPackage:
+class GenericPackage(metaclass=DocInheritMeta(style="google_with_merge")):
+    """Generic package class.
+
+    Args:
+        env: the environment to install the package into.
+        update: whether to update the package if it is already installed.
+        fast_update: whether to use fast update. If True, it will be used if the package
+            supports it, otherwise it will fall back to normal update.
+        package_name: the name of the package.
+        arch: the arch to compile for.
+        tune: the tune to compile for.
+        version: the version to install, which should be a valid git tag/branch for git-based packages.
+    """
+
     env: InstallEnvironment
     update: Optional[bool] = None
     fast_update: bool = False
