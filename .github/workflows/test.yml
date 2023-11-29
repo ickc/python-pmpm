@@ -1,0 +1,61 @@
+name: Sanity check
+
+on:
+  pull_request:
+  push:
+  schedule:
+      - cron: '12 1 * * 6'
+
+jobs:
+  test:
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - "ubuntu-22.04"
+          - "ubuntu-20.04"
+          - "windows-2022"
+          - "windows-2019"
+          - "macos-13"
+          - "macos-12"
+          - "macos-11"
+        python-version:
+          - "3.8"
+          - "3.9"
+          - "3.10"
+          - "3.11"
+          - "3.12"
+    defaults:
+      run:
+        shell: bash -l {0}
+    name: test with conda on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: conda-incubator/setup-miniconda@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+          mamba-version: "*"
+          channels: conda-forge
+          environment-file: environment.yml
+      - name: Install pmpm
+        run: pip install .
+      - name: test
+        run: |
+          pmpm \
+            conda_install \
+            "$HOME/pmpm-test" \
+            --conda-channels conda-forge \
+            --conda-dependencies numpy \
+            --dependencies toast=toast3 \
+            --python-version ${{ matrix.python-version }} \
+            --conda-prefix-name conda_prefix \
+            --compile-prefix-name compile_prefix \
+            --download-prefix-name download_prefix \
+            --conda mamba \
+            --skip-test \
+            --arch x86-64-v2 \
+            --tune generic
+        env:
+          # c.f. https://github.com/hpc4cmb/toast/blob/eb1e65097f99ecac63d8976f7131764a43a7ff07/src/toast/tests/runner.py#L113-L117
+          CIBUILDWHEEL: 1
