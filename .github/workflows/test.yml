@@ -44,12 +44,13 @@ jobs:
       - name: Install pmpm
         run: pip install .
       - name: test
+        # TODO: make ipykernel optional
         run: |
           pmpm \
             conda_install \
             "$HOME/pmpm-test" \
             --conda-channels conda-forge \
-            --conda-dependencies numpy \
+            --conda-dependencies ipykernel \
             --dependencies toast=toast3 \
             --python-version ${{ matrix.python-version }} \
             --conda mamba \
