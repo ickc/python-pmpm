@@ -22,14 +22,6 @@ if TYPE_CHECKING:
 logger = getLogger("pmpm")
 
 
-def is_intel() -> bool:
-    from cpuinfo import get_cpu_info
-
-    _is_intel = get_cpu_info()["vendor_id_raw"] == "GenuineIntel"
-    logger.info("Determined if the CPU is Intel: %s", _is_intel)
-    return _is_intel
-
-
 def prepend_path(environ: Dict[str, str], path: str):
     """Prepend to PATH in environment dictionary in-place."""
     if "PATH" in environ:
@@ -102,8 +94,7 @@ class InstallEnvironment:
     skip_test: bool = False
     skip_conda: bool = False
     fast_update: bool = False
-    # TODO: defopt can't pass False here
-    nomkl: Optional[bool] = None
+    nomkl: bool = False
     update: Optional[bool] = None
     # see doc for march: https://gcc.gnu.org/onlinedocs/gcc/x86-Options.html
     # for example, native or x86-64-v3
@@ -151,18 +142,6 @@ class InstallEnvironment:
                 self.conda_dependencies,
                 self.dependencies,
             )
-
-        if self.nomkl is None:
-            try:
-                self.nomkl = False if is_intel() else True
-            except ImportError:
-                raise RuntimeError(
-                    "Cannot determine if CPU is Intel. Consider running pip/conda/mamba install py-cpuinfo."
-                )
-            except Exception as e:
-                logger.critical("Cannot determine nomkl automatically. Try specifying nomkl explicitly.")
-                raise e
-        self.nomkl: bool
 
         append_env(self.conda_dependencies, f"python={self.python_version}")
         if self.nomkl:
