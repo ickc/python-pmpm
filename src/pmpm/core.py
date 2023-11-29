@@ -294,11 +294,15 @@ class InstallEnvironment(metaclass=DocInheritMeta(style="google_with_merge")):
     def bash_bin(self) -> Path:
         from shutil import which
 
-        bash_str = "bash.exe" if self.is_windows else "bash"
-        bash = which(bash_str, path=self.environ_with_all_paths.get("PATH", None))
-
-        if bash is None:
-            raise RuntimeError("Cannot locate bash in environment: %s", self.environ_with_all_paths)
+        # hard-coded to git bash on Windows
+        # see https://github.com/actions/runner/issues/1328
+        if self.is_windows:
+            bash = r"C:\Program Files\Git\bin\bash.EXE"
+            check_file(Path(bash), "binary located at %s")
+        else:
+            bash = which("bash", path=self.environ_with_all_paths.get("PATH", None))
+            if bash is None:
+                raise RuntimeError(f"Cannot locate bash in environment: {self.environ_with_all_paths}")
 
         logger.info("Using bash located at %s", bash)
         return Path(bash)
