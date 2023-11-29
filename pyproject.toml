@@ -45,6 +45,7 @@ include = [
 [tool.poetry.dependencies]
 python = ">=3.8"
 defopt = "^6"
+custom-inherit = "^2.3"
 psutil = "^5"
 
 # extras

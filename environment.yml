@@ -17,6 +17,7 @@ dependencies:
   - poetry >=1,<2
   # run:
   - defopt >=6,<7
+  - custom-inherit >=2.3,<3
   - psutil >=5,<6
   # run_constrained:
   - coloredlogs >=14,<16

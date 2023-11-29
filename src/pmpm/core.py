@@ -13,6 +13,7 @@ from typing import TYPE_CHECKING, ClassVar, Iterable, List, Optional, Tuple
 
 import defopt
 import psutil
+from custom_inherit import DocInheritMeta
 
 from .templates import CONDA_CHANNELS, CONDA_DEPENDENCIES, DEPENDENCIES
 
@@ -59,26 +60,27 @@ def check_dir(path: Path, msg: str):
 
 
 @dataclass
-class InstallEnvironment:
+class InstallEnvironment(metaclass=DocInheritMeta(style="google_with_merge")):
     """A Generic install environment.
 
-    :param prefix: the prefix path of the environment.
-    :conda_channels: conda channels for packages to be searched in.
-    :param conda_dependencies: dependencies install via conda.
-    :param dependencies: dependencies install via pmpm.
-    :param python_version: Python version to be installed.
-    :param conda_prefix_name: the subdirectory within `prefix` for conda.
-    :param compile_prefix_name: the subdirectory within `prefix` for compiled packages from `dependencies`.
-    :param download_prefix_name: the subdirectory within `prefix` for downloaded source codes from `dependencies`.
-    :param conda: executable name for conda solver, can be mamba, conda.
-    :param sub_platform: such as ubuntu, arch, macports, homebrew, etc.
-    :param skip_test: skip test if specified.
-    :param skip_conda: skip installing/updating conda.
-    :param fast_update: assume minimal change to source of compiled package and perform fast update.
-    :param nomkl: if nomkl is used in conda packages, nomkl should be True for non-Intel CPUs.
-    :param update: if updating all packages. If neither --update nor --no-update is provided, determine automatically.
-    :param arch: -march for compilation, for example, native or x86-64-v3
-    :param tune: -mtune for compilation, for example, native or generic
+    Args:
+        prefix: the prefix path of the environment.
+        conda_channels: conda channels for packages to be searched in.
+        conda_dependencies: dependencies install via conda.
+        dependencies: dependencies install via pmpm.
+        python_version: Python version to be installed.
+        conda_prefix_name: the subdirectory within `prefix` for conda.
+        compile_prefix_name: the subdirectory within `prefix` for compiled packages from `dependencies`.
+        download_prefix_name: the subdirectory within `prefix` for downloaded source codes from `dependencies`.
+        conda: executable name for conda solver, can be mamba, conda.
+        sub_platform: such as ubuntu, arch, macports, homebrew, etc.
+        skip_test: skip test if specified.
+        skip_conda: skip installing/updating conda.
+        fast_update: assume minimal change to source of compiled package and perform fast update.
+        nomkl: if nomkl is used in conda packages, nomkl should be True for non-Intel CPUs.
+        update: if updating all packages. If neither --update nor --no-update is provided, determine automatically.
+        arch: -march for compilation, for example, native or x86-64-v3
+        tune: -mtune for compilation, for example, native or generic
     """
 
     prefix: Path
@@ -387,24 +389,6 @@ class InstallEnvironment:
 @dataclass
 class CondaOnlyEnvironment(InstallEnvironment):
     """Using only the stack provided by conda to compile.
-
-    :param prefix: the prefix path of the environment.
-    :conda_channels: conda channels for packages to be searched in.
-    :param conda_dependencies: dependencies install via conda.
-    :param dependencies: dependencies install via pmpm.
-    :param python_version: Python version to be installed.
-    :param conda_prefix_name: the subdirectory within `prefix` for conda.
-    :param compile_prefix_name: the subdirectory within `prefix` for compiled packages from `dependencies`.
-    :param download_prefix_name: the subdirectory within `prefix` for downloaded source codes from `dependencies`.
-    :param conda: executable name for conda solver, can be mamba, conda.
-    :param sub_platform: such as ubuntu, arch, macports, homebrew, etc.
-    :param skip_test: skip test if specified.
-    :param skip_conda: skip installing/updating conda.
-    :param fast_update: assume minimal change to source of compiled package and perform fast update.
-    :param nomkl: if nomkl is used in conda packages, nomkl should be True for non-Intel CPUs.
-    :param update: if updating all packages.
-    :param arch: -march for compilation, for example, native or x86-64-v3
-    :param tune: -mtune for compilation, for example, native or generic
     """
 
     conda_prefix_name: str = ""
