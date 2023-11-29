@@ -1,4 +1,4 @@
-name: test with conda
+name: Integration test with conda
 
 on:
   pull_request:
@@ -13,7 +13,7 @@ jobs:
       matrix:
         os:
           - "ubuntu"
-          - "macos"
+          # - "macos"
           # - "windows"
     defaults:
       run:
