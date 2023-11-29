@@ -76,7 +76,7 @@ class InstallEnvironment:
     :param skip_conda: skip installing/updating conda.
     :param fast_update: assume minimal change to source of compiled package and perform fast update.
     :param nomkl: if nomkl is used in conda packages, nomkl should be True for non-Intel CPUs.
-    :param update: if updating all packages.
+    :param update: if updating all packages. If neither --update nor --no-update is provided, determine automatically.
     :param arch: -march for compilation, for example, native or x86-64-v3
     :param tune: -mtune for compilation, for example, native or generic
     """
