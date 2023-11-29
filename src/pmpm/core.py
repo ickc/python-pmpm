@@ -400,6 +400,7 @@ class CondaOnlyEnvironment(InstallEnvironment):
         "TERM",
         "HOME",
         "SYSTEMROOT",
+        "USERPROFILE",
     )
     sanitized_path: ClassVar[Tuple[str, ...]] = ("/bin", "/usr/bin")  # needed for conda to find POSIX executables
 
