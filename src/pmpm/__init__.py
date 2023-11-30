@@ -1,3 +1,6 @@
+"""pmpm—Python Manual Package Manager
+"""
+
 import logging
 import os
 
@@ -17,4 +20,4 @@ try:
     logger.setLevel(level=level)
 except ValueError:
     logger.setLevel(level=logging.INFO)
-    logger.error(f"Unknown PMPMLOGLEVEL {level}, set to default INFO.")
+    logger.error("Unknown PMPMLOGLEVEL %s, set to default INFO.", level)
