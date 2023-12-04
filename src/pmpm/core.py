@@ -7,7 +7,6 @@ as well as its main logic.
 from __future__ import annotations
 
 from shutil import which
-import json
 import os
 import platform
 from dataclasses import dataclass, field
@@ -21,6 +20,7 @@ from typing import TYPE_CHECKING, ClassVar, Iterable, List, Optional, Tuple
 import defopt
 import psutil
 from custom_inherit import DocInheritMeta
+import yaml
 
 from .templates import CONDA_CHANNELS, CONDA_DEPENDENCIES, DEPENDENCIES
 from .packages.conda import Package
@@ -201,16 +201,15 @@ class InstallEnvironment(metaclass=DocInheritMeta(style="google_with_merge")):
         }
 
     def write_dict(self):
-        """Write the environment definition to a JSON file."""
+        """Write the environment definition to a YAML file."""
         logger.info("Writing environment definition to %s", self.conda_environment_path)
         conda_environment_path = self.conda_environment_path
         conda_environment_path.parent.mkdir(parents=True, exist_ok=True)
         with conda_environment_path.open("w") as f:
-            json.dump(
+            yaml.safe_dump(
                 self.to_dict,
                 f,
-                indent=2,
-                sort_keys=True,
+                default_flow_style=False,
             )
 
     @classmethod
@@ -239,14 +238,14 @@ class InstallEnvironment(metaclass=DocInheritMeta(style="google_with_merge")):
 
     @classmethod
     def read_dict(cls, file: Path):
-        """Read an environment definition from a JSON file."""
+        """Read an environment definition from a YAML file."""
         with file.open("r") as f:
-            data = json.load(f)
+            data = yaml.safe_load(f)
         return cls.from_dict(data)
 
     @cached_property
     def conda_environment_path(self) -> Path:
-        """Path to the JSON file of the environment definition."""
+        """Path to the YAML file of the environment definition."""
         return self.prefix / self.conda_environment_filename
 
     @cached_property
