@@ -6,7 +6,6 @@ as well as its main logic.
 
 from __future__ import annotations
 
-from shutil import which
 import os
 import platform
 from dataclasses import dataclass, field
@@ -14,16 +13,17 @@ from functools import cached_property
 from importlib import import_module
 from logging import getLogger
 from pathlib import Path
+from shutil import which
 from subprocess import list2cmdline
 from typing import TYPE_CHECKING, ClassVar, Iterable, List, Optional, Tuple
 
 import defopt
 import psutil
-from custom_inherit import DocInheritMeta
 import yaml
+from custom_inherit import DocInheritMeta
 
-from .templates import CONDA_CHANNELS, CONDA_DEPENDENCIES, DEPENDENCIES
 from .packages.conda import Package
+from .templates import CONDA_CHANNELS, CONDA_DEPENDENCIES, DEPENDENCIES
 
 if TYPE_CHECKING:
     from typing import Any, Dict, Union
@@ -415,8 +415,7 @@ class InstallEnvironment(metaclass=DocInheritMeta(style="google_with_merge")):
 
 @dataclass
 class CondaOnlyEnvironment(InstallEnvironment):
-    """Using only the stack provided by conda to compile.
-    """
+    """Using only the stack provided by conda to compile."""
 
     conda_prefix_name: str = ""
     compile_prefix_name: str = ""
