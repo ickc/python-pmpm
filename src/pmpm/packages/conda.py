@@ -21,7 +21,7 @@ class Package(GenericPackage):
     def src_dir(self) -> Path:
         return self.env.conda_prefix / "etc" / "conda"
 
-    def _install_conda(self):
+    def _install_conda(self) -> None:
         logger.info("Creating conda environment")
         cmd = [
             str(self.env.mamba_bin),
@@ -37,7 +37,7 @@ class Package(GenericPackage):
             env=self.env.environ_with_conda_path,
         )
 
-    def _install_ipykernel(self):
+    def _install_ipykernel(self) -> None:
         logger.info("Registering ipykernel")
         cmd = [
             str(self.env.python_bin),
@@ -56,11 +56,11 @@ class Package(GenericPackage):
             cwd=self.src_dir,
         )
 
-    def install_env(self):
+    def install_env(self) -> None:
         self._install_conda()
         self._install_ipykernel()
 
-    def update_env(self):
+    def update_env(self) -> None:
         logger.info("Updating conda environment")
         cmd = [
             str(self.env.mamba_bin),

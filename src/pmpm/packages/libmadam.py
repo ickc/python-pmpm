@@ -21,7 +21,7 @@ class Package(GenericPackage):
     def src_dir(self) -> Path:
         return self.env.downoad_prefix / self.package_name
 
-    def download(self):
+    def download(self) -> None:
         logger.info("Downloading %s", self.package_name)
         cmd = [
             "git",
@@ -34,7 +34,7 @@ class Package(GenericPackage):
             cwd=self.src_dir.parent,
         )
 
-    def _autogen(self):
+    def _autogen(self) -> None:
         logger.info("Running autogen")
         self.run_conda_activated(
             "./autogen.sh",
@@ -42,7 +42,7 @@ class Package(GenericPackage):
             cwd=self.src_dir,
         )
 
-    def _configure(self):
+    def _configure(self) -> None:
         env = self.env.environ_with_compile_path.copy()
         env["MPIFC"] = "mpifort"
         env["FC"] = "mpifort"
@@ -68,7 +68,7 @@ class Package(GenericPackage):
             cwd=self.src_dir,
         )
 
-    def _make(self):
+    def _make(self) -> None:
         logger.info("Running make")
         cmd = [
             "make",
@@ -80,7 +80,7 @@ class Package(GenericPackage):
             cwd=self.src_dir,
         )
 
-    def _make_install(self):
+    def _make_install(self) -> None:
         logger.info("Running make install")
         cmd = [
             "make",
@@ -93,7 +93,7 @@ class Package(GenericPackage):
             cwd=self.src_dir,
         )
 
-    def _python_install(self):
+    def _python_install(self) -> None:
         logger.info("Running Python install")
         cmd = [
             str(self.env.python_bin),
@@ -106,7 +106,7 @@ class Package(GenericPackage):
             cwd=self.src_dir / "python",
         )
 
-    def _test(self):
+    def _test(self) -> None:
         logger.info("Running test")
         cmd = [
             str(self.env.python_bin),
@@ -119,7 +119,7 @@ class Package(GenericPackage):
             cwd=self.src_dir / "python",
         )
 
-    def install_env(self):
+    def install_env(self) -> None:
         logger.info("Installing %s", self.package_name)
         self.download()
         self._autogen()
@@ -130,7 +130,7 @@ class Package(GenericPackage):
         if not self.env.skip_test:
             self._test()
 
-    def update_env(self):
+    def update_env(self) -> None:
         logger.info("Updating %s, any changes in %s will be installed.", self.package_name, self.src_dir)
         self._autogen()
         self._configure()
@@ -140,7 +140,7 @@ class Package(GenericPackage):
         if not self.env.skip_test:
             self._test()
 
-    def update_env_fast(self):
+    def update_env_fast(self) -> None:
         logger.info("Fast updating %s, any changes in %s will be installed.", self.package_name, self.src_dir)
         self._make()
         self._make_install()

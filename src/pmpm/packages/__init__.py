@@ -18,7 +18,7 @@ logger = getLogger("pmpm")
 
 
 @dataclass
-class GenericPackage(metaclass=DocInheritMeta(style="google_with_merge")):
+class GenericPackage(metaclass=DocInheritMeta(style="google_with_merge")):  # type: ignore[misc]
     """Generic package class.
 
     Args:
@@ -44,7 +44,7 @@ class GenericPackage(metaclass=DocInheritMeta(style="google_with_merge")):
     # must be a valid git tag/branch for git-based packages
     version: str = "master"
 
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         # use some heuristics to determine if we need to update or not
         if self.update is None:
             if self.fast_update:
@@ -57,16 +57,16 @@ class GenericPackage(metaclass=DocInheritMeta(style="google_with_merge")):
     def src_dir(self) -> Path:
         raise NotImplementedError
 
-    def download(self):
+    def download(self) -> None:
         raise NotImplementedError
 
-    def install_env(self):
+    def install_env(self) -> None:
         raise NotImplementedError
 
-    def update_env(self):
+    def update_env(self) -> None:
         raise NotImplementedError
 
-    def update_env_fast(self):
+    def update_env_fast(self) -> None:
         logger.warning("%s has not implemented fast update, using normal update...", self.package_name)
         return self.update_env()
 
@@ -74,7 +74,7 @@ class GenericPackage(metaclass=DocInheritMeta(style="google_with_merge")):
         self,
         *commands: Union[str, List[str]],
         **kwargs,
-    ):
+    ) -> None:
         """Run commands with conda activated.
 
         :param kwargs: passes to subprocess.run
@@ -82,7 +82,7 @@ class GenericPackage(metaclass=DocInheritMeta(style="google_with_merge")):
         logger.info("Running the following command with conda activated:")
         run(self.activate_cmd_str, *commands, **kwargs)
 
-    def run_all(self):
+    def run_all(self) -> None:
         if self.update:
             if self.fast_update:
                 self.update_env_fast()

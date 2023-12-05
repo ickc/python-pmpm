@@ -13,7 +13,7 @@ logger = getLogger(__name__)
 
 bash: str = ""
 if platform.system() != "Windows":
-    bash = which("bash")
+    bash = which("bash")  # type: ignore[assignment]
     if bash is None:
         raise RuntimeError("Cannot locate bash.")
     logger.info("Using bash located at %s", bash)

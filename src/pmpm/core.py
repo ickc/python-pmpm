@@ -29,7 +29,7 @@ if TYPE_CHECKING:
 logger = getLogger("pmpm")
 
 
-def prepend_path(environ: Dict[str, str], path: str):
+def prepend_path(environ: Dict[str, str], path: str) -> None:
     """Prepend to PATH in environment dictionary in-place."""
     if "PATH" in environ:
         environ["PATH"] = path + os.pathsep + environ["PATH"]
@@ -37,7 +37,7 @@ def prepend_path(environ: Dict[str, str], path: str):
         environ["PATH"] = path
 
 
-def append_path(environ: Dict[str, str], path: str):
+def append_path(environ: Dict[str, str], path: str) -> None:
     """Append to PATH in environment dictionary in-place."""
     if "PATH" in environ:
         environ["PATH"] += os.pathsep + path
@@ -45,13 +45,13 @@ def append_path(environ: Dict[str, str], path: str):
         environ["PATH"] = path
 
 
-def append_env(dependencies: List[str], package: str):
+def append_env(dependencies: List[str], package: str) -> None:
     """Append a package to conda environment definition."""
     if package not in dependencies:
         dependencies.append(package)
 
 
-def check_file(path: Path, msg: str):
+def check_file(path: Path, msg: str) -> None:
     """Check if a file exists."""
     if path.is_file():
         logger.info(msg, path)
@@ -59,7 +59,7 @@ def check_file(path: Path, msg: str):
         raise RuntimeError(f"{path} not found.")
 
 
-def check_dir(path: Path, msg: str):
+def check_dir(path: Path, msg: str) -> None:
     """Check if a directory exists."""
     if path.is_dir():
         logger.info(msg, path)
@@ -68,7 +68,7 @@ def check_dir(path: Path, msg: str):
 
 
 @dataclass
-class InstallEnvironment(metaclass=DocInheritMeta(style="google_with_merge")):
+class InstallEnvironment(metaclass=DocInheritMeta(style="google_with_merge")):  # type: ignore[misc]
     """A Generic install environment.
 
     Args:
@@ -118,7 +118,7 @@ class InstallEnvironment(metaclass=DocInheritMeta(style="google_with_merge")):
     system: ClassVar[str] = platform.system()
     cpu_count: ClassVar[int] = psutil.cpu_count(logical=False)
 
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         if self.file is not None:
             logger.info("Reading environment definition from %s and overriding cli options", self.file)
             with self.file.open() as f:
@@ -174,7 +174,7 @@ class InstallEnvironment(metaclass=DocInheritMeta(style="google_with_merge")):
     @cached_property
     def dependencies_versioned(self) -> dict[str, Optional[str]]:
         """Return a dictionary of dependencies with version."""
-        res = {}
+        res: dict[str, Optional[str]] = {}
         for dep in self.dependencies:
             temp = dep.split("=")
             if len(temp) == 1:
@@ -211,7 +211,7 @@ class InstallEnvironment(metaclass=DocInheritMeta(style="google_with_merge")):
             },
         }
 
-    def write_dict(self):
+    def write_dict(self) -> None:
         """Write the environment definition to a YAML file."""
         logger.info("Writing environment definition to %s", self.conda_environment_path)
         conda_environment_path = self.conda_environment_path
@@ -224,13 +224,13 @@ class InstallEnvironment(metaclass=DocInheritMeta(style="google_with_merge")):
             )
 
     @classmethod
-    def from_dict(cls, data: Dict[str, Union[str, List[str], Dict[str, Any]]]):
+    def from_dict(cls, data: Dict[str, Union[str, List[str], Dict[str, Any]]]) -> InstallEnvironment:
         """Construct an environment from a dictionary."""
-        pmpm: Dict[str, Any] = data["_pmpm"]
+        pmpm: Dict[str, Any] = data["_pmpm"]  # type: ignore[assignment]
         return cls(
-            Path(data["prefix"]),
-            conda_channels=data["channels"],
-            conda_dependencies=data["dependencies"],
+            Path(data["prefix"]),  # type: ignore[arg-type]
+            conda_channels=data["channels"],  # type: ignore[arg-type]
+            conda_dependencies=data["dependencies"],  # type: ignore[arg-type]
             dependencies=pmpm["dependencies"],
             python_version=str(pmpm["python_version"]),
             conda_prefix_name=pmpm["conda_prefix_name"],
@@ -284,7 +284,11 @@ class InstallEnvironment(metaclass=DocInheritMeta(style="google_with_merge")):
     @cached_property
     def mamba_bin(self) -> Path:
         """Path to the mamba binary."""
-        path = self.conda_root_prefix / "Scripts" / "mamba" if self.is_windows else self.conda_root_prefix / "bin" / "mamba"
+        path = (
+            self.conda_root_prefix / "Scripts" / "mamba"
+            if self.is_windows
+            else self.conda_root_prefix / "bin" / "mamba"
+        )
         try:
             check_file(path, "binary located at %s")
             return path
@@ -314,7 +318,11 @@ class InstallEnvironment(metaclass=DocInheritMeta(style="google_with_merge")):
     @cached_property
     def activate_cmd(self) -> List[str]:
         """Return a command to activate the conda environment."""
-        return [str(self.activate_bin), str(self.conda_prefix)] if self.is_windows else ["source", str(self.activate_bin), str(self.conda_prefix)]
+        return (
+            [str(self.activate_bin), str(self.conda_prefix)]
+            if self.is_windows
+            else ["source", str(self.activate_bin), str(self.conda_prefix)]
+        )
 
     @cached_property
     def activate_cmd_str(self) -> str:
@@ -322,21 +330,21 @@ class InstallEnvironment(metaclass=DocInheritMeta(style="google_with_merge")):
         return list2cmdline(self.activate_cmd)
 
     @cached_property
-    def conda_prefix(self):
+    def conda_prefix(self) -> Path:
         """Path to the prefix for conda."""
         path = self.prefix / self.conda_prefix_name
         path.mkdir(parents=True, exist_ok=True)
         return path
 
     @cached_property
-    def compile_prefix(self):
+    def compile_prefix(self) -> Path:
         """Path to the prefix for the compiled stack by pmpm."""
         path = self.prefix / self.compile_prefix_name
         path.mkdir(parents=True, exist_ok=True)
         return path
 
     @cached_property
-    def downoad_prefix(self):
+    def downoad_prefix(self) -> Path:
         """Path to the prefix for the downloaded source codes by pmpm."""
         path = self.prefix / self.download_prefix_name
         path.mkdir(parents=True, exist_ok=True)
@@ -372,7 +380,7 @@ class InstallEnvironment(metaclass=DocInheritMeta(style="google_with_merge")):
         prepend_path(env, str(self.conda_prefix / "bin"))
         return env
 
-    def run_all(self):
+    def run_all(self) -> None:
         """Run all steps to install/update the environment."""
         # TODO: don't write dict if read from file
         self.write_dict()
@@ -415,7 +423,7 @@ class CondaOnlyEnvironment(InstallEnvironment):
     )
     sanitized_path: ClassVar[Tuple[str, ...]] = ("/bin", "/usr/bin")  # needed for conda to find POSIX executables
 
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         super().__post_init__()
 
         if self.conda_prefix_name != self.compile_prefix_name:
@@ -469,7 +477,7 @@ class CondaOnlyEnvironment(InstallEnvironment):
         return self.environ_with_all_paths
 
 
-def cli():
+def cli() -> None:
     """Command line interface for pmpm."""
     env = defopt.run(
         {

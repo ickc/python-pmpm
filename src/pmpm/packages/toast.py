@@ -30,7 +30,7 @@ class Package(GenericPackage):
         path.mkdir(parents=True, exist_ok=True)
         return path
 
-    def download(self):
+    def download(self) -> None:
         logger.info("Downloading %s", self.package_name)
         cmd = [
             "git",
@@ -55,7 +55,7 @@ class Package(GenericPackage):
             cwd=self.src_dir,
         )
 
-    def _cmake(self):
+    def _cmake(self) -> None:
         logger.info("Running CMake")
         prefix = self.env.compile_prefix
         libext = "dylib" if self.env.is_darwin else "so"
@@ -87,7 +87,7 @@ class Package(GenericPackage):
             cwd=self.build_dir,
         )
 
-    def _make(self):
+    def _make(self) -> None:
         logger.info("Running Make")
         cmd = [
             "make",
@@ -99,7 +99,7 @@ class Package(GenericPackage):
             cwd=self.build_dir,
         )
 
-    def _make_install(self):
+    def _make_install(self) -> None:
         logger.info("Running make install")
         cmd = [
             "make",
@@ -112,7 +112,7 @@ class Package(GenericPackage):
             cwd=self.build_dir,
         )
 
-    def _test(self):
+    def _test(self) -> None:
         logger.info("Running test")
         CIBUILDWHEEL = os.environ.get("CIBUILDWHEEL", None)
         if CIBUILDWHEEL is not None:
@@ -133,7 +133,7 @@ class Package(GenericPackage):
                 cwd=tmpdirname,
             )
 
-    def install_env(self):
+    def install_env(self) -> None:
         logger.info("Installing %s", self.package_name)
         self.download()
         self._cmake()
@@ -142,7 +142,7 @@ class Package(GenericPackage):
         if not self.env.skip_test:
             self._test()
 
-    def update_env(self):
+    def update_env(self) -> None:
         logger.info("Updating %s, any changes in %s will be installed.", self.package_name, self.src_dir)
         self._cmake()
         self._make()
@@ -150,7 +150,7 @@ class Package(GenericPackage):
         if not self.env.skip_test:
             self._test()
 
-    def update_env_fast(self):
+    def update_env_fast(self) -> None:
         logger.info("Fast updating %s, any changes in %s will be installed.", self.package_name, self.src_dir)
         self._make()
         self._make_install()
