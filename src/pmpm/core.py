@@ -22,7 +22,6 @@ import yaml
 from custom_inherit import DocInheritMeta
 
 from .packages.conda import Package
-from .templates import CONDA_CHANNELS, CONDA_DEPENDENCIES, DEPENDENCIES
 
 if TYPE_CHECKING:
     from typing import Any, Dict, Union
@@ -95,9 +94,9 @@ class InstallEnvironment(metaclass=DocInheritMeta(style="google_with_merge")):
 
     prefix: Path
     file: Optional[Path] = None
-    conda_channels: List[str] = field(default_factory=lambda: list(CONDA_CHANNELS))
-    conda_dependencies: List[str] = field(default_factory=lambda: list(CONDA_DEPENDENCIES))
-    dependencies: List[str] = field(default_factory=lambda: list(DEPENDENCIES))
+    conda_channels: List[str] = field(default_factory=list)
+    conda_dependencies: List[str] = field(default_factory=list)
+    dependencies: List[str] = field(default_factory=list)
     python_version: str = "3.10"
     conda_prefix_name: str = "conda"
     compile_prefix_name: str = "compile"
