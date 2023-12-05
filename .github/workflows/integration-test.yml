@@ -31,7 +31,7 @@ jobs:
       - name: Install pmpm
         run: pip install .
       - name: test
-        run: pmpm conda_install "$HOME/pmpm-test"
+        run: pmpm conda_install "$HOME/pmpm-test" --file examples/linux.yml
         env:
           # c.f. https://github.com/hpc4cmb/toast/blob/eb1e65097f99ecac63d8976f7131764a43a7ff07/src/toast/tests/runner.py#L113-L117
           CIBUILDWHEEL: 1

@@ -75,6 +75,7 @@ class InstallEnvironment(metaclass=DocInheritMeta(style="google_with_merge")):
 
     Args:
         prefix: the prefix path of the environment.
+        file: the YAML file of the environment definition.
         conda_channels: conda channels for packages to be searched in.
         conda_dependencies: dependencies install via conda.
         dependencies: dependencies install via pmpm.
@@ -94,6 +95,7 @@ class InstallEnvironment(metaclass=DocInheritMeta(style="google_with_merge")):
     """
 
     prefix: Path
+    file: Optional[Path] = None
     conda_channels: List[str] = field(default_factory=lambda: list(CONDA_CHANNELS))
     conda_dependencies: List[str] = field(default_factory=lambda: list(CONDA_DEPENDENCIES))
     dependencies: List[str] = field(default_factory=lambda: list(DEPENDENCIES))
@@ -136,6 +138,46 @@ class InstallEnvironment(metaclass=DocInheritMeta(style="google_with_merge")):
     cpu_count: ClassVar[int] = psutil.cpu_count(logical=False)
 
     def __post_init__(self):
+        if self.file is not None:
+            logger.info("Reading environment definition from %s and overriding cli options", self.file)
+            with self.file.open() as f:
+                data = yaml.safe_load(f)
+            if "channels" in data:
+                self.conda_channels = data["channels"]
+            if "dependencies" in data:
+                self.conda_dependencies = data["dependencies"]
+            if "prefix" in data:
+                self.prefix = Path(data["prefix"])
+            if "_pmpm" in data:
+                pmpm = data["_pmpm"]
+                if "dependencies" in pmpm:
+                    self.dependencies = pmpm["dependencies"]
+                if "python_version" in pmpm:
+                    self.python_version = str(pmpm["python_version"])
+                if "conda_prefix_name" in pmpm:
+                    self.conda_prefix_name = pmpm["conda_prefix_name"]
+                if "compile_prefix_name" in pmpm:
+                    self.compile_prefix_name = pmpm["compile_prefix_name"]
+                if "download_prefix_name" in pmpm:
+                    self.download_prefix_name = pmpm["download_prefix_name"]
+                if "conda" in pmpm:
+                    self.conda = pmpm["conda"]
+                if "sub_platform" in pmpm:
+                    self.sub_platform = pmpm["sub_platform"]
+                if "skip_test" in pmpm:
+                    self.skip_test = pmpm["skip_test"]
+                if "skip_conda" in pmpm:
+                    self.skip_conda = pmpm["skip_conda"]
+                if "fast_update" in pmpm:
+                    self.fast_update = pmpm["fast_update"]
+                if "nomkl" in pmpm:
+                    self.nomkl = pmpm["nomkl"]
+                if "update" in pmpm:
+                    self.update = pmpm["update"]
+                if "arch" in pmpm:
+                    self.arch = pmpm["arch"]
+                if "tune" in pmpm:
+                    self.tune = pmpm["tune"]
         if self.system not in self.supported_systems:
             raise OSError(f"OS {self.system} not supported.")
         elif self.is_windows:
@@ -235,13 +277,6 @@ class InstallEnvironment(metaclass=DocInheritMeta(style="google_with_merge")):
             arch=pmpm["arch"],
             tune=pmpm["tune"],
         )
-
-    @classmethod
-    def read_dict(cls, file: Path):
-        """Read an environment definition from a YAML file."""
-        with file.open("r") as f:
-            data = yaml.safe_load(f)
-        return cls.from_dict(data)
 
     @cached_property
     def conda_environment_path(self) -> Path:
@@ -490,8 +525,6 @@ def cli():
         {
             "system_install": InstallEnvironment,
             "conda_install": CondaOnlyEnvironment,
-            "system_install_from_file": InstallEnvironment.read_dict,
-            "conda_install_from_file": CondaOnlyEnvironment.read_dict,
         },
         strict_kwonly=False,
         show_types=True,
