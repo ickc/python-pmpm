@@ -26,7 +26,6 @@ dependencies:
   - micromamba
   - mpi4py
   - mypy
-  - namaster
   - nbformat
   - numba
   - numpy
