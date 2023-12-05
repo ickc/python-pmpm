@@ -285,11 +285,7 @@ class InstallEnvironment(metaclass=DocInheritMeta(style="google_with_merge")):
     @cached_property
     def mamba_bin(self) -> Path:
         """Path to the mamba binary."""
-        if self.conda == "mamba" and self.is_windows:
-            mamba = "mamba.exe"
-        else:
-            mamba = self.conda
-        path = self.conda_root_prefix / "bin" / mamba
+        path = self.conda_root_prefix / "Scripts" / "mamba.exe" if self.is_windows else self.conda_root_prefix / "bin" / "mamba"
         try:
             check_file(path, "binary located at %s")
             return path
