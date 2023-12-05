@@ -293,10 +293,6 @@ class InstallEnvironment(metaclass=DocInheritMeta(style="google_with_merge")):  
             check_file(path, "binary located at %s")
             return path
         except RuntimeError:
-            # list all files in the Scripts directory
-            files = list(self.conda_root_prefix.glob("**/*"))
-            for file in files:
-                logger.warning(str(file))
             logger.warning("%s not found, use conda instead.", self.conda)
             return self.conda_bin
 
