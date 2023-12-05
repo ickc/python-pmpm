@@ -13,7 +13,6 @@ from functools import cached_property
 from importlib import import_module
 from logging import getLogger
 from pathlib import Path
-from shutil import which
 from subprocess import list2cmdline
 from typing import TYPE_CHECKING, ClassVar, Iterable, List, Optional, Tuple
 
@@ -312,23 +311,6 @@ class InstallEnvironment(metaclass=DocInheritMeta(style="google_with_merge")):
     def python_bin(self) -> Path:
         """Path to the python binary in the current environment."""
         return self.conda_prefix / "bin" / "python"
-
-    @cached_property
-    def bash_bin(self) -> Path:
-        """Path to the bash binary."""
-        # TODO: remove relying on bash_bin at all
-        # hard-coded to git bash on Windows
-        # see https://github.com/actions/runner/issues/1328
-        if self.is_windows:
-            bash = r"C:\Program Files\Git\bin\bash.EXE"
-            check_file(Path(bash), "binary located at %s")
-        else:
-            bash = which("bash", path=self.environ_with_all_paths.get("PATH", None))
-            if bash is None:
-                raise RuntimeError(f"Cannot locate bash in environment: {self.environ_with_all_paths}")
-
-        logger.info("Using bash located at %s", bash)
-        return Path(bash)
 
     @cached_property
     def activate_cmd(self) -> List[str]:

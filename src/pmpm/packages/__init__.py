@@ -7,6 +7,8 @@ from typing import TYPE_CHECKING, ClassVar
 
 from custom_inherit import DocInheritMeta
 
+from ..util import run_commands_with_side_effects
+
 if TYPE_CHECKING:
     from pathlib import Path
     from typing import List, Optional, Union
@@ -14,14 +16,6 @@ if TYPE_CHECKING:
     from ..core import InstallEnvironment
 
 logger = getLogger("pmpm")
-
-
-def combine_commands(*args: Union[str, List[str]]) -> str:
-    """Combine multiple commands into a single line of string for subprocess.
-
-    :param args: can be in string or list of string that subprocess.run accepts.
-    """
-    return " && ".join(cmd if type(cmd) is str else subprocess.list2cmdline(cmd) for cmd in args)
 
 
 @dataclass
@@ -93,36 +87,17 @@ class GenericPackage(metaclass=DocInheritMeta(style="google_with_merge")):
             **kwargs,
         )
 
-    def run(
-        self,
-        *commands: Union[str, List[str]],
-        **kwargs,
-    ):
-        """Run commands through bash.
-
-        :param kwargs: passes to subprocess.run
-        """
-        cmd_str = combine_commands(*commands)
-        logger.info("Running %s", cmd_str)
-        subprocess.run(
-            cmd_str,
-            check=True,
-            shell=True,
-            executable=self.bash_bin,
-            **kwargs,
-        )
-
     def run_conda_activated(
         self,
         *commands: Union[str, List[str]],
         **kwargs,
     ):
-        """Run commands through bash with conda activated.
+        """Run commands with conda activated.
 
         :param kwargs: passes to subprocess.run
         """
         logger.info("Running the following command with conda activated:")
-        self.run(self.activate_cmd_str, *commands, **kwargs)
+        run_commands_with_side_effects(self.activate_cmd_str, *commands, **kwargs)
 
     def run_all(self):
         if self.update:
@@ -158,7 +133,3 @@ class GenericPackage(metaclass=DocInheritMeta(style="google_with_merge")):
     @property
     def activate_cmd_str(self) -> str:
         return self.env.activate_cmd_str
-
-    @property
-    def bash_bin(self) -> str:
-        return self.env.bash_bin
