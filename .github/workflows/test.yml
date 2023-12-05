@@ -10,17 +10,18 @@ jobs:
   test:
     strategy:
       fail-fast: false
+      # https://docs.github.com/en/actions/using-github-hosted-runners/about-github-hosted-runners/about-github-hosted-runners#supported-runners-and-hardware-resources
       matrix:
         include:
-          - os: "macos-11"
+          - os: "windows-2022"
             python-version: "3.8"
-          - os: "macos-12"
+          - os: "macos-11"
             python-version: "3.9"
-          - os: "ubuntu-20.04"
+          - os: "macos-12"
             python-version: "3.10"
-          - os: "ubuntu-22.04"
+          - os: "ubuntu-20.04"
             python-version: "3.11"
-          - os: "ubuntu-latest"
+          - os: "ubuntu-22.04"
             python-version: "3.12"
     defaults:
       run:
