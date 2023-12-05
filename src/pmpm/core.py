@@ -304,7 +304,7 @@ class InstallEnvironment(metaclass=DocInheritMeta(style="google_with_merge")):  
     def activate_bin(self) -> Path:
         """Path to the activate binary."""
         if self.is_windows:
-            path = self.conda_root_prefix / "Scripts" / "activate"
+            path = self.conda_root_prefix / "condabin" / "activate.bat"
         else:
             path = self.conda_root_prefix / "bin" / "activate"
             check_file(path, "binary located at %s")
