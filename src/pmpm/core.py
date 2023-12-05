@@ -315,9 +315,7 @@ class InstallEnvironment(metaclass=DocInheritMeta(style="google_with_merge")):
     @cached_property
     def activate_cmd(self) -> List[str]:
         """Return a command to activate the conda environment."""
-        cmd = [] if self.is_windows else ["source"]
-        cmd += [str(self.activate_bin), str(self.conda_prefix)]
-        return cmd
+        return [str(self.conda_bin), "activate", str(self.conda_prefix)] if self.is_windows else ["source", str(self.activate_bin), str(self.conda_prefix)]
 
     @cached_property
     def activate_cmd_str(self) -> str:
