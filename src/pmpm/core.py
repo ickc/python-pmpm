@@ -118,23 +118,6 @@ class InstallEnvironment(metaclass=DocInheritMeta(style="google_with_merge")):
     conda_environment_filename: ClassVar[str] = "environment.yml"
     supported_systems: ClassVar[Iterable[str]] = ("Linux", "Darwin", "Windows")
     system: ClassVar[str] = platform.system()
-    windows_exclude_conda_dependencies: ClassVar[Iterable[str]] = {
-        "automake",
-        "libaatm",
-        "mpich-mpicc",
-        "libsharp",
-        "healpy",
-        "libtool",
-        "mpich-mpicxx",
-        "mpich-mpifort",
-        "suitesparse",
-        "pysm3",
-        "fftw",
-        "cfitsio",
-        "lapack",
-        "matplotlib",
-    }
-    windows_exclude_dependencies: ClassVar[Iterable[str]] = ("libmadam",)
     cpu_count: ClassVar[int] = psutil.cpu_count(logical=False)
 
     def __post_init__(self):
@@ -180,18 +163,6 @@ class InstallEnvironment(metaclass=DocInheritMeta(style="google_with_merge")):
                     self.tune = pmpm["tune"]
         if self.system not in self.supported_systems:
             raise OSError(f"OS {self.system} not supported.")
-        elif self.is_windows:
-            if "matplotlib" in self.conda_dependencies:
-                self.conda_dependencies.append("matplotlib-base")
-            self.conda_dependencies = [
-                dep for dep in self.conda_dependencies if dep not in self.windows_exclude_conda_dependencies
-            ]
-            dependencies = []
-            for dep in self.dependencies:
-                if dep.split("=", maxsplit=1)[0] not in self.windows_exclude_dependencies:
-                    dependencies.append(dep)
-            self.dependencies = dependencies
-            logger.warning("Windows support is experimental and may not work.")
 
         append_env(self.conda_dependencies, f"python={self.python_version}")
         if self.nomkl:
