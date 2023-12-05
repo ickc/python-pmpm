@@ -301,7 +301,7 @@ class InstallEnvironment(metaclass=DocInheritMeta(style="google_with_merge")):
     def activate_bin(self) -> Path:
         """Path to the activate binary."""
         if self.is_windows:
-            path = Path("activate")
+            path = self.conda_root_prefix / "Scripts" / "activate"
         else:
             path = self.conda_root_prefix / "bin" / "activate"
             check_file(path, "binary located at %s")
@@ -315,7 +315,7 @@ class InstallEnvironment(metaclass=DocInheritMeta(style="google_with_merge")):
     @cached_property
     def activate_cmd(self) -> List[str]:
         """Return a command to activate the conda environment."""
-        return [str(self.conda_bin), "activate", str(self.conda_prefix)] if self.is_windows else ["source", str(self.activate_bin), str(self.conda_prefix)]
+        return [str(self.activate_bin), str(self.conda_prefix)] if self.is_windows else ["source", str(self.activate_bin), str(self.conda_prefix)]
 
     @cached_property
     def activate_cmd_str(self) -> str:
