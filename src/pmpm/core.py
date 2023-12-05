@@ -285,7 +285,7 @@ class InstallEnvironment(metaclass=DocInheritMeta(style="google_with_merge")):  
     def mamba_bin(self) -> Path:
         """Path to the mamba binary."""
         path = (
-            self.conda_root_prefix / "Scripts" / "mamba"
+            self.conda_root_prefix / "Scripts" / "mamba.exe"
             if self.is_windows
             else self.conda_root_prefix / "bin" / "mamba"
         )
