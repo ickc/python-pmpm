@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING, ClassVar
 
 from custom_inherit import DocInheritMeta
 
-from ..util import run_commands_with_side_effects
+from ..util import run
 
 if TYPE_CHECKING:
     from pathlib import Path
@@ -80,7 +80,7 @@ class GenericPackage(metaclass=DocInheritMeta(style="google_with_merge")):
         :param kwargs: passes to subprocess.run
         """
         logger.info("Running the following command with conda activated:")
-        run_commands_with_side_effects(self.activate_cmd_str, *commands, **kwargs)
+        run(self.activate_cmd_str, *commands, **kwargs)
 
     def run_all(self):
         if self.update:

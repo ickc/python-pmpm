@@ -4,7 +4,7 @@ from dataclasses import dataclass
 from logging import getLogger
 from typing import TYPE_CHECKING, ClassVar
 
-from ..util import run_simple
+from ..util import run
 from . import GenericPackage
 
 logger = getLogger("pmpm")
@@ -32,7 +32,7 @@ class Package(GenericPackage):
             "--prefix",
             str(self.env.conda_prefix),
         ]
-        run_simple(
+        run(
             cmd,
             env=self.env.environ_with_conda_path,
         )
@@ -71,7 +71,7 @@ class Package(GenericPackage):
             "--prefix",
             str(self.env.conda_prefix),
         ]
-        run_simple(
+        run(
             cmd,
             env=self.env.environ_with_conda_path,
         )

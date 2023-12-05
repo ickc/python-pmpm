@@ -27,42 +27,44 @@ def combine_commands(*args: Union[str, List[str]]) -> str:
     return " && ".join(cmd if isinstance(cmd, str) else subprocess.list2cmdline(cmd) for cmd in args)
 
 
-def run_simple(
-    command: List[str],
-    **kwargs,
-):
-    """Run single command without shell.
-
-    :param kwargs: passes to subprocess.run"""
-    cmd_str = subprocess.list2cmdline(command)
-    logger.info("Running %s", cmd_str)
-    subprocess.run(
-        command,
-        check=True,
-        **kwargs,
-    )
-
-
-def run_commands_with_side_effects(
+def run(
     *commands: Union[str, List[str]],
     **kwargs,
 ) -> None:
-    cmd_str = combine_commands(*commands)
-    logger.info("Running %s", cmd_str)
-    if bash:
+    """Run commands with side effects between them.
+
+    :param commands: can be in string or list of string that subprocess.run accepts.
+    :param kwargs: passes to subprocess.run
+    """
+    n = len(commands)
+    if n == 1:
+        command = commands[0]
+        cmd_str = subprocess.list2cmdline(command)
+        logger.info("Running %s", cmd_str)
         subprocess.run(
-            cmd_str,
+            command,
             check=True,
-            shell=True,
-            text=True,
-            executable=bash,
             **kwargs,
         )
+    elif n > 1:
+        cmd_str = combine_commands(*commands)
+        logger.info("Running %s", cmd_str)
+        if bash:
+            subprocess.run(
+                cmd_str,
+                check=True,
+                shell=True,
+                text=True,
+                executable=bash,
+                **kwargs,
+            )
+        else:
+            subprocess.run(
+                cmd_str,
+                check=True,
+                shell=True,
+                text=True,
+                **kwargs,
+            )
     else:
-        subprocess.run(
-            cmd_str,
-            check=True,
-            shell=True,
-            text=True,
-            **kwargs,
-        )
+        raise ValueError("No commands given.")

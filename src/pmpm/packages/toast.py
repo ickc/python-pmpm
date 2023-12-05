@@ -7,7 +7,7 @@ from functools import cached_property
 from logging import getLogger
 from typing import TYPE_CHECKING, ClassVar
 
-from ..util import run_simple
+from ..util import run
 from . import GenericPackage
 
 logger = getLogger("pmpm")
@@ -37,7 +37,7 @@ class Package(GenericPackage):
             "clone",
             f"https://github.com/hpc4cmb/{self.package_name}.git",
         ]
-        run_simple(
+        run(
             cmd,
             env=self.env.environ_with_all_paths,
             cwd=self.src_dir.parent,
@@ -49,7 +49,7 @@ class Package(GenericPackage):
             "checkout",
             branch,
         ]
-        run_simple(
+        run(
             cmd,
             env=self.env.environ_with_all_paths,
             cwd=self.src_dir,
@@ -81,7 +81,7 @@ class Package(GenericPackage):
             f"-DSUITESPARSE_LIBRARY_DIR_HINTS={prefix}/lib",
             "..",
         ]
-        run_simple(
+        run(
             cmd,
             env=self.env.environ_with_compile_path,
             cwd=self.build_dir,
@@ -93,7 +93,7 @@ class Package(GenericPackage):
             "make",
             f"-j{self.env.cpu_count}",
         ]
-        run_simple(
+        run(
             cmd,
             env=self.env.environ_with_compile_path,
             cwd=self.build_dir,
@@ -106,7 +106,7 @@ class Package(GenericPackage):
             "install",
             f"-j{self.env.cpu_count}",
         ]
-        run_simple(
+        run(
             cmd,
             env=self.env.environ_with_compile_path,
             cwd=self.build_dir,
