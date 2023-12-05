@@ -27,6 +27,22 @@ def combine_commands(*args: Union[str, List[str]]) -> str:
     return " && ".join(cmd if isinstance(cmd, str) else subprocess.list2cmdline(cmd) for cmd in args)
 
 
+def run_simple(
+    command: List[str],
+    **kwargs,
+):
+    """Run single command without shell.
+
+    :param kwargs: passes to subprocess.run"""
+    cmd_str = subprocess.list2cmdline(command)
+    logger.info("Running %s", cmd_str)
+    subprocess.run(
+        command,
+        check=True,
+        **kwargs,
+    )
+
+
 def run_commands_with_side_effects(
     *commands: Union[str, List[str]],
     **kwargs,

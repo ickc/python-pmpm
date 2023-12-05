@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import subprocess
 from dataclasses import dataclass
 from logging import getLogger
 from typing import TYPE_CHECKING, ClassVar
@@ -70,22 +69,6 @@ class GenericPackage(metaclass=DocInheritMeta(style="google_with_merge")):
     def update_env_fast(self):
         logger.warning("%s has not implemented fast update, using normal update...", self.package_name)
         return self.update_env()
-
-    @staticmethod
-    def run_simple(
-        command: List[str],
-        **kwargs,
-    ):
-        """Run single command without shell.
-
-        :param kwargs: passes to subprocess.run"""
-        cmd_str = subprocess.list2cmdline(command)
-        logger.info("Running %s", cmd_str)
-        subprocess.run(
-            command,
-            check=True,
-            **kwargs,
-        )
 
     def run_conda_activated(
         self,
