@@ -14,13 +14,22 @@ jobs:
         os:
           - "ubuntu"
           # - "macos"
-          # - "windows"
+          - "windows"
     defaults:
       run:
         shell: bash -l {0}
     name: conda_install on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}-latest
     steps:
+      # set ENV_FILE to the path of the environment file according to the OS
+      - name: Set ENV_FILE
+        run: |
+          if [[ "${{ matrix.os }}" == "ubuntu" ]]; then
+            ENV_FILE=examples/linux.yml
+          elif [[ "${{ matrix.os }}" == "windows" ]]; then
+            ENV_FILE=examples/windows.yml
+          fi
+          echo "ENV_FILE=$ENV_FILE" >> $GITHUB_ENV
       - uses: actions/checkout@v4
       - uses: conda-incubator/setup-miniconda@v2
         with:
@@ -31,7 +40,7 @@ jobs:
       - name: Install pmpm
         run: pip install .
       - name: test
-        run: pmpm conda_install "$HOME/pmpm-test" --file examples/linux.yml
+        run: pmpm conda_install "$HOME/pmpm-test" --file $ENV_FILE
         env:
           # c.f. https://github.com/hpc4cmb/toast/blob/eb1e65097f99ecac63d8976f7131764a43a7ff07/src/toast/tests/runner.py#L113-L117
           CIBUILDWHEEL: 1
