@@ -20,7 +20,7 @@ import psutil
 import yaml
 from custom_inherit import DocInheritMeta
 
-from .packages.conda import Package
+from .packages.conda import Package as CondaPackage
 from .util import append_env, append_path, check_dir, check_file, prepend_path
 
 if TYPE_CHECKING:
@@ -311,12 +311,11 @@ class InstallEnvironment(metaclass=DocInheritMeta(style="google_with_merge")):  
 
     def run_all(self) -> None:
         """Run all steps to install/update the environment."""
-        # TODO: don't write dict if read from file
         self.write_dict()
 
         # install conda
         if not self.skip_conda:
-            package = Package(self, update=self.update, fast_update=self.fast_update)
+            package = CondaPackage(self, update=self.update, fast_update=self.fast_update)
             package.run_all()
 
         for dep, ver in self.dependencies_versioned.items():
