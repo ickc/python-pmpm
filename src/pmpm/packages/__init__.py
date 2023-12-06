@@ -80,7 +80,7 @@ class GenericPackage(metaclass=DocInheritMeta(style="google_with_merge")):  # ty
         :param kwargs: passes to subprocess.run
         """
         logger.info("Running the following command with conda activated:")
-        cmd = [str(self.env.mamba_bin), "run", "--prefix", self.env.prefix]
+        cmd = [str(self.env.mamba_bin), "run", "--prefix", str(self.env.prefix)]
         if isinstance(command, str):
             cmd.append(command)
         else:
