@@ -16,7 +16,7 @@ dependencies:
   - ephem
   - flake8
   - flatbuffers
-  - h5py=*=mpi*
+  - h5py
   - influxdb
   - ipykernel
   - lapack
