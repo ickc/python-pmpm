@@ -15,6 +15,7 @@ if TYPE_CHECKING:
 
 @dataclass
 class Package(GenericPackage):
+    install_ipykernel: bool = True
     package_name: ClassVar[str] = "conda"
 
     @property
@@ -58,7 +59,8 @@ class Package(GenericPackage):
 
     def install_env(self) -> None:
         self._install_conda()
-        self._install_ipykernel()
+        if self.install_ipykernel:
+            self._install_ipykernel()
 
     def update_env(self) -> None:
         logger.info("Updating conda environment")

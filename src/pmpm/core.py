@@ -48,6 +48,7 @@ class InstallEnvironment(metaclass=DocInheritMeta(style="google_with_merge")):  
         skip_test: skip test if specified.
         skip_conda: skip installing/updating conda.
         fast_update: assume minimal change to source of compiled package and perform fast update.
+        install_ipykernel: install this environment as an ipykernel.
         nomkl: if nomkl is used in conda packages, nomkl should be True for non-Intel CPUs.
         update: if updating all packages. If neither --update nor --no-update is provided, determine automatically.
         arch: -march for compilation, for example, native or x86-64-v3
@@ -68,6 +69,7 @@ class InstallEnvironment(metaclass=DocInheritMeta(style="google_with_merge")):  
     skip_test: bool = False
     skip_conda: bool = False
     fast_update: bool = False
+    install_ipykernel: bool = True
     nomkl: bool = False
     update: Optional[bool] = None
     # see doc for march: https://gcc.gnu.org/onlinedocs/gcc/x86-Options.html
@@ -315,7 +317,12 @@ class InstallEnvironment(metaclass=DocInheritMeta(style="google_with_merge")):  
 
         # install conda
         if not self.skip_conda:
-            package = CondaPackage(self, update=self.update, fast_update=self.fast_update)
+            package = CondaPackage(
+                self,
+                install_ipykernel=self.install_ipykernel,
+                update=self.update,
+                fast_update=self.fast_update,
+            )
             package.run_all()
 
         for dep, ver in self.dependencies_versioned.items():

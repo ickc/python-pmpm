@@ -15,6 +15,7 @@ jobs:
         include:
           - os: "windows-2022"
             python-version: "3.8"
+            extra-args: --no-install-ipykernel
           - os: "macos-11"
             python-version: "3.9"
           - os: "macos-12"
@@ -51,7 +52,7 @@ jobs:
             --conda mamba \
             --skip-test \
             --arch x86-64-v2 \
-            --tune generic
+            --tune generic ${{ matrix.extra-args }}
         env:
           # c.f. https://github.com/hpc4cmb/toast/blob/eb1e65097f99ecac63d8976f7131764a43a7ff07/src/toast/tests/runner.py#L113-L117
           CIBUILDWHEEL: 1

@@ -11,10 +11,10 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        os:
-          - "ubuntu"
-          # - "macos"
-          - "windows"
+        include:
+          - os: "windows"
+            extra-args: --no-install-ipykernel
+          - os: "ubuntu"
     defaults:
       run:
         shell: bash -l {0}
@@ -40,7 +40,7 @@ jobs:
       - name: Install pmpm
         run: pip install .
       - name: test
-        run: pmpm conda_install "$HOME/pmpm-test" --file $ENV_FILE
+        run: pmpm conda_install "$HOME/pmpm-test" --file $ENV_FILE ${{ matrix.extra-args }}
         env:
           # c.f. https://github.com/hpc4cmb/toast/blob/eb1e65097f99ecac63d8976f7131764a43a7ff07/src/toast/tests/runner.py#L113-L117
           CIBUILDWHEEL: 1
