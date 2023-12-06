@@ -259,11 +259,6 @@ class InstallEnvironment(metaclass=DocInheritMeta(style="google_with_merge")):  
             return self.conda_bin
 
     @cached_property
-    def python_bin(self) -> Path:
-        """Path to the python binary in the current environment."""
-        return self.conda_prefix / "bin" / "python"
-
-    @cached_property
     def conda_prefix(self) -> Path:
         """Path to the prefix for conda."""
         path = self.prefix / self.conda_prefix_name

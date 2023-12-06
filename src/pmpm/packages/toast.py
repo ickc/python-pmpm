@@ -122,7 +122,7 @@ class Package(GenericPackage):
         else:
             env = self.env.environ_with_all_paths
         cmd = [
-            str(self.env.python_bin),
+            "python",
             "-c",
             "from toast.tests import run; run()",
         ]

@@ -96,7 +96,7 @@ class Package(GenericPackage):
     def _python_install(self) -> None:
         logger.info("Running Python install")
         cmd = [
-            str(self.env.python_bin),
+            "python",
             "setup.py",
             "install",
         ]
@@ -109,7 +109,7 @@ class Package(GenericPackage):
     def _test(self) -> None:
         logger.info("Running test")
         cmd = [
-            str(self.env.python_bin),
+            "python",
             "setup.py",
             "test",
         ]

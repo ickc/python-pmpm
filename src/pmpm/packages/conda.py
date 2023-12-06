@@ -40,7 +40,7 @@ class Package(GenericPackage):
     def _install_ipykernel(self) -> None:
         logger.info("Registering ipykernel")
         cmd = [
-            str(self.env.python_bin),
+            "python",
             "-m",
             "ipykernel",
             "install",
