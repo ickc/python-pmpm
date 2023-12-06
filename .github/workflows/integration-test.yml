@@ -15,6 +15,7 @@ jobs:
           - os: "windows"
             extra-args: --no-install-ipykernel
           - os: "ubuntu"
+          - os: "macos"
     defaults:
       run:
         shell: bash -l {0}
@@ -28,6 +29,8 @@ jobs:
             ENV_FILE=examples/linux.yml
           elif [[ "${{ matrix.os }}" == "windows" ]]; then
             ENV_FILE=examples/windows.yml
+          elif [[ "${{ matrix.os }}" == "macos" ]]; then
+            ENV_FILE=examples/macos.yml
           fi
           echo "ENV_FILE=$ENV_FILE" >> $GITHUB_ENV
       - uses: actions/checkout@v4
