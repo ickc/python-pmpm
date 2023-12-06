@@ -67,7 +67,6 @@ dependencies:
       - https://github.com/simonsobs/sotodlib/archive/master.tar.gz
       - ocs
       - posix_ipc
-      - so3g
       - socs
 _pmpm:
   dependencies:
