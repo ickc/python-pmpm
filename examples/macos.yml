@@ -7,6 +7,8 @@ dependencies:
   - automake
   - bandit
   - cfitsio
+  - clang_osx-64
+  - clangxx_osx-64
   - cmake
   - compilers
   - conda
@@ -18,6 +20,7 @@ dependencies:
   - fftw=*=mpi*
   - flake8
   - flatbuffers
+  - gfortran_osx-64
   - h5py=*=mpi*
   - healpy
   - influxdb

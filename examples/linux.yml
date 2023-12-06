@@ -18,6 +18,9 @@ dependencies:
   - fftw=*=mpi*
   - flake8
   - flatbuffers
+  - gcc_linux-64
+  - gfortran_linux-64
+  - gxx_linux-64
   - h5py=*=mpi*
   - healpy
   - influxdb
