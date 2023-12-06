@@ -38,7 +38,6 @@ dependencies:
   - pyfftw
   - pylint
   - pyserial
-  - pysm3
   - pysmi
   - pysnmp
   - pysqlite3
