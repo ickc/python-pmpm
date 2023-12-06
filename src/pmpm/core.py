@@ -349,12 +349,12 @@ class CondaOnlyEnvironment(InstallEnvironment):
     compile_prefix_name: str = ""
     environment_variable: ClassVar[Tuple[str, ...]] = (
         "CONDA_BUILD_SYSROOT",
-        "CONDA_PREFIX",
         "CONDA_EXE",
-        "SCRATCH",
-        "TERM",
+        "CONDA_PREFIX",
         "HOME",
+        "SCRATCH",
         "SYSTEMROOT",
+        "TERM",
         "USERPROFILE",
     )
     sanitized_path: ClassVar[Tuple[str, ...]] = ("/bin", "/usr/bin")  # needed for conda to find POSIX executables
