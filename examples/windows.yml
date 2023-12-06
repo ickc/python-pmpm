@@ -62,7 +62,6 @@ dependencies:
   - ujson
   - wurlitzer
   - pip:
-      - cbor2
       - ocs
       - posix_ipc
       - socs
