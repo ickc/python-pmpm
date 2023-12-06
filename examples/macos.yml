@@ -29,7 +29,7 @@ dependencies:
   - libaatm
   - libsharp=*=mpi*
   - libtool
-  - llvm-openmp
+  - defaults::intel-openmp
   - make
   - mamba
   - matplotlib
