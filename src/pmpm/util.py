@@ -11,21 +11,6 @@ if TYPE_CHECKING:
 
 logger = getLogger(__name__)
 
-bash: str = ""
-if platform.system() != "Windows":
-    bash = which("bash")  # type: ignore[assignment]
-    if bash is None:
-        raise RuntimeError("Cannot locate bash.")
-    logger.info("Using bash located at %s", bash)
-
-
-def combine_commands(*args: Union[str, List[str]]) -> str:
-    """Combine multiple commands into a single line of string for subprocess.
-
-    :param args: can be in string or list of string that subprocess.run accepts.
-    """
-    return " && ".join(cmd if isinstance(cmd, str) else subprocess.list2cmdline(cmd) for cmd in args)
-
 
 def run(
     command: Union[str, List[str]],
