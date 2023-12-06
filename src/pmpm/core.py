@@ -348,14 +348,27 @@ class CondaOnlyEnvironment(InstallEnvironment):
     conda_prefix_name: str = ""
     compile_prefix_name: str = ""
     environment_variable: ClassVar[Tuple[str, ...]] = (
-        "CONDA_BUILD_SYSROOT",
-        "CONDA_EXE",
-        "CONDA_PREFIX",
-        "HOME",
-        "SCRATCH",
-        "SYSTEMROOT",
-        "TERM",
-        "USERPROFILE",
+        "_CE_CONDA",  # conda
+        "_CE_M",  # conda
+        "CONDA_BUILD_SYSROOT",  # conda build for macOS
+        "CONDA_DEFAULT_ENV",  # conda
+        "CONDA_EXE",  # conda
+        "CONDA_PREFIX",  # conda
+        "CONDA_PROMPT_MODIFIER",  # conda
+        "CONDA_PYTHON_EXE",  # conda
+        "CONDA_SHLVL",  # conda
+        "CPL_ZIP_ENCODING",  # conda
+        "GDAL_DATA",  # conda
+        "GDAL_DRIVER_PATH",  # conda
+        "GSETTINGS_SCHEMA_DIR_CONDA_BACKUP",  # conda
+        "GSETTINGS_SCHEMA_DIR",  # conda
+        "HOME",  # UNIX
+        "PROJ_DATA",  # conda
+        "PROJ_NETWORK",  # conda
+        "SYSTEMROOT",  # Windows, usually points to C:\Windows
+        "TERM",  # UNIX
+        "USERPROFILE",  # Windows, usually points to C:\Users\USERNAME
+        "XML_CATALOG_FILES",  # conda
     )
     sanitized_path: ClassVar[Tuple[str, ...]] = ("/bin", "/usr/bin")  # needed for conda to find POSIX executables
 
