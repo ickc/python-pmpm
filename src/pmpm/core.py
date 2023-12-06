@@ -353,6 +353,7 @@ class CondaOnlyEnvironment(InstallEnvironment):
         "CONDA_BUILD_SYSROOT",  # conda build for macOS
         "CONDA_DEFAULT_ENV",  # conda
         "CONDA_EXE",  # conda
+        "CONDA_MKL_INTERFACE_LAYER_BACKUP",  # conda
         "CONDA_PREFIX",  # conda
         "CONDA_PROMPT_MODIFIER",  # conda
         "CONDA_PYTHON_EXE",  # conda
@@ -363,6 +364,7 @@ class CondaOnlyEnvironment(InstallEnvironment):
         "GSETTINGS_SCHEMA_DIR_CONDA_BACKUP",  # conda
         "GSETTINGS_SCHEMA_DIR",  # conda
         "HOME",  # UNIX
+        "MKL_INTERFACE_LAYER",  # conda
         "PROJ_DATA",  # conda
         "PROJ_NETWORK",  # conda
         "SYSTEMROOT",  # Windows, usually points to C:\Windows
