@@ -66,3 +66,19 @@ def run(
         check=True,
         **kwargs,
     )
+
+
+def split_conda_dep_from_pip(
+    dep: list[str] | list[str | dict[str, list[str]]],
+) -> tuple[list[str], list[str]]:
+    """Split conda and pip dependencies."""
+    conda_dependencies: list[str] = []
+    pip_dependencies: list[str] = []
+    for i in dep:
+        if isinstance(i, str):
+            conda_dependencies.append(i)
+        elif isinstance(i, dict) and len(i) == 1 and "pip" in i:
+            pip_dependencies = i["pip"]
+        else:
+            raise RuntimeError(f"Invalid dependency {i}")
+    return conda_dependencies, pip_dependencies

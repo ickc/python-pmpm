@@ -21,10 +21,14 @@ import yaml
 from custom_inherit import DocInheritMeta
 
 from .packages.conda import Package as CondaPackage
-from .util import append_env, append_path, check_dir, check_file, prepend_path
+from .util import append_env, append_path, check_dir, check_file, prepend_path, split_conda_dep_from_pip
 
 if TYPE_CHECKING:
-    from typing import Any, Dict, Union
+    from typing import Any, Dict
+
+    PMPM_YAML_SPEC = dict[
+        str, str | list[str] | list[str | dict[str, list[str]]] | dict[str, str | list[str] | bool | None]
+    ]
 
 logger = getLogger("pmpm")
 
@@ -38,6 +42,7 @@ class InstallEnvironment(metaclass=DocInheritMeta(style="google_with_merge")):  
         file: the YAML file of the environment definition.
         conda_channels: conda channels for packages to be searched in.
         conda_dependencies: dependencies install via conda.
+        pip_dependencies: dependencies install via pip.
         dependencies: dependencies install via pmpm.
         python_version: Python version to be installed.
         conda_prefix_name: the subdirectory within `prefix` for conda.
@@ -59,6 +64,7 @@ class InstallEnvironment(metaclass=DocInheritMeta(style="google_with_merge")):  
     file: Optional[Path] = None
     conda_channels: List[str] = field(default_factory=list)
     conda_dependencies: List[str] = field(default_factory=list)
+    pip_dependencies: List[str] = field(default_factory=list)
     dependencies: List[str] = field(default_factory=list)
     python_version: str = "3.10"
     conda_prefix_name: str = "conda"
@@ -90,7 +96,9 @@ class InstallEnvironment(metaclass=DocInheritMeta(style="google_with_merge")):  
             if "channels" in data:
                 self.conda_channels = data["channels"]
             if "dependencies" in data:
-                self.conda_dependencies = data["dependencies"]
+                self.conda_dependencies, pip_dependencies = split_conda_dep_from_pip(data["dependencies"])
+                if pip_dependencies:
+                    self.pip_dependencies = pip_dependencies
             if "prefix" in data:
                 self.prefix = Path(data["prefix"])
             if "_pmpm" in data:
@@ -150,12 +158,19 @@ class InstallEnvironment(metaclass=DocInheritMeta(style="google_with_merge")):  
         return res
 
     @property
-    def to_dict(self) -> Dict[str, Union[str, List[str], Dict[str, Any]]]:
+    def to_dict(
+        self,
+    ) -> PMPM_YAML_SPEC:
         """Return a dictionary representation of the environment."""
+        conda_dependencies: list[str] | list[str | dict[str, list[str]]] = (
+            self.conda_dependencies + [{"pip": self.pip_dependencies}]
+            if self.pip_dependencies
+            else self.conda_dependencies
+        )
         return {
             "name": self.name,
             "channels": self.conda_channels,
-            "dependencies": self.conda_dependencies,
+            "dependencies": conda_dependencies,
             "prefix": str(self.prefix),
             "_pmpm": {
                 "dependencies": self.dependencies,
@@ -188,13 +203,15 @@ class InstallEnvironment(metaclass=DocInheritMeta(style="google_with_merge")):  
             )
 
     @classmethod
-    def from_dict(cls, data: Dict[str, Union[str, List[str], Dict[str, Any]]]) -> InstallEnvironment:
+    def from_dict(cls, data: PMPM_YAML_SPEC) -> InstallEnvironment:
         """Construct an environment from a dictionary."""
         pmpm: Dict[str, Any] = data["_pmpm"]  # type: ignore[assignment]
+        conda_dependencies, pip_dependencies = split_conda_dep_from_pip(data["dependencies"])  # type: ignore[arg-type]
         return cls(
             Path(data["prefix"]),  # type: ignore[arg-type]
             conda_channels=data["channels"],  # type: ignore[arg-type]
-            conda_dependencies=data["dependencies"],  # type: ignore[arg-type]
+            conda_dependencies=conda_dependencies,
+            pip_dependencies=pip_dependencies,
             dependencies=pmpm["dependencies"],
             python_version=str(pmpm["python_version"]),
             conda_prefix_name=pmpm["conda_prefix_name"],
