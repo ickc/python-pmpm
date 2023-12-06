@@ -13,7 +13,6 @@ from functools import cached_property
 from importlib import import_module
 from logging import getLogger
 from pathlib import Path
-from subprocess import list2cmdline
 from typing import TYPE_CHECKING, ClassVar, Iterable, List, Optional, Tuple
 
 import defopt
