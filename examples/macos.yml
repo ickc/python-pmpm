@@ -73,6 +73,7 @@ dependencies:
   - typer
   - ujson
   - wurlitzer
+  - llvm-openmp
 _pmpm:
   dependencies:
     - libmadam
