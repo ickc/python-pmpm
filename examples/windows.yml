@@ -61,10 +61,6 @@ dependencies:
   - typer
   - ujson
   - wurlitzer
-  - pip:
-      - ocs
-      - posix_ipc
-      - socs
 _pmpm:
   dependencies:
     - toast=toast3
