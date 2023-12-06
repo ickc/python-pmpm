@@ -81,6 +81,8 @@ class Package(GenericPackage):
             f"-DSUITESPARSE_LIBRARY_DIR_HINTS={prefix}/lib",
             "..",
         ]
+        if self.env.is_darwin:
+            cmd.append(f"-DCMAKE_OSX_SYSROOT={self.env.environ['CONDA_BUILD_SYSROOT']}")
         run(
             cmd,
             env=self.env.environ_with_compile_path,

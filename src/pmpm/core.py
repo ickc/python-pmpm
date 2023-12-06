@@ -348,6 +348,7 @@ class CondaOnlyEnvironment(InstallEnvironment):
     conda_prefix_name: str = ""
     compile_prefix_name: str = ""
     environment_variable: ClassVar[Tuple[str, ...]] = (
+        "CONDA_BUILD_SYSROOT",
         "CONDA_PREFIX",
         "CONDA_EXE",
         "SCRATCH",
