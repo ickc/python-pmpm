@@ -28,43 +28,18 @@ def combine_commands(*args: Union[str, List[str]]) -> str:
 
 
 def run(
-    *commands: Union[str, List[str]],
+    command: Union[str, List[str]],
     **kwargs,
 ) -> None:
-    """Run commands with side effects between them.
+    """Run command while logging what is running.
 
-    :param commands: can be in string or list of string that subprocess.run accepts.
+    :param command: can be in string or list of string that subprocess.run accepts.
     :param kwargs: passes to subprocess.run
     """
-    n = len(commands)
-    if n == 1:
-        command = commands[0]
-        cmd_str = subprocess.list2cmdline(command)
-        logger.info("Running %s", cmd_str)
-        subprocess.run(
-            command,
-            check=True,
-            **kwargs,
-        )
-    elif n > 1:
-        cmd_str = combine_commands(*commands)
-        logger.info("Running %s", cmd_str)
-        if bash:
-            subprocess.run(
-                cmd_str,
-                check=True,
-                shell=True,
-                text=True,
-                executable=bash,
-                **kwargs,
-            )
-        else:
-            subprocess.run(
-                cmd_str,
-                check=True,
-                shell=True,
-                text=True,
-                **kwargs,
-            )
-    else:
-        raise ValueError("No commands given.")
+    cmd_str = subprocess.list2cmdline(command)
+    logger.info("Running %s", cmd_str)
+    subprocess.run(
+        command,
+        check=True,
+        **kwargs,
+    )

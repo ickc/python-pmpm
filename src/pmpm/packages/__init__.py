@@ -72,7 +72,7 @@ class GenericPackage(metaclass=DocInheritMeta(style="google_with_merge")):  # ty
 
     def run_conda_activated(
         self,
-        *commands: Union[str, List[str]],
+        command: Union[str, List[str]],
         **kwargs,
     ) -> None:
         """Run commands with conda activated.
@@ -80,7 +80,12 @@ class GenericPackage(metaclass=DocInheritMeta(style="google_with_merge")):  # ty
         :param kwargs: passes to subprocess.run
         """
         logger.info("Running the following command with conda activated:")
-        run(self.activate_cmd_str, *commands, **kwargs)
+        cmd = [str(self.env.mamba_bin), "run", "--prefix", self.env.prefix]
+        if isinstance(command, str):
+            cmd.append(command)
+        else:
+            cmd += list(command)
+        run(cmd, **kwargs)
 
     def run_all(self) -> None:
         if self.update:
