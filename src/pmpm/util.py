@@ -1,15 +1,53 @@
 from __future__ import annotations
 
-import platform
+import os
 import subprocess
 from logging import getLogger
-from shutil import which
-from typing import TYPE_CHECKING
+from pathlib import Path
+from typing import TYPE_CHECKING, List
 
 if TYPE_CHECKING:
-    from typing import List, Union
+    from typing import Dict, List, Union
 
 logger = getLogger(__name__)
+
+
+def prepend_path(environ: Dict[str, str], path: str) -> None:
+    """Prepend to PATH in environment dictionary in-place."""
+    if "PATH" in environ:
+        environ["PATH"] = path + os.pathsep + environ["PATH"]
+    else:
+        environ["PATH"] = path
+
+
+def append_path(environ: Dict[str, str], path: str) -> None:
+    """Append to PATH in environment dictionary in-place."""
+    if "PATH" in environ:
+        environ["PATH"] += os.pathsep + path
+    else:
+        environ["PATH"] = path
+
+
+def append_env(dependencies: List[str], package: str) -> None:
+    """Append a package to conda environment definition."""
+    if package not in dependencies:
+        dependencies.append(package)
+
+
+def check_file(path: Path, msg: str) -> None:
+    """Check if a file exists."""
+    if path.is_file():
+        logger.info(msg, path)
+    else:
+        raise RuntimeError(f"{path} not found.")
+
+
+def check_dir(path: Path, msg: str) -> None:
+    """Check if a directory exists."""
+    if path.is_dir():
+        logger.info(msg, path)
+    else:
+        raise RuntimeError(f"{path} not found.")
 
 
 def run(
