@@ -26,6 +26,7 @@ dependencies:
   - libaatm
   - libsharp=*=mpi*
   - libtool
+  - llvm-openmp
   - make
   - mamba
   - matplotlib
@@ -52,8 +53,8 @@ dependencies:
   - pysmi
   - pysnmp
   - pysqlite3
-  - pytest-cov
   - pytest
+  - pytest-cov
   - python-dateutil
   - pytz
   - pyyaml
@@ -63,8 +64,8 @@ dependencies:
   - setproctitle
   - setuptools
   - skyfield
-  - sphinx_rtd_theme
   - sphinx
+  - sphinx_rtd_theme
   - sqlalchemy
   - suitesparse
   - toml
@@ -73,7 +74,6 @@ dependencies:
   - typer
   - ujson
   - wurlitzer
-  - llvm-openmp
 _pmpm:
   dependencies:
     - libmadam
