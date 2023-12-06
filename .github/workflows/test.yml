@@ -47,7 +47,7 @@ jobs:
             "$HOME/pmpm-test" \
             --conda-channels conda-forge \
             --conda-dependencies ipykernel \
-            --pip-dependencies six \
+            --pip-dependencies requests \
             --dependencies \
             --python-version ${{ matrix.python-version }} \
             --conda mamba \
