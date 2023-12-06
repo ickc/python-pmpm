@@ -85,7 +85,7 @@ class GenericPackage(metaclass=DocInheritMeta(style="google_with_merge")):  # ty
             cmd.append(command)
         else:
             cmd += list(command)
-        run(cmd, **kwargs)
+        run(cmd, **kwargs)  # type: ignore[arg-type]
 
     def run_all(self) -> None:
         if self.update:
