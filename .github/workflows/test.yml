@@ -24,6 +24,7 @@ jobs:
             python-version: "3.11"
           - os: "ubuntu-22.04"
             python-version: "3.12"
+            extra-args: --pip-dependencies requests
     defaults:
       run:
         shell: bash -l {0}
@@ -47,7 +48,6 @@ jobs:
             "$HOME/pmpm-test" \
             --conda-channels conda-forge \
             --conda-dependencies ipykernel \
-            --pip-dependencies requests \
             --dependencies \
             --python-version ${{ matrix.python-version }} \
             --conda mamba \
