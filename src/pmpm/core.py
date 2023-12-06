@@ -368,7 +368,6 @@ class CondaOnlyEnvironment(InstallEnvironment):
     environment_variable: ClassVar[Tuple[str, ...]] = (
         "_CE_CONDA",  # conda
         "_CE_M",  # conda
-        "CONDA_BUILD_SYSROOT",  # conda build for macOS
         "CONDA_DEFAULT_ENV",  # conda
         "CONDA_EXE",  # conda
         "CONDA_MKL_INTERFACE_LAYER_BACKUP",  # conda
