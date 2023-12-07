@@ -28,6 +28,7 @@ dependencies:
 - lapack
 - libaatm
 - libblas=*=*openblas
+- libgomp
 - liblapack=*=*openblas
 - libsharp=*=mpi_openmpi_*
 - libtool

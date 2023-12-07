@@ -28,6 +28,7 @@ dependencies:
 - lapack
 - libaatm
 - libblas=*=*mkl
+- libgomp
 - liblapack=*=*mkl
 - libsharp=*=nompi_*
 - libtool

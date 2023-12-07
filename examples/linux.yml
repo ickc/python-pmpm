@@ -25,6 +25,7 @@ dependencies:
 - ipykernel
 - lapack
 - libaatm
+- libgomp
 - libtool
 - make
 - mamba
