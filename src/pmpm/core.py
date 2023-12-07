@@ -318,7 +318,6 @@ class InstallEnvironment(metaclass=DocInheritMeta(style="google_with_merge")):  
     def environ_with_conda_path(self) -> Dict[str, str]:
         """Return a dictionary of environment variables with conda prefix prepended to PATH."""
         env = self.environ.copy()
-        prepend_path(env, str(self.conda_root_prefix / "condabin"))
         prepend_path(env, str(self.conda_prefix / "bin"))
         return env
 
