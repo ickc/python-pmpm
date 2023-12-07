@@ -1,4 +1,4 @@
-name: Integration test (small)
+name: Integration—cli
 
 on:
   pull_request:
@@ -28,7 +28,7 @@ jobs:
     defaults:
       run:
         shell: bash -l {0}
-    name: conda_install on ${{ matrix.os }}
+    name: ${{ matrix.os }}-py${{ matrix.python-version }}${{ matrix.extra-args }}
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4

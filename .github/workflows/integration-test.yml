@@ -1,4 +1,4 @@
-name: Integration test
+name: Integration—examples
 
 on:
   pull_request:
@@ -24,7 +24,7 @@ jobs:
     defaults:
       run:
         shell: bash -l {0}
-    name: conda_install on ${{ matrix.os }} with ${{ matrix.mkl }}
+    name: ${{ matrix.os }}-${{ matrix.mkl }}${{ matrix.extra-args }}
     runs-on: ${{ matrix.os }}-latest
     steps:
       # set ENV_FILE to the path of the environment file according to the OS
