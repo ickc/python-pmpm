@@ -44,9 +44,6 @@ class Package(GenericPackage):
 
     def _configure(self) -> None:
         env = self.env.environ_with_compile_path.copy()
-        env["MPIFC"] = "mpifort"
-        env["FC"] = "mpifort"
-
         inc = self.env.compile_prefix / "include"
         lib = self.env.compile_prefix / "lib"
         temp = f'-O3 -fPIC -pthread -march={self.arch} -mtune={self.tune} -I"{inc}" -L"{lib}"'
