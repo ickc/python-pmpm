@@ -13,9 +13,6 @@ jobs:
       # https://docs.github.com/en/actions/using-github-hosted-runners/about-github-hosted-runners/about-github-hosted-runners#supported-runners-and-hardware-resources
       matrix:
         include:
-          - os: "windows-2022"
-            python-version: "3.8"
-            extra-args: --no-install-ipykernel
           - os: "macos-11"
             python-version: "3.9"
           - os: "macos-12"
@@ -25,6 +22,9 @@ jobs:
           - os: "ubuntu-22.04"
             python-version: "3.12"
             extra-args: --pip-dependencies requests
+          - os: "windows-2022"
+            python-version: "3.12"
+            extra-args: --no-install-ipykernel
     defaults:
       run:
         shell: bash -l {0}
