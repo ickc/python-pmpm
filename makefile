@@ -21,8 +21,10 @@ html: dist/docs/
 env_variant_generator:
 	for os in windows linux macos; do \
 		for mpi in nompi openmpi mpich; do \
-			$(_python) -m pmpm.env_variant_generator examples/$$os.yml --mpi $$mpi --mkl -o examples/$$os-mkl-$$mpi.yml; \
-			$(_python) -m pmpm.env_variant_generator examples/$$os.yml --mpi $$mpi --no-mkl -o examples/$$os-nomkl-$$mpi.yml; \
+			if [[ ! ( $$os == windows && $$mpi == openmpi ) ]]; then \
+				$(_python) -m pmpm.env_variant_generator examples/$$os.yml --mpi $$mpi --mkl -o examples/$$os-mkl-$$mpi.yml; \
+				$(_python) -m pmpm.env_variant_generator examples/$$os.yml --mpi $$mpi --no-mkl -o examples/$$os-nomkl-$$mpi.yml; \
+			fi \
 		done \
 	done
 
@@ -37,7 +39,7 @@ test-mpi:
 		tests
 
 clean:
-	rm -f $(RSTs)
+	rm -f $(RSTs) examples/linux-*.yml examples/macos-*.yml examples/windows-*.yml
 
 # docs #########################################################################
 
