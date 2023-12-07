@@ -7,6 +7,8 @@ dependencies:
 - automake
 - bandit
 - cfitsio
+- clang_osx-64
+- clangxx_osx-64
 - cmake
 - compilers
 - conda
@@ -18,24 +20,20 @@ dependencies:
 - fftw=*=mpi*
 - flake8
 - flatbuffers
-- gcc_linux-64
-- gfortran_linux-64
-- gxx_linux-64
+- gfortran_osx-64
 - h5py=*=mpi*
 - healpy
 - influxdb
 - ipykernel
 - lapack
 - libaatm
-- libblas=*=*mkl
-- liblapack=*=*mkl
 - libsharp=*=mpi*
 - libtool
+- llvm-openmp
 - make
 - mamba
 - matplotlib
 - micromamba
-- mkl
 - mpi4py
 - mpich-mpicc
 - mpich-mpicxx
@@ -81,6 +79,7 @@ dependencies:
 - wurlitzer
 - pip:
   - cbor2
+  # TODO: choose your own version here, can be a branch like master, or a version like v0.4.0
   - https://github.com/simonsobs/sotodlib/archive/master.tar.gz
   - ocs
   - pixell

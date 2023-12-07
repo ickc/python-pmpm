@@ -98,6 +98,7 @@ mpi = [
 
 [tool.poetry.scripts]
 pmpm = 'pmpm.core:cli'
+pmpm_env_variant_generator = 'pmpm.env_variant_generator:cli'
 
 [tool.coverage.paths]
 source = [

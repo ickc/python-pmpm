@@ -27,15 +27,12 @@ dependencies:
 - ipykernel
 - lapack
 - libaatm
-- libblas=*=*mkl
-- liblapack=*=*mkl
 - libsharp=*=mpi*
 - libtool
 - make
 - mamba
 - matplotlib
 - micromamba
-- mkl
 - mpi4py
 - mpich-mpicc
 - mpich-mpicxx
@@ -81,6 +78,7 @@ dependencies:
 - wurlitzer
 - pip:
   - cbor2
+  # TODO: choose your own version here, can be a branch like master, or a version like v0.4.0
   - https://github.com/simonsobs/sotodlib/archive/master.tar.gz
   - ocs
   - pixell

@@ -4,7 +4,6 @@ channels:
 dependencies:
 - astropy
 - autobahn
-- automake
 - bandit
 - cfitsio
 - cmake
@@ -15,33 +14,18 @@ dependencies:
 - cython
 - deprecation
 - ephem
-- fftw=*=mpi*
 - flake8
 - flatbuffers
-- gcc_linux-64
-- gfortran_linux-64
-- gxx_linux-64
-- h5py=*=mpi*
-- healpy
+- h5py
 - influxdb
 - ipykernel
 - lapack
-- libaatm
-- libblas=*=*mkl
-- liblapack=*=*mkl
-- libsharp=*=mpi*
-- libtool
 - make
 - mamba
-- matplotlib
+- matplotlib-base
 - micromamba
-- mkl
 - mpi4py
-- mpich-mpicc
-- mpich-mpicxx
-- mpich-mpifort
 - mypy
-- namaster
 - nbformat
 - numba
 - numpy
@@ -54,7 +38,6 @@ dependencies:
 - pyfftw
 - pylint
 - pyserial
-- pysm3
 - pysmi
 - pysnmp
 - pysqlite3
@@ -72,22 +55,12 @@ dependencies:
 - sphinx
 - sphinx_rtd_theme
 - sqlalchemy
-- suitesparse
 - toml
 - tqdm
 - twisted
 - typer
 - ujson
 - wurlitzer
-- pip:
-  - cbor2
-  - https://github.com/simonsobs/sotodlib/archive/master.tar.gz
-  - ocs
-  - pixell
-  - posix_ipc
-  - so3g
-  - socs
 _pmpm:
   dependencies:
-  - libmadam
   - toast=toast3

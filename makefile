@@ -13,11 +13,16 @@ RSTs = CHANGELOG.rst README.rst
 
 # Main Targets #################################################################
 
-.PHONY: test test-mpi docs clean
+.PHONY: test test-mpi docs clean env_variant_generator
 
 docs: $(RSTs)
 	$(MAKE) html
 html: dist/docs/
+env_variant_generator:
+	for os in windows linux macos; do \
+		$(_python) -m pmpm.env_variant_generator examples/$$os.yml --mkl -o examples/$$os-mkl.yml; \
+		$(_python) -m pmpm.env_variant_generator examples/$$os.yml --no-mkl -o examples/$$os-nomkl.yml; \
+	done
 
 test:
 	$(_python) -m pytest -vv $(PYTESTPARALLEL) \

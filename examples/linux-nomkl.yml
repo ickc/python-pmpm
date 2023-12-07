@@ -1,95 +1,93 @@
 channels:
-  - conda-forge
-  - nodefaults
+- conda-forge
+- nodefaults
 dependencies:
-  - astropy
-  - autobahn
-  - automake
-  - bandit
-  - cfitsio
-  - cmake
-  - cmake
-  - compilers
-  - conda
-  - configobj
-  - coveralls
-  - cython
-  - deprecation
-  - ephem
-  - fftw=*=mpi*
-  - flake8
-  - flatbuffers
-  - gcc_linux-64
-  - gfortran_linux-64
-  - gxx_linux-64
-  - h5py=*=mpi*
-  - healpy
-  - influxdb
-  - ipykernel
-  - lapack
-  - libaatm
-  - libblas=*=*openblas
-  - liblapack=*=*openblas
-  - libsharp=*=mpi*
-  - libtool
-  - make
-  - mamba
-  - matplotlib
-  - micromamba
-  - mpi4py
-  - mpich-mpicc
-  - mpich-mpicxx
-  - mpich-mpifort
-  - mypy
-  - namaster
-  - nbformat
-  - nomkl
-  - numba
-  - numpy
-  - pillow
-  - plotly
-  - pshmem
-  - py-ubjson
-  - pyaml
-  - pydocstyle
-  - pyfftw
-  - pylint
-  - pyserial
-  - pysm3
-  - pysmi
-  - pysnmp
-  - pysqlite3
-  - pytest
-  - pytest-cov
-  - python-dateutil
-  - pytz
-  - pyyaml
-  - quaternionarray
-  - scikit-image
-  - scipy
-  - setproctitle
-  - setuptools
-  - skyfield
-  - sphinx
-  - sphinx_rtd_theme
-  - sqlalchemy
-  - suitesparse
-  - toml
-  - tqdm
-  - twisted
-  - typer
-  - ujson
-  - wurlitzer
-  - pip:
-      - cbor2
-      # TODO: choose your own version here, can be a branch like master, or a version like v0.4.0
-      - https://github.com/simonsobs/sotodlib/archive/master.tar.gz
-      - ocs
-      - pixell
-      - posix_ipc
-      - so3g
-      - socs
+- astropy
+- autobahn
+- automake
+- bandit
+- cfitsio
+- cmake
+- compilers
+- conda
+- configobj
+- coveralls
+- cython
+- deprecation
+- ephem
+- fftw=*=mpi*
+- flake8
+- flatbuffers
+- gcc_linux-64
+- gfortran_linux-64
+- gxx_linux-64
+- h5py=*=mpi*
+- healpy
+- influxdb
+- ipykernel
+- lapack
+- libaatm
+- libblas=*=*openblas
+- liblapack=*=*openblas
+- libsharp=*=mpi*
+- libtool
+- make
+- mamba
+- matplotlib
+- micromamba
+- mpi4py
+- mpich-mpicc
+- mpich-mpicxx
+- mpich-mpifort
+- mypy
+- namaster
+- nbformat
+- nomkl
+- numba
+- numpy
+- pillow
+- plotly
+- pshmem
+- py-ubjson
+- pyaml
+- pydocstyle
+- pyfftw
+- pylint
+- pyserial
+- pysm3
+- pysmi
+- pysnmp
+- pysqlite3
+- pytest
+- pytest-cov
+- python-dateutil
+- pytz
+- pyyaml
+- quaternionarray
+- scikit-image
+- scipy
+- setproctitle
+- setuptools
+- skyfield
+- sphinx
+- sphinx_rtd_theme
+- sqlalchemy
+- suitesparse
+- toml
+- tqdm
+- twisted
+- typer
+- ujson
+- wurlitzer
+- pip:
+  - cbor2
+  - https://github.com/simonsobs/sotodlib/archive/master.tar.gz
+  - ocs
+  - pixell
+  - posix_ipc
+  - so3g
+  - socs
 _pmpm:
   dependencies:
-    - libmadam
-    - toast=toast3
+  - libmadam
+  - toast=toast3
