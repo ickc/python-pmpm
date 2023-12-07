@@ -38,6 +38,7 @@ def main(
     with path.open() as f:
         env = yaml.load(f, Loader=yamlloader.ordereddict.CSafeLoader)
     conda_dependencies, pip_dependencies = split_conda_dep_from_pip(env["dependencies"])
+    # mkl
     if mkl:
         conda_dependencies += [
             "mkl",
@@ -50,25 +51,18 @@ def main(
             "libblas=*=*openblas",
             "liblapack=*=*openblas",
         ]
-    if mpi == "nompi":
-        conda_dependencies += [
-            mpi,
-            f"fftw=*={mpi}*",
-            f"h5py=*={mpi}*",
-            f"libsharp=*={mpi}*",
-        ]
-    elif mpi in ("mpich", "openmpi"):
+    # mpi
+    conda_dependencies.append(mpi)
+    for pkg in ("fftw", "h5py", "libsharp"):
+        conda_dependencies.append(f"{pkg}=*=mpi_{mpi}_*")
+    if mpi in ("mpich", "openmpi"):
         conda_dependencies += [
             "mpi4py",
-            mpi,
-            f"fftw=*={mpi}*",
-            f"h5py=*={mpi}*",
-            f"libsharp=*={mpi}*",
             f"{mpi}-mpicc",
             f"{mpi}-mpicxx",
             f"{mpi}-mpifort",
         ]
-    else:
+    elif mpi != "nompi":
         raise ValueError(f"Unknown MPI: {mpi}")
     conda_dependencies.sort()
     env["dependencies"] = conda_dependencies + [{"pip": pip_dependencies}] if pip_dependencies else conda_dependencies

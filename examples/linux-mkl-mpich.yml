@@ -15,13 +15,13 @@ dependencies:
 - cython
 - deprecation
 - ephem
-- fftw=*=mpich*
+- fftw=*=mpi_mpich_*
 - flake8
 - flatbuffers
 - gcc_linux-64
 - gfortran_linux-64
 - gxx_linux-64
-- h5py=*=mpich*
+- h5py=*=mpi_mpich_*
 - healpy
 - influxdb
 - ipykernel
@@ -29,7 +29,7 @@ dependencies:
 - libaatm
 - libblas=*=*mkl
 - liblapack=*=*mkl
-- libsharp=*=mpich*
+- libsharp=*=mpi_mpich_*
 - libtool
 - make
 - mamba

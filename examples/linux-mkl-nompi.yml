@@ -15,13 +15,13 @@ dependencies:
 - cython
 - deprecation
 - ephem
-- fftw=*=nompi*
+- fftw=*=mpi_nompi_*
 - flake8
 - flatbuffers
 - gcc_linux-64
 - gfortran_linux-64
 - gxx_linux-64
-- h5py=*=nompi*
+- h5py=*=mpi_nompi_*
 - healpy
 - influxdb
 - ipykernel
@@ -29,7 +29,7 @@ dependencies:
 - libaatm
 - libblas=*=*mkl
 - liblapack=*=*mkl
-- libsharp=*=nompi*
+- libsharp=*=mpi_nompi_*
 - libtool
 - make
 - mamba

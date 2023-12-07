@@ -17,11 +17,11 @@ dependencies:
 - cython
 - deprecation
 - ephem
-- fftw=*=openmpi*
+- fftw=*=mpi_openmpi_*
 - flake8
 - flatbuffers
 - gfortran_osx-64
-- h5py=*=openmpi*
+- h5py=*=mpi_openmpi_*
 - healpy
 - influxdb
 - ipykernel
@@ -29,7 +29,7 @@ dependencies:
 - libaatm
 - libblas=*=*openblas
 - liblapack=*=*openblas
-- libsharp=*=openmpi*
+- libsharp=*=mpi_openmpi_*
 - libtool
 - llvm-openmp
 - make
