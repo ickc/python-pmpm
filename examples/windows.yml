@@ -24,7 +24,6 @@ dependencies:
 - mamba
 - matplotlib-base
 - micromamba
-- mpi4py
 - mypy
 - nbformat
 - numba

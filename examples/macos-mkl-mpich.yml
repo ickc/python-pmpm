@@ -17,11 +17,11 @@ dependencies:
 - cython
 - deprecation
 - ephem
-- fftw=*=mpi*
+- fftw=*=mpich*
 - flake8
 - flatbuffers
 - gfortran_osx-64
-- h5py=*=mpi*
+- h5py=*=mpich*
 - healpy
 - influxdb
 - ipykernel
@@ -29,7 +29,7 @@ dependencies:
 - libaatm
 - libblas=*=*mkl
 - liblapack=*=*mkl
-- libsharp=*=mpi*
+- libsharp=*=mpich*
 - libtool
 - llvm-openmp
 - make
@@ -38,6 +38,7 @@ dependencies:
 - micromamba
 - mkl
 - mpi4py
+- mpich
 - mpich-mpicc
 - mpich-mpicxx
 - mpich-mpifort

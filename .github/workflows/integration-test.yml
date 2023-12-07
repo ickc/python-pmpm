@@ -18,22 +18,26 @@ jobs:
         mkl:
           - mkl
           - nomkl
+        mpi:
+          - nompi
+          - openmpi
+          - mpich
         include:
           - os: "windows"
             extra-args: --no-install-ipykernel
     defaults:
       run:
         shell: bash -l {0}
-    name: ${{ matrix.os }}-${{ matrix.mkl }}${{ matrix.extra-args }}
+    name: ${{ matrix.os }}-${{ matrix.mkl }}-${{ matrix.mpi }}${{ matrix.extra-args }}
     runs-on: ${{ matrix.os }}-latest
     steps:
       # set ENV_FILE to the path of the environment file according to the OS
       - name: Set ENV_FILE
         run: |
           if [[ "${{ matrix.os }}" == "ubuntu" ]]; then
-            ENV_FILE=examples/linux-${{ matrix.mkl }}.yml
+            ENV_FILE=examples/linux-${{ matrix.mkl }}-${{ matrix.mpi }}.yml
           else
-            ENV_FILE=examples/${{ matrix.os }}-${{ matrix.mkl }}.yml
+            ENV_FILE=examples/${{ matrix.os }}-${{ matrix.mkl }}-${{ matrix.mpi }}.yml
           fi
           echo "ENV_FILE=$ENV_FILE" >> $GITHUB_ENV
       - uses: actions/checkout@v4

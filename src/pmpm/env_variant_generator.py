@@ -25,6 +25,7 @@ def main(
     *,
     output: Path,
     mkl: bool = False,
+    mpi: str = "nompi",
 ) -> None:
     """Generate the environment variants.
 
@@ -49,6 +50,26 @@ def main(
             "libblas=*=*openblas",
             "liblapack=*=*openblas",
         ]
+    if mpi == "nompi":
+        conda_dependencies += [
+            mpi,
+            f"fftw=*={mpi}*",
+            f"h5py=*={mpi}*",
+            f"libsharp=*={mpi}*",
+        ]
+    elif mpi in ("mpich", "openmpi"):
+        conda_dependencies += [
+            "mpi4py",
+            mpi,
+            f"fftw=*={mpi}*",
+            f"h5py=*={mpi}*",
+            f"libsharp=*={mpi}*",
+            f"{mpi}-mpicc",
+            f"{mpi}-mpicxx",
+            f"{mpi}-mpifort",
+        ]
+    else:
+        raise ValueError(f"Unknown MPI: {mpi}")
     conda_dependencies.sort()
     env["dependencies"] = conda_dependencies + [{"pip": pip_dependencies}] if pip_dependencies else conda_dependencies
     with output.open("w") as f:

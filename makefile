@@ -20,8 +20,10 @@ docs: $(RSTs)
 html: dist/docs/
 env_variant_generator:
 	for os in windows linux macos; do \
-		$(_python) -m pmpm.env_variant_generator examples/$$os.yml --mkl -o examples/$$os-mkl.yml; \
-		$(_python) -m pmpm.env_variant_generator examples/$$os.yml --no-mkl -o examples/$$os-nomkl.yml; \
+		for mpi in nompi openmpi mpich; do \
+			$(_python) -m pmpm.env_variant_generator examples/$$os.yml --mpi $$mpi --mkl -o examples/$$os-mkl-$$mpi.yml; \
+			$(_python) -m pmpm.env_variant_generator examples/$$os.yml --mpi $$mpi --no-mkl -o examples/$$os-nomkl-$$mpi.yml; \
+		done \
 	done
 
 test:

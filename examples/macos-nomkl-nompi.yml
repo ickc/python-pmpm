@@ -17,14 +17,19 @@ dependencies:
 - cython
 - deprecation
 - ephem
+- fftw=*=nompi*
 - flake8
 - flatbuffers
 - gfortran_osx-64
+- h5py=*=nompi*
 - healpy
 - influxdb
 - ipykernel
 - lapack
 - libaatm
+- libblas=*=*openblas
+- liblapack=*=*openblas
+- libsharp=*=nompi*
 - libtool
 - llvm-openmp
 - make
@@ -34,6 +39,8 @@ dependencies:
 - mypy
 - namaster
 - nbformat
+- nomkl
+- nompi
 - numba
 - numpy
 - pillow
@@ -72,7 +79,6 @@ dependencies:
 - wurlitzer
 - pip:
   - cbor2
-  # TODO: choose your own version here, can be a branch like master, or a version like v0.4.0
   - https://github.com/simonsobs/sotodlib/archive/master.tar.gz
   - ocs
   - pixell
