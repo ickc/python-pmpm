@@ -54,7 +54,6 @@ class InstallEnvironment(metaclass=DocInheritMeta(style="google_with_merge")):  
         skip_conda: skip installing/updating conda.
         fast_update: assume minimal change to source of compiled package and perform fast update.
         install_ipykernel: install this environment as an ipykernel.
-        nomkl: if nomkl is used in conda packages, nomkl should be True for non-Intel CPUs.
         update: if updating all packages. If neither --update nor --no-update is provided, determine automatically.
         arch: -march for compilation, for example, native or x86-64-v3
         tune: -mtune for compilation, for example, native or generic
@@ -76,7 +75,6 @@ class InstallEnvironment(metaclass=DocInheritMeta(style="google_with_merge")):  
     skip_conda: bool = False
     fast_update: bool = False
     install_ipykernel: bool = True
-    nomkl: bool = False
     update: Optional[bool] = None
     # see doc for march: https://gcc.gnu.org/onlinedocs/gcc/x86-Options.html
     # for example, native or x86-64-v3
@@ -123,8 +121,6 @@ class InstallEnvironment(metaclass=DocInheritMeta(style="google_with_merge")):  
                     self.skip_conda = pmpm["skip_conda"]
                 if "fast_update" in pmpm:
                     self.fast_update = pmpm["fast_update"]
-                if "nomkl" in pmpm:
-                    self.nomkl = pmpm["nomkl"]
                 if "update" in pmpm:
                     self.update = pmpm["update"]
                 if "arch" in pmpm:
@@ -135,8 +131,6 @@ class InstallEnvironment(metaclass=DocInheritMeta(style="google_with_merge")):  
             raise OSError(f"OS {self.system} not supported.")
 
         append_env(self.conda_dependencies, f"python={self.python_version}")
-        if self.nomkl:
-            append_env(self.conda_dependencies, "nomkl")
 
     @property
     def name(self) -> str:
@@ -183,7 +177,6 @@ class InstallEnvironment(metaclass=DocInheritMeta(style="google_with_merge")):  
                 "skip_test": self.skip_test,
                 "skip_conda": self.skip_conda,
                 "fast_update": self.fast_update,
-                "nomkl": self.nomkl,
                 "update": self.update,
                 "arch": self.arch,
                 "tune": self.tune,
@@ -222,7 +215,6 @@ class InstallEnvironment(metaclass=DocInheritMeta(style="google_with_merge")):  
             skip_test=pmpm["skip_test"],
             skip_conda=pmpm["skip_conda"],
             fast_update=pmpm["fast_update"],
-            nomkl=pmpm["nomkl"],
             update=pmpm["update"],
             arch=pmpm["arch"],
             tune=pmpm["tune"],
@@ -379,14 +371,6 @@ class CondaOnlyEnvironment(InstallEnvironment):
 
         if self.conda_prefix_name != self.compile_prefix_name:
             raise RuntimeError("For conda only environment, conda_prefix_name should equals to compile_prefix_name.")
-
-        append_env(self.conda_dependencies, "cmake")
-        if self.nomkl:
-            append_env(self.conda_dependencies, "libblas")
-            append_env(self.conda_dependencies, "liblapack")
-        else:
-            append_env(self.conda_dependencies, "libblas=*=*mkl")
-            append_env(self.conda_dependencies, "liblapack=*=*mkl")
 
     # @property
     # def sanitized_path(self) -> List[str]:

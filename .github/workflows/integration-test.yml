@@ -11,11 +11,16 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
+        os:
+          - "ubuntu"
+          - "windows"
+          - "macos"
+        mkl:
+          - mkl
+          - nomkl
         include:
           - os: "windows"
             extra-args: --no-install-ipykernel
-          - os: "ubuntu"
-          - os: "macos"
     defaults:
       run:
         shell: bash -l {0}
@@ -26,11 +31,9 @@ jobs:
       - name: Set ENV_FILE
         run: |
           if [[ "${{ matrix.os }}" == "ubuntu" ]]; then
-            ENV_FILE=examples/linux.yml
-          elif [[ "${{ matrix.os }}" == "windows" ]]; then
-            ENV_FILE=examples/windows.yml
-          elif [[ "${{ matrix.os }}" == "macos" ]]; then
-            ENV_FILE=examples/macos.yml
+            ENV_FILE=examples/linux-${{ matrix.mkl }}.yml
+          else
+            ENV_FILE=examples/${{ matrix.os }}-${{ matrix.mkl }}.yml
           fi
           echo "ENV_FILE=$ENV_FILE" >> $GITHUB_ENV
       - uses: actions/checkout@v4

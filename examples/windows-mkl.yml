@@ -7,6 +7,7 @@ dependencies:
   - bandit
   - cfitsio
   - cmake
+  - cmake
   - compilers
   - conda
   - configobj
@@ -20,10 +21,13 @@ dependencies:
   - influxdb
   - ipykernel
   - lapack
+  - libblas=*=*mkl
+  - liblapack=*=*mkl
   - make
   - mamba
   - matplotlib-base
   - micromamba
+  - mkl
   - mpi4py
   - mypy
   - nbformat
