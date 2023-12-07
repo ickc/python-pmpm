@@ -62,4 +62,4 @@ dependencies:
 - wurlitzer
 _pmpm:
   dependencies:
-  - toast=toast3
+  - toast
