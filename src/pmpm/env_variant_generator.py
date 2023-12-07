@@ -53,16 +53,20 @@ def main(
         ]
     # mpi
     conda_dependencies.append(mpi)
-    for pkg in ("fftw", "h5py", "libsharp"):
-        conda_dependencies.append(f"{pkg}=*=mpi_{mpi}_*")
+    pkgs = ("fftw", "h5py", "libsharp")
     if mpi in ("mpich", "openmpi"):
+        for pkg in pkgs:
+            conda_dependencies.append(f"{pkg}=*=mpi_{mpi}_*")
         conda_dependencies += [
             "mpi4py",
             f"{mpi}-mpicc",
             f"{mpi}-mpicxx",
             f"{mpi}-mpifort",
         ]
-    elif mpi != "nompi":
+    elif mpi == "nompi":
+        for pkg in pkgs:
+            conda_dependencies.append(f"{pkg}=*=nompi_*")
+    else:
         raise ValueError(f"Unknown MPI: {mpi}")
     conda_dependencies.sort()
     env["dependencies"] = conda_dependencies + [{"pip": pip_dependencies}] if pip_dependencies else conda_dependencies
