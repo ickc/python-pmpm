@@ -87,4 +87,4 @@ dependencies:
 _pmpm:
   dependencies:
   - libmadam
-  - toast=toast3
+  - toast
