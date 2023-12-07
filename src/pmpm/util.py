@@ -4,15 +4,11 @@ import os
 import subprocess
 from logging import getLogger
 from pathlib import Path
-from typing import TYPE_CHECKING, List
-
-if TYPE_CHECKING:
-    from typing import Dict, List, Union
 
 logger = getLogger(__name__)
 
 
-def prepend_path(environ: Dict[str, str], path: str) -> None:
+def prepend_path(environ: dict[str, str], path: str) -> None:
     """Prepend to PATH in environment dictionary in-place."""
     if "PATH" in environ:
         environ["PATH"] = path + os.pathsep + environ["PATH"]
@@ -20,7 +16,7 @@ def prepend_path(environ: Dict[str, str], path: str) -> None:
         environ["PATH"] = path
 
 
-def append_path(environ: Dict[str, str], path: str) -> None:
+def append_path(environ: dict[str, str], path: str) -> None:
     """Append to PATH in environment dictionary in-place."""
     if "PATH" in environ:
         environ["PATH"] += os.pathsep + path
@@ -28,7 +24,7 @@ def append_path(environ: Dict[str, str], path: str) -> None:
         environ["PATH"] = path
 
 
-def append_env(dependencies: List[str], package: str) -> None:
+def append_env(dependencies: list[str], package: str) -> None:
     """Append a package to conda environment definition."""
     if package not in dependencies:
         dependencies.append(package)
@@ -51,7 +47,7 @@ def check_dir(path: Path, msg: str) -> None:
 
 
 def run(
-    command: Union[str, List[str]],
+    command: str | list[str],
     **kwargs,
 ) -> None:
     """Run command while logging what is running.

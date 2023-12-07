@@ -10,7 +10,6 @@ from ..util import run
 
 if TYPE_CHECKING:
     from pathlib import Path
-    from typing import List, Optional, Union
 
     from ..core import InstallEnvironment
 
@@ -33,7 +32,7 @@ class GenericPackage(metaclass=DocInheritMeta(style="google_with_merge")):  # ty
     """
 
     env: InstallEnvironment
-    update: Optional[bool] = None
+    update: bool | None = None
     fast_update: bool = False
     package_name: ClassVar[str] = ""
     # see doc for march: https://gcc.gnu.org/onlinedocs/gcc/x86-Options.html
@@ -72,7 +71,7 @@ class GenericPackage(metaclass=DocInheritMeta(style="google_with_merge")):  # ty
 
     def run_conda_activated(
         self,
-        command: Union[str, List[str]],
+        command: str | list[str],
         **kwargs,
     ) -> None:
         """Run commands with conda activated.

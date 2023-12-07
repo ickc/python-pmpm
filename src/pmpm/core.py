@@ -13,7 +13,7 @@ from functools import cached_property
 from importlib import import_module
 from logging import getLogger
 from pathlib import Path
-from typing import TYPE_CHECKING, ClassVar, Iterable, List, Optional, Tuple
+from typing import TYPE_CHECKING, ClassVar
 
 import defopt
 import psutil
@@ -24,10 +24,13 @@ from .packages.conda import Package as CondaPackage
 from .util import append_env, append_path, check_dir, check_file, prepend_path, split_conda_dep_from_pip
 
 if TYPE_CHECKING:
-    from typing import Any, Dict
-
+    PMPM_DICT_SPEC = dict[
+        str,
+        list[str] | str | bool | None,
+    ]
     PMPM_YAML_SPEC = dict[
-        str, str | list[str] | list[str | dict[str, list[str]]] | dict[str, str | list[str] | bool | None]
+        str,
+        str | list[str] | list[str | dict[str, list[str]]] | PMPM_DICT_SPEC,
     ]
 
 logger = getLogger("pmpm")
@@ -60,11 +63,11 @@ class InstallEnvironment(metaclass=DocInheritMeta(style="google_with_merge")):  
     """
 
     prefix: Path
-    file: Optional[Path] = None
-    conda_channels: List[str] = field(default_factory=list)
-    conda_dependencies: List[str] = field(default_factory=list)
-    pip_dependencies: List[str] = field(default_factory=list)
-    dependencies: List[str] = field(default_factory=list)
+    file: Path | None = None
+    conda_channels: list[str] = field(default_factory=list)
+    conda_dependencies: list[str] = field(default_factory=list)
+    pip_dependencies: list[str] = field(default_factory=list)
+    dependencies: list[str] = field(default_factory=list)
     python_version: str = "3.10"
     conda_prefix_name: str = "conda"
     compile_prefix_name: str = "compile"
@@ -75,14 +78,14 @@ class InstallEnvironment(metaclass=DocInheritMeta(style="google_with_merge")):  
     skip_conda: bool = False
     fast_update: bool = False
     install_ipykernel: bool = True
-    update: Optional[bool] = None
+    update: bool | None = None
     # see doc for march: https://gcc.gnu.org/onlinedocs/gcc/x86-Options.html
     # for example, native or x86-64-v3
     arch: str = "x86-64-v3"
     # for example, native or generic
     tune: str = "generic"
     conda_environment_filename: ClassVar[str] = "environment.yml"
-    supported_systems: ClassVar[Iterable[str]] = ("Linux", "Darwin", "Windows")
+    supported_systems: ClassVar[tuple[str, ...]] = ("Linux", "Darwin", "Windows")
     system: ClassVar[str] = platform.system()
     cpu_count: ClassVar[int] = psutil.cpu_count(logical=False)
 
@@ -138,9 +141,9 @@ class InstallEnvironment(metaclass=DocInheritMeta(style="google_with_merge")):  
         return self.prefix.name
 
     @cached_property
-    def dependencies_versioned(self) -> dict[str, Optional[str]]:
+    def dependencies_versioned(self) -> dict[str, str | None]:
         """Return a dictionary of dependencies with version."""
-        res: dict[str, Optional[str]] = {}
+        res: dict[str, str | None] = {}
         for dep in self.dependencies:
             temp = dep.split("=")
             if len(temp) == 1:
@@ -198,26 +201,26 @@ class InstallEnvironment(metaclass=DocInheritMeta(style="google_with_merge")):  
     @classmethod
     def from_dict(cls, data: PMPM_YAML_SPEC) -> InstallEnvironment:
         """Construct an environment from a dictionary."""
-        pmpm: Dict[str, Any] = data["_pmpm"]  # type: ignore[assignment]
+        pmpm: dict[str, PMPM_DICT_SPEC] = data["_pmpm"]  # type: ignore[assignment]
         conda_dependencies, pip_dependencies = split_conda_dep_from_pip(data["dependencies"])  # type: ignore[arg-type]
         return cls(
             Path(data["prefix"]),  # type: ignore[arg-type]
             conda_channels=data["channels"],  # type: ignore[arg-type]
             conda_dependencies=conda_dependencies,
             pip_dependencies=pip_dependencies,
-            dependencies=pmpm["dependencies"],
+            dependencies=pmpm["dependencies"],  # type: ignore[arg-type]
             python_version=str(pmpm["python_version"]),
-            conda_prefix_name=pmpm["conda_prefix_name"],
-            compile_prefix_name=pmpm["compile_prefix_name"],
-            download_prefix_name=pmpm["download_prefix_name"],
-            conda=pmpm["conda"],
-            sub_platform=pmpm["sub_platform"],
-            skip_test=pmpm["skip_test"],
-            skip_conda=pmpm["skip_conda"],
-            fast_update=pmpm["fast_update"],
-            update=pmpm["update"],
-            arch=pmpm["arch"],
-            tune=pmpm["tune"],
+            conda_prefix_name=pmpm["conda_prefix_name"],  # type: ignore[arg-type]
+            compile_prefix_name=pmpm["compile_prefix_name"],  # type: ignore[arg-type]
+            download_prefix_name=pmpm["download_prefix_name"],  # type: ignore[arg-type]
+            conda=pmpm["conda"],  # type: ignore[arg-type]
+            sub_platform=pmpm["sub_platform"],  # type: ignore[arg-type]
+            skip_test=pmpm["skip_test"],  # type: ignore[arg-type]
+            skip_conda=pmpm["skip_conda"],  # type: ignore[arg-type]
+            fast_update=pmpm["fast_update"],  # type: ignore[arg-type]
+            update=pmpm["update"],  # type: ignore[arg-type]
+            arch=pmpm["arch"],  # type: ignore[arg-type]
+            tune=pmpm["tune"],  # type: ignore[arg-type]
         )
 
     @cached_property
@@ -291,7 +294,7 @@ class InstallEnvironment(metaclass=DocInheritMeta(style="google_with_merge")):  
         return path
 
     @cached_property
-    def environ(self) -> Dict[str, str]:
+    def environ(self) -> dict[str, str]:
         """Return a dictionary of environment variables."""
         _dict = dict(os.environ)
         # point CONDA_PREFIX to the root prefix
@@ -300,21 +303,21 @@ class InstallEnvironment(metaclass=DocInheritMeta(style="google_with_merge")):  
         return _dict
 
     @cached_property
-    def environ_with_compile_path(self) -> Dict[str, str]:
+    def environ_with_compile_path(self) -> dict[str, str]:
         """Return a dictionary of environment variables with compile prefix prepended to PATH."""
         env = self.environ.copy()
         prepend_path(env, str(self.compile_prefix / "bin"))
         return env
 
     @cached_property
-    def environ_with_conda_path(self) -> Dict[str, str]:
+    def environ_with_conda_path(self) -> dict[str, str]:
         """Return a dictionary of environment variables with conda prefix prepended to PATH."""
         env = self.environ.copy()
         prepend_path(env, str(self.conda_prefix / "bin"))
         return env
 
     @cached_property
-    def environ_with_all_paths(self) -> Dict[str, str]:
+    def environ_with_all_paths(self) -> dict[str, str]:
         """Return a dictionary of environment variables with all prefixes prepended to PATH."""
         env = self.environ_with_compile_path.copy()
         prepend_path(env, str(self.conda_prefix / "bin"))
@@ -356,7 +359,7 @@ class CondaOnlyEnvironment(InstallEnvironment):
 
     conda_prefix_name: str = ""
     compile_prefix_name: str = ""
-    environment_variable: ClassVar[Tuple[str, ...]] = (
+    environment_variable: ClassVar[tuple[str, ...]] = (
         "CONDA_EXE",  # conda
         "CONDA_PREFIX",  # conda
         "HOME",  # UNIX
@@ -364,7 +367,7 @@ class CondaOnlyEnvironment(InstallEnvironment):
         "TERM",  # UNIX
         "USERPROFILE",  # Windows, usually points to C:\Users\USERNAME
     )
-    sanitized_path: ClassVar[Tuple[str, ...]] = ("/bin", "/usr/bin")  # needed for conda to find POSIX executables
+    sanitized_path: ClassVar[tuple[str, ...]] = ("/bin", "/usr/bin")  # needed for conda to find POSIX executables
 
     def __post_init__(self) -> None:
         super().__post_init__()
@@ -373,7 +376,7 @@ class CondaOnlyEnvironment(InstallEnvironment):
             raise RuntimeError("For conda only environment, conda_prefix_name should equals to compile_prefix_name.")
 
     # @property
-    # def sanitized_path(self) -> List[str]:
+    # def sanitized_path(self) -> list[str]:
     #     import subprocess
 
     #     res = subprocess.run(
@@ -389,7 +392,7 @@ class CondaOnlyEnvironment(InstallEnvironment):
     #     return paths
 
     @cached_property
-    def environ(self) -> Dict[str, str]:
+    def environ(self) -> dict[str, str]:
         os_env = super().environ
         _dict = {key: os_env[key] for key in self.environment_variable if key in os_env}
         for path in self.sanitized_path:
@@ -398,17 +401,17 @@ class CondaOnlyEnvironment(InstallEnvironment):
         return _dict
 
     @cached_property
-    def environ_with_all_paths(self) -> Dict[str, str]:
+    def environ_with_all_paths(self) -> dict[str, str]:
         env = self.environ.copy()
         prepend_path(env, str(self.conda_prefix / "bin"))
         return env
 
     @property
-    def environ_with_compile_path(self) -> Dict[str, str]:
+    def environ_with_compile_path(self) -> dict[str, str]:
         return self.environ_with_all_paths
 
     @property
-    def environ_with_conda_path(self) -> Dict[str, str]:
+    def environ_with_conda_path(self) -> dict[str, str]:
         return self.environ_with_all_paths
 
 
