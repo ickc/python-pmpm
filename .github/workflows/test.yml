@@ -9,7 +9,7 @@ on:
 jobs:
   test:
     strategy:
-      fail-fast: true
+      fail-fast: false
       # https://docs.github.com/en/actions/using-github-hosted-runners/about-github-hosted-runners/about-github-hosted-runners#supported-runners-and-hardware-resources
       matrix:
         include:
