@@ -52,9 +52,9 @@ def main(
             "liblapack=*=*openblas",
         ]
     # mpi
-    conda_dependencies.append(mpi)
     pkgs = ("fftw", "h5py", "libsharp")
     if mpi in ("mpich", "openmpi"):
+        conda_dependencies.append(mpi)
         for pkg in pkgs:
             conda_dependencies.append(f"{pkg}=*=mpi_{mpi}_*")
         conda_dependencies += [

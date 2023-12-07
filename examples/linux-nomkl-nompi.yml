@@ -39,7 +39,6 @@ dependencies:
 - namaster
 - nbformat
 - nomkl
-- nompi
 - numba
 - numpy
 - pillow

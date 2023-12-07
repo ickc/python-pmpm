@@ -39,7 +39,6 @@ dependencies:
 - mypy
 - namaster
 - nbformat
-- nompi
 - numba
 - numpy
 - pillow

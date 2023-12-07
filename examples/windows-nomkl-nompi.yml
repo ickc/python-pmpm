@@ -32,7 +32,6 @@ dependencies:
 - mypy
 - nbformat
 - nomkl
-- nompi
 - numba
 - numpy
 - pillow
