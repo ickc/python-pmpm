@@ -20,7 +20,7 @@ class Package(GenericPackage):
 
     @property
     def src_dir(self) -> Path:
-        return self.env.conda_prefix / "etc" / "conda"
+        return self.env.conda_prefix / "bin"
 
     def _install_conda(self) -> None:
         logger.info("Creating conda environment")
@@ -54,7 +54,6 @@ class Package(GenericPackage):
         self.run_conda_activated(
             cmd,
             env=self.env.environ_with_conda_path,
-            cwd=self.src_dir,
         )
 
     def install_env(self) -> None:
