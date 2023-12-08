@@ -23,7 +23,25 @@ changelog
 [![Downloads](https://img.shields.io/pypi/dm/souk-data-centre.svg)](https://pypi.python.org/pypi/souk-data-centre/)
 ![License](https://img.shields.io/pypi/l/souk-data-centre.svg) -->
 
+## Introduction
+
 Python manual package manager is a package manager written in Python for manually installing a compiled stack.
+Before you proceed, you should know that for typical usage, `conda` (and its friends `mamba`/`micromamba`) should be enough for the purpose.
+`pmpm` built on top of `conda` which also compile some Python packages locally.
+
+Goal:
+
+- Custom compilation of some packages, possibly for optimization such as `-march` and `-mtune` which is beyond what `conda` offers.
+- Provide fast re-compile after some small local changes, suitable for development.
+
+Approaches:
+
+- `conda_install`: Both the conda provided stack and the compiled stack from `pmpm` are in the same prefix, this makes activating an environment seamless. It is achieved by cleanly compile an environment using the conda provided stack only, including compilers.
+- `system_install`: The conda provided stack and the compiled stack from `pmpm` has a different prefix. This makes the 2 completely separate, where the compiled stack can uses the host compilers. This is useful for example when the vendor provided MPI compilers are needed. This also has more points of failure, as we can't completely control what is in the host environment. `pmpm` only serves as automation for reproducibility. But you probably need to modify how `pmpm` behaves on different host, and you probably need to install packages from the OS package manager.
+
+Alternative approach:
+
+- You can create a conda recipe and use `conda-build` and tweak from there for customization. The only downside probably is the time it takes to re-compile after modifications.
 
 ## Installation
 
