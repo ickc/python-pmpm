@@ -31,13 +31,13 @@ homepage = "https://github.com/ickc/python-pmpm"
 repository = "https://github.com/ickc/python-pmpm"
 documentation = "https://ickc.github.io/python-pmpm"
 authors = ["Kolen Cheung <christian.kolen@gmail.com>"]
-readme = "README.rst"
+readme = "docs/index.md"
 packages = [
     { include = "pmpm", from = "src" },
 ]
 include = [
     'LICENSE',
-    'README.rst',
+    'docs/index.md',
 ]
 
 [tool.poetry.dependencies]
