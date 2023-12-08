@@ -43,18 +43,18 @@ class Package(GenericPackage):
             env=self.env.environ_with_all_paths,
             cwd=self.src_dir.parent,
         )
-        branch = self.version
-        logger.info("Changing to %s branch...", branch)
-        cmd = [
-            "git",
-            "checkout",
-            branch,
-        ]
-        run(
-            cmd,
-            env=self.env.environ_with_all_paths,
-            cwd=self.src_dir,
-        )
+        if (branch := self.version) is not None:
+            logger.info("Changing to %s branch...", branch)
+            cmd = [
+                "git",
+                "checkout",
+                branch,
+            ]
+            run(
+                cmd,
+                env=self.env.environ_with_all_paths,
+                cwd=self.src_dir,
+            )
 
     def _cmake(self) -> None:
         logger.info("Running CMake")
