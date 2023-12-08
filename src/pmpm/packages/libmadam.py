@@ -48,8 +48,6 @@ class Package(GenericPackage):
         PATH = env["PATH"]
         FC = which("mpifort", path=PATH)
         if FC is None:
-            FC = which("gfortran", path=PATH)
-        if FC is None:
             raise RuntimeError(f"Could not find mpifort or gfortran in {PATH}")
         env["MPIFC"] = FC
         env["FC"] = FC
