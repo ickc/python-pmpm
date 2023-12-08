@@ -5,6 +5,7 @@ import tempfile
 from dataclasses import dataclass
 from functools import cached_property
 from logging import getLogger
+from shutil import which
 from typing import TYPE_CHECKING, ClassVar
 
 from ..util import run
@@ -59,20 +60,50 @@ class Package(GenericPackage):
         logger.info("Running CMake")
         prefix = self.env.compile_prefix
         libext = "dylib" if self.env.is_darwin else "so"
+
+        # compilers discovery
+        env = self.env.environ_with_compile_path
+        PATH = env["PATH"]
+        # CC
+        MPICC: str | None = which("mpicc", path=PATH)
+        CC: str
+        if MPICC is not None:
+            CC = MPICC
+        else:
+            _CC: str | None = which("gcc", path=PATH)
+            if _CC is None:
+                _CC = which("clang", path=PATH)
+            if _CC is None:
+                raise RuntimeError("Could not find a C compiler")
+            else:
+                CC = _CC
+            del _CC
+        # CXX
+        MPICXX: str | None = which("mpicxx", path=PATH)
+        CXX: str
+        if MPICXX is not None:
+            CXX = MPICXX
+        else:
+            _CXX = which("g++", path=PATH)
+            if _CXX is None:
+                _CXX = which("clang++", path=PATH)
+            if _CXX is None:
+                raise RuntimeError("Could not find a C++ compiler")
+            else:
+                CXX = _CXX
+            del _CXX
         cmd = [
             "cmake",
             "-DCMAKE_VERBOSE_MAKEFILE:BOOL=ON",
             "-DPython3_FIND_VIRTUALENV=ONLY",
             f"-DBLAS_LIBRARIES={prefix}/lib/libblas.{libext}",
-            f"-DCMAKE_C_COMPILER={prefix}/bin/mpicc",
+            f"-DCMAKE_C_COMPILER={prefix}/bin/{CC}",
             f"-DCMAKE_C_FLAGS=-O3 -fPIC -pthread -march={self.arch} -mtune={self.tune}",
-            f"-DCMAKE_CXX_COMPILER={prefix}/bin/mpicxx",
+            f"-DCMAKE_CXX_COMPILER={prefix}/bin/{CXX}",
             f"-DCMAKE_CXX_FLAGS=-O3 -fPIC -pthread -march={self.arch} -mtune={self.tune}",
             f"-DCMAKE_INSTALL_PREFIX={prefix}",
             f"-DFFTW_ROOT={prefix}",
             f"-DLAPACK_LIBRARIES={prefix}/lib/liblapack.{libext}",
-            f"-DMPI_C_COMPILER={prefix}/bin/mpicc",
-            f"-DMPI_CXX_COMPILER={prefix}/bin/mpicxx",
             f"-DPython_EXECUTABLE:FILEPATH={prefix}/bin/python",
             f"-DPYTHON_EXECUTABLE:FILEPATH={prefix}/bin/python",
             f"-DPython3_EXECUTABLE:FILEPATH={prefix}/bin/python",
@@ -81,6 +112,10 @@ class Package(GenericPackage):
             f"-DSUITESPARSE_LIBRARY_DIR_HINTS={prefix}/lib",
             "..",
         ]
+        if MPICC is not None:
+            cmd.append(f"-DMPI_C_COMPILER={prefix}/bin/{MPICC}")
+        if MPICXX is not None:
+            cmd.append(f"-DMPI_CXX_COMPILER={prefix}/bin/{MPICXX}")
         run(
             cmd,
             env=self.env.environ_with_compile_path,
