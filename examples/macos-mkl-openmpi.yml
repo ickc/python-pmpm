@@ -91,5 +91,4 @@ dependencies:
   - socs
 _pmpm:
   dependencies:
-  - libmadam
   - toast

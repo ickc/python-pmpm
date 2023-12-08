@@ -56,13 +56,14 @@ def main(
             "libblas=*=*openblas",
             "liblapack=*=*openblas",
         ]
+    # remove libmadam from known incompatibilities
+    if mpi == "nompi" or (os == "macos" and mpi == "openmpi"):
+        env["_pmpm"]["dependencies"] = [pkg for pkg in env["_pmpm"]["dependencies"] if pkg != "libmadam"]
     # mpi
     pkgs = ("fftw", "h5py") if os == "windows" else ("fftw", "h5py", "libsharp")
     if mpi == "nompi":
         for pkg in pkgs:
             conda_dependencies.append(f"{pkg}=*=nompi_*")
-        # libmadam has to be built with MPI
-        env["_pmpm"]["dependencies"] = [pkg for pkg in env["_pmpm"]["dependencies"] if pkg != "libmadam"]
     elif os == "windows":
         raise ValueError("MPI is not supported on Windows")
     else:
