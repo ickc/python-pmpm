@@ -24,7 +24,6 @@ dependencies:
 - lapack
 - libblas=*=*openblas
 - liblapack=*=*openblas
-- libsharp=*=nompi_*
 - make
 - mamba
 - matplotlib-base

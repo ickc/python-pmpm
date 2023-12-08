@@ -57,7 +57,7 @@ def main(
             "liblapack=*=*openblas",
         ]
     # mpi
-    pkgs = ("fftw", "h5py", "libsharp")
+    pkgs = ("fftw", "h5py") if os == "windows" else ("fftw", "h5py", "libsharp")
     if mpi == "nompi":
         for pkg in pkgs:
             conda_dependencies.append(f"{pkg}=*=nompi_*")
