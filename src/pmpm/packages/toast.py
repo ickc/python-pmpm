@@ -68,6 +68,7 @@ class Package(GenericPackage):
         MPICC: str | None = which("mpicc", path=PATH)
         CC: str
         if MPICC is not None:
+            logger.info("Using MPICC=%s", MPICC)
             CC = MPICC
         else:
             _CC: str | None = which("gcc", path=PATH)
@@ -76,12 +77,14 @@ class Package(GenericPackage):
             if _CC is None:
                 raise RuntimeError("Could not find a C compiler")
             else:
+                logger.info("Using CC=%s", _CC)
                 CC = _CC
             del _CC
         # CXX
         MPICXX: str | None = which("mpicxx", path=PATH)
         CXX: str
         if MPICXX is not None:
+            logger.info("Using MPICXX=%s", MPICXX)
             CXX = MPICXX
         else:
             _CXX = which("g++", path=PATH)
@@ -90,6 +93,7 @@ class Package(GenericPackage):
             if _CXX is None:
                 raise RuntimeError("Could not find a C++ compiler")
             else:
+                logger.info("Using CXX=%s", _CXX)
                 CXX = _CXX
             del _CXX
         cmd = [
@@ -97,9 +101,9 @@ class Package(GenericPackage):
             "-DCMAKE_VERBOSE_MAKEFILE:BOOL=ON",
             "-DPython3_FIND_VIRTUALENV=ONLY",
             f"-DBLAS_LIBRARIES={prefix}/lib/libblas.{libext}",
-            f"-DCMAKE_C_COMPILER={prefix}/bin/{CC}",
+            f"-DCMAKE_C_COMPILER={CC}",
             f"-DCMAKE_C_FLAGS=-O3 -fPIC -pthread -march={self.arch} -mtune={self.tune}",
-            f"-DCMAKE_CXX_COMPILER={prefix}/bin/{CXX}",
+            f"-DCMAKE_CXX_COMPILER={CXX}",
             f"-DCMAKE_CXX_FLAGS=-O3 -fPIC -pthread -march={self.arch} -mtune={self.tune}",
             f"-DCMAKE_INSTALL_PREFIX={prefix}",
             f"-DFFTW_ROOT={prefix}",
@@ -113,9 +117,9 @@ class Package(GenericPackage):
             "..",
         ]
         if MPICC is not None:
-            cmd.append(f"-DMPI_C_COMPILER={prefix}/bin/{MPICC}")
+            cmd.append(f"-DMPI_C_COMPILER={MPICC}")
         if MPICXX is not None:
-            cmd.append(f"-DMPI_CXX_COMPILER={prefix}/bin/{MPICXX}")
+            cmd.append(f"-DMPI_CXX_COMPILER={MPICXX}")
         run(
             cmd,
             env=self.env.environ_with_compile_path,
