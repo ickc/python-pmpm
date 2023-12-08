@@ -2,7 +2,6 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from logging import getLogger
-from shutil import which
 from typing import TYPE_CHECKING, ClassVar
 
 from ..util import run
@@ -45,14 +44,8 @@ class Package(GenericPackage):
 
     def _configure(self) -> None:
         env = self.env.environ_with_compile_path.copy()
-        PATH = env["PATH"]
-        FC = which("mpifort", path=PATH)
-        if FC is None:
-            FC = which("gfortran", path=PATH)
-        if FC is None:
-            raise RuntimeError(f"Could not find mpifort or gfortran in {PATH}")
-        env["MPIFC"] = FC
-        env["FC"] = FC
+        env["MPIFC"] = "mpifort"
+        env["FC"] = "mpifort"
 
         inc = self.env.compile_prefix / "include"
         lib = self.env.compile_prefix / "lib"
