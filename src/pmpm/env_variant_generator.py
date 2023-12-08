@@ -66,6 +66,8 @@ def main(
     elif mpi == "nompi":
         for pkg in pkgs:
             conda_dependencies.append(f"{pkg}=*=nompi_*")
+        # libmadam has to be built with MPI
+        env["_pmpm"]["dependencies"] = [pkg for pkg in env["_pmpm"]["dependencies"] if pkg != "libmadam"]
     else:
         raise ValueError(f"Unknown MPI: {mpi}")
     conda_dependencies.sort()
