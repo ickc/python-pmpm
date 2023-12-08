@@ -21,9 +21,9 @@ html: dist/docs/
 env_variant_generator:
 	for os in windows linux macos; do \
 		for mpi in nompi openmpi mpich; do \
-			if [[ ! ( $$os == windows && $$mpi == openmpi ) ]]; then \
-				$(_python) -m pmpm.env_variant_generator examples/$$os.yml --mpi $$mpi --mkl -o examples/$$os-mkl-$$mpi.yml; \
-				$(_python) -m pmpm.env_variant_generator examples/$$os.yml --mpi $$mpi --no-mkl -o examples/$$os-nomkl-$$mpi.yml; \
+			if [[ $$os != windows || $$mpi == nompi ]]; then \
+				$(_python) -m pmpm.env_variant_generator examples/$$os.yml --mpi $$mpi --os $$os --mkl --output examples/$$os-mkl-$$mpi.yml; \
+				$(_python) -m pmpm.env_variant_generator examples/$$os.yml --mpi $$mpi --os $$os --no-mkl --output examples/$$os-nomkl-$$mpi.yml; \
 			fi \
 		done \
 	done

@@ -10,6 +10,7 @@ from __future__ import annotations
 
 from logging import getLogger
 from pathlib import Path
+from typing import Literal
 
 import defopt
 import yaml
@@ -25,7 +26,8 @@ def main(
     *,
     output: Path,
     mkl: bool = False,
-    mpi: str = "nompi",
+    mpi: Literal["nompi", "mpich", "openmpi"] = "nompi",
+    os: Literal["linux", "macos", "windows"] = "linux",
 ) -> None:
     """Generate the environment variants.
 
@@ -33,7 +35,10 @@ def main(
 
     Args:
         path: Path to the YAML file.
+        output: Path to the output YAML file.
         mkl: Whether to generate the MKL variant.
+        mpi: MPI implementation to use.
+        os: Operating system the environment is for.
     """
     with path.open() as f:
         env = yaml.load(f, Loader=yamlloader.ordereddict.CSafeLoader)
@@ -53,7 +58,14 @@ def main(
         ]
     # mpi
     pkgs = ("fftw", "h5py", "libsharp")
-    if mpi in ("mpich", "openmpi"):
+    if mpi == "nompi":
+        for pkg in pkgs:
+            conda_dependencies.append(f"{pkg}=*=nompi_*")
+        # libmadam has to be built with MPI
+        env["_pmpm"]["dependencies"] = [pkg for pkg in env["_pmpm"]["dependencies"] if pkg != "libmadam"]
+    elif os == "windows":
+        raise ValueError("MPI is not supported on Windows")
+    else:
         conda_dependencies.append(mpi)
         for pkg in pkgs:
             conda_dependencies.append(f"{pkg}=*=mpi_{mpi}_*")
@@ -63,13 +75,6 @@ def main(
             f"{mpi}-mpicxx",
             f"{mpi}-mpifort",
         ]
-    elif mpi == "nompi":
-        for pkg in pkgs:
-            conda_dependencies.append(f"{pkg}=*=nompi_*")
-        # libmadam has to be built with MPI
-        env["_pmpm"]["dependencies"] = [pkg for pkg in env["_pmpm"]["dependencies"] if pkg != "libmadam"]
-    else:
-        raise ValueError(f"Unknown MPI: {mpi}")
     conda_dependencies.sort()
     env["dependencies"] = conda_dependencies + [{"pip": pip_dependencies}] if pip_dependencies else conda_dependencies
     with output.open("w") as f:
