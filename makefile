@@ -3,7 +3,7 @@ SPHINXBUILD   ?= sphinx-build
 SOURCEDIR     = docs
 BUILDDIR      = dist/docs
 
-# for bump2version, valid options are: major, minor, patch
+# for bump-my-version, valid options are: major, minor, patch
 PART ?= patch
 
 PORT ?= 8099
@@ -76,7 +76,7 @@ pypiManual:
 # releasing ####################################################################
 
 bump:
-	bump2version $(PART)
+	bump-my-version $(PART)
 	git push --follow-tags
 
 print-%:
