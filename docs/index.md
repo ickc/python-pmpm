@@ -67,3 +67,10 @@ Use one of the example config in this repository:
 ```sh
 pmpm conda_install "$HOME/pmpm-test" --file examples/....yml
 ```
+
+## Design
+
+When installing from a YAML file such as those given in the `examples/` directory,
+`pmpm` behaves as a superset of conda/mamba with an extra `_pmpm` key in the YAML configuration.
+`pmpm` will compile packages available in `pmpm.packages` after the conda environment is created,
+as defined in the YAML file.
