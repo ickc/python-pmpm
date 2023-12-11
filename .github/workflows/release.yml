@@ -5,6 +5,9 @@ on:
       - v*
 jobs:
   pypi-publish:
+    defaults:
+      run:
+        shell: bash -l {0}
     name: upload release to PyPI
     runs-on: ubuntu-latest
     # Specifying a GitHub environment is optional, but strongly encouraged
