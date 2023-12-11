@@ -35,6 +35,7 @@ dependencies:
   - sphinx
   - sphinx_bootstrap_theme
   - sphinxcontrib-apidoc
+  - myst-parser
   # dev:
   - data-science-types
   - ipykernel

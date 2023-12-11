@@ -63,6 +63,7 @@ pytest-mpi = {optional = true, version = "*"}
 sphinx = {optional = true, version = "^3.3"}
 sphinx-bootstrap-theme = {optional = true, version = "*"}
 sphinxcontrib-apidoc = {optional = true, version = "*"}
+myst-parser = {optional = true, version = "*"}
 
 # mpi
 mpi4py = {optional = true, version = "^3"}
