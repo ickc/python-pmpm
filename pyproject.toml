@@ -89,6 +89,7 @@ docs = [
     "sphinx",
     "sphinx-bootstrap-theme",
     "sphinxcontrib-apidoc",
+    "myst-parser",
 ]
 
 mpi = [
