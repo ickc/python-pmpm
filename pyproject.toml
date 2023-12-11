@@ -60,10 +60,13 @@ pytest-parallel = {optional = true, version = "*"}
 pytest-mpi = {optional = true, version = "*"}
 
 # docs: sync this with tox.testenv.docs below
-sphinx = {optional = true, version = "^3.3"}
-sphinx-bootstrap-theme = {optional = true, version = "*"}
-sphinxcontrib-apidoc = {optional = true, version = "*"}
+sphinx = {optional = true, version = "*"}
 myst-parser = {optional = true, version = "*"}
+furo = {optional = true, version = "*"}
+sphinxcontrib-apidoc = {optional = true, version = "*"}
+sphinx-autobuild = {optional = true, version = "*"}
+linkify-it-py = {optional = true, version = "*"}
+sphinx-last-updated-by-git = {optional = true, version = "*"}
 
 # mpi
 mpi4py = {optional = true, version = "^3"}
@@ -87,9 +90,12 @@ tests = [
 ]
 docs = [
     "sphinx",
-    "sphinx-bootstrap-theme",
-    "sphinxcontrib-apidoc",
     "myst-parser",
+    "furo",
+    "sphinxcontrib-apidoc",
+    "sphinx-autobuild",
+    "linkify-it-py",
+    "sphinx-last-updated-by-git",
 ]
 
 mpi = [

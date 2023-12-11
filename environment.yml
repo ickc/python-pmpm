@@ -33,9 +33,14 @@ dependencies:
   - pytest-xdist
   # docs:
   - sphinx
-  - sphinx_bootstrap_theme
+  - sphinx-autobuild
   - sphinxcontrib-apidoc
   - myst-parser
+  - furo
+  - linkify-it-py
+  - bump2version
+  - pip:
+    - sphinx-last-updated-by-git
   # dev:
   - data-science-types
   - ipykernel
