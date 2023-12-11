@@ -65,7 +65,7 @@ clean:
 # Deploy to PyPI
 ## by CI, properly git tagged
 pypi:
-	git push origin v0.1.0
+	git push origin v0.2.0
 ## Manually
 pypiManual:
 	rm -rf dist
