@@ -1,3 +1,27 @@
 # Revision history for `pmpm`
 
-- v0.1.0: first release and proof of concept.
+- v0.2.0: First PyPI release.
+    - features:
+        - support installing packages from another git branch / tag, such as `toast=toast3`.
+        - `pmpm` cli & flags
+            - replace `*_install_from_file` by `--file` flag
+            - add `--pip-dependencies`
+            - add `--install-ipykernel`
+            - add `--arch`
+            - add `--tune`
+            - remove `nomkl`
+        - less automatic stateful settings such as detecting Intel CPU.
+        - read from / write to YAML formats rather than JSON.
+        - make conda-activation works more reliably by running `conda run` instead.
+        - add `pmpm_env_variant_generator`
+        - refactor how defaults work.
+        - drop Python 3.8-3.9, add Python 3.12.
+        - remove Windows support.
+    - maintenance:
+        - improve type-hints.
+        - refactor `pmpm.util`
+        - remove `pmpm.templates`
+        - add documentation on GitHub Pages and Read the Docs.
+        - improve integration tests.
+        - migrate from bump2version to bump-my-version
+- v0.1.0: First release and proof of concept.
