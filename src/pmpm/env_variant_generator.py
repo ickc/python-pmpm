@@ -65,10 +65,10 @@ def main(
         for pkg in pkgs:
             conda_dependencies.append(f"{pkg}=*=nompi_*")
     else:
-        conda_dependencies.append(mpi)
         for pkg in pkgs:
             conda_dependencies.append(f"{pkg}=*=mpi_{mpi}_*")
         conda_dependencies += [
+            mpi,
             "mpi4py",
             f"{mpi}-mpicc",
             f"{mpi}-mpicxx",
