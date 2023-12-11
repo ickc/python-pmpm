@@ -6,7 +6,7 @@
 :hidden:
 
 api/modules
-changelog
+CHANGELOG
 ```
 
 <!-- [![Documentation Status](https://readthedocs.org/projects/souk-data-centre/badge/?version=latest)](https://souk-data-centre.readthedocs.io/en/latest/?badge=latest&style=plastic)
