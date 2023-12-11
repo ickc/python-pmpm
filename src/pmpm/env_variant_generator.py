@@ -27,7 +27,7 @@ def main(
     output: Path,
     mkl: bool = False,
     mpi: Literal["nompi", "mpich", "openmpi"] = "nompi",
-    os: Literal["linux", "macos", "windows"] = "linux",
+    os: Literal["linux", "macos"] = "linux",
 ) -> None:
     """Generate the environment variants.
 
@@ -60,12 +60,10 @@ def main(
     if mpi == "nompi" or (os == "macos" and mpi == "openmpi"):
         env["_pmpm"]["dependencies"] = [pkg for pkg in env["_pmpm"]["dependencies"] if pkg != "libmadam"]
     # mpi
-    pkgs = ("fftw", "h5py") if os == "windows" else ("fftw", "h5py", "libsharp")
+    pkgs = ("fftw", "h5py", "libsharp")
     if mpi == "nompi":
         for pkg in pkgs:
             conda_dependencies.append(f"{pkg}=*=nompi_*")
-    elif os == "windows":
-        raise ValueError("MPI is not supported on Windows")
     else:
         conda_dependencies.append(mpi)
         for pkg in pkgs:

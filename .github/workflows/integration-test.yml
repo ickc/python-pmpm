@@ -21,15 +21,6 @@ jobs:
           - nompi
           - openmpi
           - mpich
-        include:
-          - os: "windows"
-            mkl: "mkl"
-            mpi: "nompi"
-            extra-args: --no-install-ipykernel
-          - os: "windows"
-            mkl: "nomkl"
-            mpi: "nompi"
-            extra-args: --no-install-ipykernel
     defaults:
       run:
         shell: bash -l {0}

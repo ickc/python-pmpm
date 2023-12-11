@@ -22,9 +22,6 @@ jobs:
           - os: "ubuntu-22.04"
             python-version: "3.12"
             extra-args: --pip-dependencies requests
-          - os: "windows-2022"
-            python-version: "3.12"
-            extra-args: --no-install-ipykernel
     defaults:
       run:
         shell: bash -l {0}

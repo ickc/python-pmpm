@@ -85,7 +85,7 @@ class InstallEnvironment(metaclass=DocInheritMeta(style="google_with_merge")):  
     # for example, native or generic
     tune: str = "generic"
     conda_environment_filename: ClassVar[str] = "environment.yml"
-    supported_systems: ClassVar[tuple[str, ...]] = ("Linux", "Darwin", "Windows")
+    supported_systems: ClassVar[tuple[str, ...]] = ("Linux", "Darwin")
     system: ClassVar[str] = platform.system()
     cpu_count: ClassVar[int] = psutil.cpu_count(logical=False)
 
@@ -239,11 +239,6 @@ class InstallEnvironment(metaclass=DocInheritMeta(style="google_with_merge")):  
         return self.system == "Darwin"
 
     @cached_property
-    def is_windows(self) -> bool:
-        """Return True if the system is Windows."""
-        return self.system == "Windows"
-
-    @cached_property
     def conda_bin(self) -> Path:
         """Path to the conda binary."""
         path = Path(self.environ["CONDA_EXE"])
@@ -260,11 +255,7 @@ class InstallEnvironment(metaclass=DocInheritMeta(style="google_with_merge")):  
     @cached_property
     def mamba_bin(self) -> Path:
         """Path to the mamba binary."""
-        path = (
-            self.conda_root_prefix / "Scripts" / "mamba.exe"
-            if self.is_windows
-            else self.conda_root_prefix / "bin" / "mamba"
-        )
+        path = self.conda_root_prefix / "bin" / "mamba"
         try:
             check_file(path, "binary located at %s")
             return path
@@ -363,9 +354,7 @@ class CondaOnlyEnvironment(InstallEnvironment):
         "CONDA_EXE",  # conda
         "CONDA_PREFIX",  # conda
         "HOME",  # UNIX
-        "SYSTEMROOT",  # Windows, usually points to C:\Windows
         "TERM",  # UNIX
-        "USERPROFILE",  # Windows, usually points to C:\Users\USERNAME
     )
     sanitized_path: ClassVar[tuple[str, ...]] = ("/bin", "/usr/bin")  # needed for conda to find POSIX executables
 

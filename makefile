@@ -48,17 +48,15 @@ serve: doc
 .PHONY: env_variant_generator clean
 
 env_variant_generator:
-	for os in windows linux macos; do \
+	for os in linux macos; do \
 		for mpi in nompi openmpi mpich; do \
-			if [[ $$os != windows || $$mpi == nompi ]]; then \
-				python -m pmpm.env_variant_generator examples/$$os.yml --mpi $$mpi --os $$os --mkl --output examples/$$os-mkl-$$mpi.yml; \
-				python -m pmpm.env_variant_generator examples/$$os.yml --mpi $$mpi --os $$os --no-mkl --output examples/$$os-nomkl-$$mpi.yml; \
-			fi \
+			python -m pmpm.env_variant_generator examples/$$os.yml --mpi $$mpi --os $$os --mkl --output examples/$$os-mkl-$$mpi.yml; \
+			python -m pmpm.env_variant_generator examples/$$os.yml --mpi $$mpi --os $$os --no-mkl --output examples/$$os-nomkl-$$mpi.yml; \
 		done \
 	done
 
 clean:
-	rm -f examples/linux-*.yml examples/macos-*.yml examples/windows-*.yml
+	rm -f examples/linux-*.yml examples/macos-*.yml
 	rm -rf dist
 
 # maintenance ##################################################################
