@@ -76,7 +76,7 @@ pypiManual:
 # releasing ####################################################################
 
 bump:
-	bump-my-version $(PART)
+	bump-my-version bump $(PART)
 	git push --follow-tags
 
 print-%:
