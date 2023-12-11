@@ -3,7 +3,7 @@ requires = ["setuptools", "poetry_core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
-name = "pmpm"
+name = "python_pmpm"
 version = "0.1.0"
 description = "a package manager written in Python for manually installing a compiled stack"
 license = "BSD-3-Clause"
