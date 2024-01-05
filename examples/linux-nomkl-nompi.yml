@@ -2,22 +2,27 @@ channels:
 - conda-forge
 - nodefaults
 dependencies:
+- archspec
 - astropy
 - autobahn
 - automake
 - bandit
+- bump-my-version
 - cfitsio
 - cmake
 - compilers
 - conda
 - configobj
+- coverage
 - coveralls
 - cython
+- defopt
 - deprecation
 - ephem
 - fftw=*=nompi_*
 - flake8
 - flatbuffers
+- furo
 - gcc_linux-64
 - gfortran_linux-64
 - gxx_linux-64
@@ -32,11 +37,13 @@ dependencies:
 - liblapack=*=*openblas
 - libsharp=*=nompi_*
 - libtool
+- linkify-it-py
 - make
 - mamba
 - matplotlib
 - micromamba
 - mypy
+- myst-parser
 - namaster
 - nbformat
 - nomkl
@@ -44,7 +51,10 @@ dependencies:
 - numpy
 - pillow
 - plotly
+- poetry
 - pshmem
+- psutil
+- py-cpuinfo
 - py-ubjson
 - pyaml
 - pydocstyle
@@ -61,13 +71,17 @@ dependencies:
 - pytz
 - pyyaml
 - quaternionarray
+- ruamel.yaml
 - scikit-image
 - scipy
 - setproctitle
 - setuptools
 - skyfield
+- souk
 - sphinx
+- sphinx-autobuild
 - sphinx_rtd_theme
+- sphinxcontrib-apidoc
 - sqlalchemy
 - suitesparse
 - toml
@@ -84,6 +98,7 @@ dependencies:
   - posix_ipc
   - so3g
   - socs
+  - sphinx-last-updated-by-git
 _pmpm:
   dependencies:
   - toast=toast3
