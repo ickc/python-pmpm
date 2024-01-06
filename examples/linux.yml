@@ -71,7 +71,6 @@ dependencies:
 - setproctitle
 - setuptools
 - skyfield
-- souk
 - sphinx
 - sphinx_rtd_theme
 - sphinx-autobuild
@@ -93,6 +92,7 @@ dependencies:
   - posix_ipc
   - so3g
   - socs
+  - souk
   - sphinx-last-updated-by-git
 _pmpm:
   dependencies:
