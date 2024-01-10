@@ -21,6 +21,7 @@ dependencies:
 - defopt
 - deprecation
 - ephem
+- fire
 - flake8
 - flatbuffers
 - furo
