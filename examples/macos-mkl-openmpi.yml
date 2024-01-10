@@ -22,6 +22,7 @@ dependencies:
 - deprecation
 - ephem
 - fftw=*=mpi_openmpi_*
+- fire
 - flake8
 - flatbuffers
 - furo

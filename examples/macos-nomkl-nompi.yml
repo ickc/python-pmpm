@@ -22,6 +22,7 @@ dependencies:
 - deprecation
 - ephem
 - fftw=*=nompi_*
+- fire
 - flake8
 - flatbuffers
 - furo
