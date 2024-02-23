@@ -8,6 +8,7 @@ dependencies:
 - automake
 - bandit
 - bump-my-version
+- camb
 - cfitsio
 - cmake
 - compilers
@@ -67,6 +68,7 @@ dependencies:
 - pyyaml
 - quaternionarray
 - ruamel.yaml
+- sacc
 - scikit-image
 - scipy
 - setproctitle
@@ -87,6 +89,7 @@ dependencies:
 - pip:
   - cbor2
   # TODO: choose your own version here, can be a branch like master, or a version like v0.4.0
+  - https://github.com/simonsobs/SOOPERCOOL/archive/master.tar.gz
   - https://github.com/simonsobs/sotodlib/archive/master.tar.gz
   - ocs
   - pixell
