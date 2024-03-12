@@ -19,13 +19,16 @@ dependencies:
 - cython
 - defopt
 - deprecation
+- dill
 - ephem
 - fftw=*=mpi_openmpi_*
 - fire
 - flake8
 - flatbuffers
 - furo
+- fuzzywuzzy
 - gcc_linux-64
+- getdist
 - gfortran_linux-64
 - gxx_linux-64
 - h5py=*=mpi_openmpi_*
@@ -56,14 +59,18 @@ dependencies:
 - openmpi-mpicc
 - openmpi-mpicxx
 - openmpi-mpifort
+- packaging
+- pandas
 - pillow
 - plotly
 - poetry
+- portalocker
 - pshmem
 - psutil
 - py-cpuinfo
 - py-ubjson
 - pyaml
+- pybobyqa
 - pydocstyle
 - pyfftw
 - pylint
@@ -78,6 +85,7 @@ dependencies:
 - pytz
 - pyyaml
 - quaternionarray
+- requests
 - ruamel.yaml
 - sacc
 - scikit-image
@@ -99,6 +107,7 @@ dependencies:
 - wurlitzer
 - pip:
   - cbor2
+  - cobaya
   - https://github.com/simonsobs/SOOPERCOOL/archive/master.tar.gz
   - https://github.com/simonsobs/sotodlib/archive/master.tar.gz
   - ocs
