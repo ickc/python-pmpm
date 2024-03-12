@@ -19,12 +19,15 @@ dependencies:
 - cython
 - defopt
 - deprecation
+- dill
 - ephem
 - fire
 - flake8
 - flatbuffers
 - furo
+- fuzzywuzzy
 - gcc_linux-64
+- getdist
 - gfortran_linux-64
 - gxx_linux-64
 - healpy
@@ -45,14 +48,18 @@ dependencies:
 - nbformat
 - numba
 - numpy
+- packaging
+- pandas
 - pillow
 - plotly
 - poetry
+- portalocker
 - pshmem
 - psutil
 - py-cpuinfo
 - py-ubjson
 - pyaml
+- pybobyqa
 - pydocstyle
 - pyfftw
 - pylint
@@ -67,6 +74,7 @@ dependencies:
 - pytz
 - pyyaml
 - quaternionarray
+- requests
 - ruamel.yaml
 - sacc
 - scikit-image
@@ -86,9 +94,12 @@ dependencies:
 - typer
 - ujson
 - wurlitzer
+# TODO: choose your own version here
+# For https://github.com/GITHUB_ORG/REPO/archive/BRANCH.tar.gz
+# BRANCH can be a branch like master, or a version like v0.4.0
 - pip:
   - cbor2
-  # TODO: choose your own version here, can be a branch like master, or a version like v0.4.0
+  - cobaya
   - https://github.com/simonsobs/SOOPERCOOL/archive/master.tar.gz
   - https://github.com/simonsobs/sotodlib/archive/master.tar.gz
   - ocs
