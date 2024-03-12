@@ -71,6 +71,7 @@ dependencies:
 - py-ubjson
 - pyaml
 - pybobyqa
+- pyccl
 - pydocstyle
 - pyfftw
 - pylint
@@ -89,6 +90,7 @@ dependencies:
 - ruamel.yaml
 - sacc
 - scikit-image
+- scikit-learn
 - scipy
 - setproctitle
 - setuptools
@@ -99,6 +101,7 @@ dependencies:
 - sphinxcontrib-apidoc
 - sqlalchemy
 - suitesparse
+- tensorflow
 - toml
 - tqdm
 - twisted
@@ -108,15 +111,19 @@ dependencies:
 - pip:
   - cbor2
   - cobaya
+  - fgspectra
+  - git+https://github.com/simonsobs/SOLikeT.git@master
   - https://github.com/simonsobs/SOOPERCOOL/archive/master.tar.gz
   - https://github.com/simonsobs/sotodlib/archive/master.tar.gz
   - ocs
   - pixell
   - posix_ipc
+  - pyhalomodel
   - so3g
   - socs
   - souk
   - sphinx-last-updated-by-git
+  - syslibrary
 _pmpm:
   dependencies:
   - toast
